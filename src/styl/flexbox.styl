@@ -1,0 +1,138 @@
+@require("mixins.styl")
+
+#f-main {
+	position: absolute
+	top: 0
+	left: 0
+	bottom: 0
+	right: 0
+
+	display: flex
+	flex-flow: row nowrap
+
+	& > #f-null {
+		flex: 0 0 10px
+
+		background-color: $gutter_color
+	}
+
+	& > #f-primary {
+		flex: 1 1 780px
+
+		display: flex
+		flex-flow: column nowrap
+
+		& > #f-top {
+			flex: 1 1 500px
+			overflow: auto
+
+			display: flex
+			flex-flow: row nowrap
+			border-bottom: 3px solid $gutter_color
+
+			& > #f-list {
+				flex: 1 1 580px
+				overflow: auto
+				position: relative
+
+				background-image: url(../assets/notebook/notebook.png)
+				background-repeat: repeat
+			}
+
+			& > #f-preview {
+				flex: 1 1 200px
+				overflow: hidden  // allows for flexbox animation
+				position: relative
+				transition: flex-grow 0.2s, flex-shrink 0.2s, flex-basis 0.2s
+
+				background-image: url(../assets/retina_wood/retina_wood.png)
+				background-repeat: repeat
+				box-shadow: inset 0 0 10px white
+				border-left: 3px solid $gutter_color
+
+				& > .card-svg {
+					margin: 8px
+					width: calc(100% - 16px)
+					height: calc(100% - 16px)
+				}
+			}
+		}
+
+		& > #f-bottom {
+			flex: 1 1 300px
+
+			display: flex
+			flex-flow: row nowrap
+
+			& > #f-tabs {
+				flex: 1 0 50px
+
+				display: flex
+				flex-flow: column nowrap
+				
+				& > .f-tab {
+					flex: 1 1 75px
+					position: relative
+					overflow: hidden
+
+					background-color: $gutter_color
+					font-family: sans-serif
+					cursor: pointer
+					
+					& > span {
+						position: absolute
+						top: calc(50% - 0.5em)
+						left: 3px
+						height: 1em
+						line-height: 1em
+						vertical-align: center
+					}
+					
+					&.active {
+						background-color: $solarized_light
+					}
+				}
+			}
+
+			& > #f-editor {
+				flex: 10 1 730px
+				position: relative
+
+				background-color: $gutter_color
+
+				&.fields-container {
+					display: flex
+					flex-flow: row nowrap
+
+					& > #f-fields-left {
+						flex: 1 1 100px
+						overflow: auto
+					}
+
+					& > #f-fields-right {
+						flex: 10 1 630px
+						overflow: auto
+					}
+				}
+			}
+		}
+	}
+
+	& > #f-loading {
+		flex: 1 1 800px
+		position: relative
+		overflow: hidden
+		
+		& > img.splash {
+			position: absolute
+			top: calc(50% - 144px)
+			left: calc(50% - 144px)
+			width: 288px
+			height: 288px
+		}
+	}
+}
+
+.flex-hide {
+	flex: 0 !important
+}

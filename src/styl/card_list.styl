@@ -1,0 +1,136 @@
+@require("mixins.styl")
+
+.card-list-wrapper {
+	position: absolute
+	top: 0
+	bottom: 0
+	left: 0
+	right: 0
+}
+
+table.card-list {
+	table-layout: fixed
+	border-collapse: collapse
+	
+	& > thead {
+		font-family: sans-serif
+		font-size: 0.9em
+
+		& > tr {
+			border-bottom: 1px solid #333
+
+			& > th {
+				padding-bottom: 3px
+			}
+			& > th:nth-child(n+1) {
+				cursor: pointer
+				&.active {
+					font-style: italic
+				}
+			}
+		}
+
+		& > tr > th.active::after {
+			content: '\25BC'
+		}
+		&.sortReversed > tr > th.active::after {
+			content: '\25B2'
+		}
+	}
+	
+	& > tbody {
+		input, textarea {
+			background-color: inherit
+			border: none
+		}
+
+		input {
+			font-size: 1em
+			display: block
+			width: calc(100% - 4px)
+			margin: 0 2px
+			padding: 0
+		}
+
+		textarea {
+			font-size: 0.9em
+			width: 100%
+			height: 100%
+			padding: 0
+			margin-top: 3px  // required for pixel-perfect alignment
+		}
+
+		& > tr {
+			height: 3em
+			cursor: pointer
+		}
+		& > tr:nth-child(even) {
+			background-color: rgba(255, 255, 255, 0.7)
+			&.active {
+				background-color: rgba(255, 255, 0, 0.8)
+				box-shadow: 0 3px 10px black
+			}
+		}
+		& > tr:nth-child(odd) {
+			background-color: rgba(180, 180, 180, 0.7)
+			&.active {
+				background-color: rgba(255, 255, 0, 0.8)
+				box-shadow: 0 3px 10px black
+			}
+		}
+	}
+	
+	th, td {
+		overflow: hidden
+		white-space: nowrap
+		margin: 0
+		padding: 0
+		
+		border-right: 1px solid #333
+	}
+
+	th:last-child, td:last-child {
+		border-right: none
+	}
+	
+	th.left-buffer, td.left-buffer {
+		width: 10px
+		min-width: 10px
+		max-width: 10px
+		border-right: none
+	}
+}
+
+.below-card-list {
+	margin: 5px
+	
+	& > button {
+		font-size: 1em
+	}
+}
+
+.image-chooser {
+	display: table
+	
+	span {
+		display: table-cell
+		vertical-align: middle
+		padding-left: 7px
+	}
+
+	img.thumbnail {
+		height: 2em
+		margin-top: 4px  // required for pixel-perfect alignment
+	}
+	
+	button.clearImage {
+		border: none
+		background: inherit
+		font-size: 1.2em
+		cursor: pointer
+		
+		&:hover {
+			color: #900
+		}
+	}
+}

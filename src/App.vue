@@ -6,6 +6,8 @@
 </template>
 
 <script>
+require("./styl/main.styl");
+
 export default {
 	name: "app"
 };

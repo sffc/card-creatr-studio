@@ -1,0 +1,153 @@
+@require("mixins.styl")
+@require("flexbox.styl")
+
+#f-list {
+	@require("card_list.styl")
+}
+
+body {
+	background-color: $gutter_color
+}
+
+#error-box {
+	position: fixed
+	top: 10px
+	left: 20%
+	right: 20%
+	height: auto
+	overflow: auto
+	padding: 5px
+
+	color: white
+	background-color: rgba(200, 0, 0, 0.75)
+	
+	& > div {
+		white-space: pre-wrap
+		font-family: monospace
+	}
+}
+
+.ace-container {
+	& > div {
+		position: absolute
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
+	}
+}
+
+.assets-container {
+	position: absolute
+	top: 0
+	bottom: 0
+	left: 0
+	right: 0
+	overflow: auto
+
+	display: flex
+	flex-flow: row wrap
+	align-items: flex-start
+	background-color: $solarized_light
+
+	& > .asset-box {
+		margin: 5px
+		padding: 5px
+		border: 2px solid $gutter_color
+		font-family: sans-serif
+	}
+}
+
+.fields-container {
+	& > #f-fields-left {
+		border-left: 10px solid $solarized_light
+		
+		ul {
+			list-style-type: none
+			margin: 0
+			padding-left: 0
+			
+			li {
+				padding: 5px
+				background-color: $gutter_color
+				font-family: sans-serif
+				cursor: pointer
+				border-left: 5px solid $gutter_color
+
+				&.active {
+					background-color: $solarized_light
+				}
+			}
+		}
+		
+		& > button {
+			margin-top: 5px
+			margin-left: 5px
+			background: none
+			font-size: 1em
+			border: 2px solid #000
+		}
+	}
+
+	& > #f-fields-right {
+		border-left: 10px solid $solarized_light
+		background-color: $solarized_light
+
+		display: flex
+		flex-flow: row wrap
+		align-items: flex-start
+		
+		.field-box {
+			margin: 5px
+			border: 2px solid $gutter_color
+
+			& > * {
+				display: block
+				margin: 5px
+			}
+
+			& > strong {
+				font-family: sans-serif
+			}
+
+			& > input.invalid {
+				background-color: #F99
+			}
+		}
+	}
+}
+
+.error-entry {
+	&:not(:first-child) {
+		border-top: 1px solid #FFF
+		margin-top: 5px
+		padding-top: 5px
+	}
+
+	span.error-details {
+		font-size: 0.8em
+		text-decoration: underline
+		cursor: pointer
+	}
+}
+
+#print {
+	display: none
+	& > * {
+		position: absolute
+	}
+}
+
+@media print {
+	body {
+		margin: 0
+	}
+	#f-main {
+		display: none
+	}
+	#print {
+		display: block
+	}
+}
+
+// Styles for @print are computed on the fly

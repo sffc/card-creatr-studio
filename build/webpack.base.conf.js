@@ -29,11 +29,22 @@ module.exports = {
       'vue$': 'vue/dist/vue.common.js',
       'src': resolve('src'),
       'assets': resolve('src/assets'),
-      'components': resolve('src/components')
+      'components': resolve('src/components'),
+      // 'styl': resolve('src/styl')
     }
   },
   module: {
     rules: [
+      // The following rule for Stylus doesn't seem to work,
+      // and when left out, Stylus gets compiled.
+      // {
+      //   test: /\.styl$/,
+      //   use: [
+      //     'style-loader',
+      //     'css-loader',
+      //     'stylus-loader'
+      //   ],
+      // },
       {
         test: /\.(js|vue)$/,
         loader: 'eslint-loader',
