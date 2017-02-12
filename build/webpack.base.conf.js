@@ -33,6 +33,9 @@ module.exports = {
       // 'styl': resolve('src/styl')
     }
   },
+  externals: {
+    librsvg: "librsvg" // optional dependency
+  },
   module: {
     rules: [
       // The following rule for Stylus doesn't seem to work,

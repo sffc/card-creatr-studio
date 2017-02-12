@@ -116,10 +116,12 @@ class CustomWindow extends EventEmitter {
 	_reload() {
 		var port = process.env.PORT || appConfig.dev.port;
 		var _url = url.format({
-			pathname: "/",//path.join(__dirname, "..", "dist", "index.html"),
-			protocol: "http:",
-			hostname: "localhost",
-			port: port,
+			pathname: path.join(__dirname, "..", "electron_out", "index.html"),
+			protocol: "file:",
+			// pathname: "/",
+			// protocol: "http:",
+			// hostname: "localhost",
+			// port: port,
 			slashes: true,
 			query: {
 				path: this.path
