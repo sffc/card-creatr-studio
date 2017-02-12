@@ -1,11 +1,16 @@
-import Vue from "vue";
+"use strict";
+
+const Vue = require("vue");
 
 var globalCounter = 0;
 
 function action(store, mutationName, key, callback, ...callbackArgs) {
 	let stamp = globalCounter++;
-	callback(...callbackArgs, (err, value) => {
-		store.commit(mutationName, { err, stamp, key, value });
+	return new Promise((resolve, reject) => {
+		callback(...callbackArgs, (err, value) => {
+			store.commit(mutationName, { err, stamp, key, value });
+			resolve();
+		});
 	});
 }
 
@@ -54,7 +59,7 @@ function errors(collection) {
 	return result;
 }
 
-export default {
+module.exports = {
 	action,
 	mutation,
 	getter,

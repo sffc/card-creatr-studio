@@ -1,19 +1,19 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from "vue";
-import App from "./App";
-import CardCreatr from "card-creatr";
-import Utils from "./lib/utils";
-import async from "async";
-import router from "./router";
-import store from "./store";
-import ccsb from "./lib/ccsb";
-import electron from "electron";
+"use strict";
+
+require.extensions[".vue"] = require.extensions[".js"];
+
+const Vue = require("vue/dist/vue");
+const App = require("./App");
+const CardCreatr = require("card-creatr");
+const Utils = require("./lib/utils");
+const async = require("async");
+const store = require("./store");
+const ccsb = require("./lib/ccsb");
+const electron = require("electron");
 
 /* eslint-disable no-new */
 new Vue({
 	el: "#app",
-	router,
 	template: "<App/>",
 	components: { App }
 });
@@ -60,6 +60,20 @@ async.auto({
 	"fieldsBuffer": ["load", (results, _next) => {
 		ccsb.readFile(CardCreatr.CcsbReader.FIELDS_PATH, _next);
 	}],
+	"loadAssets": ["load", (results, _next) => {
+		async.each(
+			ccsb.listAllAssets(),
+			(filename, __next) => {
+				let promise = store.dispatch("updateBuffer", filename);
+				promise.then(() => {
+					__next(null);
+				}, (err) => {
+					__next(err);
+				});
+			},
+			_next
+		);
+	}],
 	"dataObjects": ["dataBuffer", (results, _next) => {
 		CardCreatr.csv.csvBufferToObjects(results.dataBuffer, _next);
 	}],
@@ -85,9 +99,10 @@ async.auto({
 		}
 		_next(null);
 	}],
-	"resolveData": ["dataObjects", "resolveFields", (results, _next) => {
+	"resolveData": ["dataObjects", "resolveFields", "loadAssets", (results, _next) => {
 		for (let card of results.dataObjects) {
-			let _card = Utils.toCardIdForm(card, store.state.fields);
+			let _card = Utils.toCardIdForm(card, store.getters.fields);
+			_card.id = card.id;
 			store.commit("addCardData", _card);
 		}
 		_next(null);

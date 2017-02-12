@@ -1,4 +1,6 @@
-import CardCreatr from "card-creatr";
-import url from "url";
+"use strict";
 
-export default new (CardCreatr.CcsbReader)(url.parse(window.location.href, { parseQueryString: true }).query.path || null);
+const CardCreatr = require("card-creatr");
+const url = require("url");
+
+module.exports = new (CardCreatr.CcsbReader)(url.parse(window.location.href, { parseQueryString: true }).query.path || null);

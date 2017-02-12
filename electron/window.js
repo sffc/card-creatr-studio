@@ -6,7 +6,6 @@ const electron = require("electron");
 const EventEmitter = require("events");
 const path = require("path");
 const url = require("url");
-const appConfig = require("../config");
 
 var globalCounter = 0;
 
@@ -114,9 +113,9 @@ class CustomWindow extends EventEmitter {
 	}
 
 	_reload() {
-		var port = process.env.PORT || appConfig.dev.port;
+		// var port = process.env.PORT || appConfig.dev.port;
 		var _url = url.format({
-			pathname: path.join(__dirname, "..", "electron_out", "index.html"),
+			pathname: path.join(__dirname, "..", "electron", "index.html"),
 			protocol: "file:",
 			// pathname: "/",
 			// protocol: "http:",

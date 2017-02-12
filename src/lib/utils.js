@@ -1,4 +1,6 @@
-import uuidV4 from "uuid/v4";
+"use strict";
+
+const uuidV4 = require("uuid/v4");
 
 function setEquals(set1, set2) {
 	if (set1.size !== set2.size) return false;
@@ -26,7 +28,7 @@ function uuid() {
 	return uuidV4();
 }
 
-export default {
+module.exports = {
 	setEquals,
 	toCardIdForm,
 	toCardCreatrForm,

@@ -1,9 +1,11 @@
-import CardCreatr from "card-creatr";
-import Utils from "./lib/utils";
-import Vue from "vue";
-import Vuex from "vuex";
-import VuexCached from "./lib/vuex_cached";
-import ccsb from "./lib/ccsb";
+"use strict";
+
+const CardCreatr = require("card-creatr");
+const Utils = require("./lib/utils");
+const Vue = require("vue");
+const Vuex = require("vuex");
+const VuexCached = require("./lib/vuex_cached");
+const ccsb = require("./lib/ccsb");
 
 Vue.use(Vuex);
 
@@ -27,7 +29,7 @@ const STORE = new Vuex.Store({
 			VuexCached.mutation(state.buffers, payload);
 		},
 		addCardData(state, payload) {
-			state.cardData[payload.id] = payload;
+			Vue.set(state.cardData, payload.id, payload);
 		},
 		addRawField(state, payload) {
 			state.rawFields.push(payload);
@@ -35,7 +37,7 @@ const STORE = new Vuex.Store({
 	},
 	actions: {
 		updateBuffer(store, payload) {
-			VuexCached.action(store, "setBuffer", payload.filename, ccsb.load, payload.filename);
+			return VuexCached.action(store, "setBuffer", payload, ccsb.readFile.bind(ccsb), payload);
 		}
 	},
 	getters: {
@@ -43,7 +45,7 @@ const STORE = new Vuex.Store({
 			return VuexCached.getter(state.buffers);
 		},
 		fields(state) { // eslint-disable-line no-unused-vars
-			return this.rawFields.map((rawField) => {
+			return state.rawFields.map((rawField) => {
 				let field = Object.assign({}, rawField);
 				field.serialized = CardCreatr.OptionsParser.serializeFieldKey(rawField);
 				return field;
@@ -61,6 +63,7 @@ var cardDataWatchers = {};
 STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 	return new Set(Object.keys(state.cardData));
 }, (newSet, oldSet) => {
+	if (!oldSet) oldSet = new Set();
 	if (Utils.setEquals(newSet, oldSet)) return;
 	// Cards have been added or removed.
 	for (let id of oldSet) {
@@ -81,16 +84,21 @@ STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 				let cardOptions = new (CardCreatr.OptionsParser)();
 				let card = Utils.toCardCreatrForm(state.cardData[id], getters.fields);
 				cardOptions.addPrimary(card, getters.buffer);
-				cardOptions.loadSync();
+				try {
+					cardOptions.loadSync();
+				} catch(err) {
+					console.log("card options watcher failed:", id, err);
+					return null;
+				}
 				console.log("card options watcher ending:", id, new Date().getTime() % 10000);
 				return cardOptions;
 			}, (newOptions, oldOptions) => { // eslint-disable-line no-unused-vars
 				// TODO: Should we use a mutation here?
 				STORE.state.cardOptions[id] = newOptions;
-			});
+			}, { immediate: true });
 		}
 	}
-});
+}, { immediate: true });
 
 STORE.subscribe((mutation, state) => { // eslint-disable-line no-unused-vars
 	console.log("Mutation:", mutation.type, mutation.payload);
@@ -102,4 +110,4 @@ if (global) {
 	window.store = STORE;
 }
 
-export default STORE;
+module.exports = STORE;
