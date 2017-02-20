@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "electron": "^1.4.15",
+    "electron-devtools-installer": "^2.1.0",
     "eslint": "^3.14.1",
     "stylus": "^0.54.5"
   },

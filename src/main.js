@@ -9,14 +9,22 @@ const Utils = require("./lib/utils");
 const async = require("async");
 const store = require("./store");
 const ccsb = require("./lib/ccsb");
+const renderer = require("./lib/renderer");
 const electron = require("electron");
 
 /* eslint-disable no-new */
-new Vue({
+const vm = new Vue({
 	el: "#app",
 	template: "<App/>",
+	store,
 	components: { App }
 });
+
+if (global) {
+	global.vm = vm;
+} else if (window) {
+	window.vm = vm;
+}
 
 // Messages from main process
 electron.ipcRenderer.on("path", (event, message) => {
@@ -47,6 +55,9 @@ electron.ipcRenderer.on("path", (event, message) => {
 async.auto({
 	"load": (_next) => {
 		ccsb.load(_next);
+	},
+	"rendererLoad": (_next) => {
+		renderer.load(_next);
 	},
 	"dataBuffer": ["load", (results, _next) => {
 		ccsb.readFile(CardCreatr.CcsbReader.DATA_PATH, _next);
@@ -91,7 +102,7 @@ async.auto({
 			if (!jsonObj || !jsonObj.fields) return _next(null);
 			for (let field of jsonObj.fields) {
 				let _field = Object.assign(CardCreatr.defaults.getBaseField(), field);
-				_field.id = Utils.uuid();
+				_field.id = Utils.minid();
 				store.commit("addRawField", _field);
 			}
 		} catch(_err) {

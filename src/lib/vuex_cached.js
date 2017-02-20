@@ -1,12 +1,22 @@
 "use strict";
 
-const Vue = require("vue");
+const Vue = require("vue/dist/vue");
+const Utils = require("./utils");
 
 var globalCounter = 0;
 
+function makeDefault() {
+	return {
+		err: null,
+		errStamp: -1,
+		value: null,
+		valueStamp: -1
+	};
+}
+
 function action(store, mutationName, key, callback, ...callbackArgs) {
 	let stamp = globalCounter++;
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve/*,reject*/) => {
 		callback(...callbackArgs, (err, value) => {
 			store.commit(mutationName, { err, stamp, key, value });
 			resolve();
@@ -15,38 +25,24 @@ function action(store, mutationName, key, callback, ...callbackArgs) {
 }
 
 function mutation(collection, { err, stamp, key, value }) {
-	if (!collection.hasOwnProperty(key)) {
-		// Initial load
-		Vue.set(collection, key, {
-			err,
-			errStamp: stamp,
-			value,
-			valueStamp: (value ? stamp : -1)
-		});
-	} else {
-		// Update
-		let obj = collection[key];
-		if (obj.errStamp < stamp) {
-			obj.err = err;
-			obj.errStamp = stamp;
-		}
-		if (value && obj.valueStamp < stamp) {
-			obj.value = value;
-			obj.valueStamp = stamp;
-		}
+	let obj = Vue.get(collection, key, makeDefault());
+	if (obj.errStamp < stamp) {
+		obj.err = err || null;
+		obj.errStamp = stamp;
+	}
+	if (value && obj.valueStamp < stamp) {
+		obj.value = value || null;
+		obj.valueStamp = stamp;
 	}
 }
 
-function getter(collection) {
-	return (key) => {
-		if (!collection.hasOwnProperty(key)) {
-			return null;
-		} else if (!collection[key].value) {
-			return null;
-		} else {
-			return collection[key].value;
-		}
-	};
+function getter(collection, key, store, actionName) {
+	if (!collection.hasOwnProperty(key)) {
+		// Request that the key be loaded
+		console.log("Getter load dispatch for:", key);
+		store.dispatch(actionName, key);
+	}
+	return Vue.get(collection, key, makeDefault()).value;
 }
 
 function errors(collection) {

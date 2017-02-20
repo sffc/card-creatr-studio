@@ -1,9 +1,9 @@
 "use strict";
 
 const electron = require("electron");
+const edi = require("electron-devtools-installer");
 const CustomMenu = require("./menu");
 const CustomWindowManager = require("./window").CustomWindowManager;
-
 
 const menu = new CustomMenu();
 
@@ -76,4 +76,7 @@ electron.app.on("ready", () => {
 		if (!filePath) return;
 		global.windowManager.create(filePath);
 	});
+	edi.default(edi.VUEJS_DEVTOOLS)
+		.then((name) => console.log(`Added Extension:  ${name}`))
+		.catch((err) => console.log("An error occurred: ", err));
 });
