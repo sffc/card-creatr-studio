@@ -1,15 +1,16 @@
 "use strict";
 
 const uuidV4 = require("uuid/v4");
+const CardCreatr = require("card-creatr");
 const Vue = require("vue/dist/vue");
 
-// Custom function: Vue.get()
-Vue.get = function(obj, key, defaultValue) {
-	if (!obj.hasOwnProperty(key)) {
-		Vue.set(obj, key, defaultValue, { notify: false });
-	}
-	return obj[key];
-};
+// // Custom function: Vue.get()
+// Vue.get = function(obj, key, defaultValue) {
+// 	if (!obj.hasOwnProperty(key)) {
+// 		Vue.set(obj, key, defaultValue, { notify: false });
+// 	}
+// 	return obj[key];
+// };
 
 function setEquals(set1, set2) {
 	if (set1.size !== set2.size) return false;
@@ -19,18 +20,20 @@ function setEquals(set1, set2) {
 
 function toCardIdForm(card, fields) {
 	let output = {};
-	for (let fieldId of Object.keys(fields)) {
-		let field = fields[fieldId];
-		output[field.id] = card[field.serialized] || null;
+	for (let field of fields) {
+		field = Object.assign(CardCreatr.defaults.getBaseField(), field);
+		let serialized = CardCreatr.utils.serializeFieldKey(field);
+		output[field.id] = card[serialized] || null;
 	}
 	return output;
 }
 
 function toCardCreatrForm(card, fields) {
 	let output = {};
-	for (let fieldId of Object.keys(fields)) {
-		let field = fields[fieldId];
-		output[field.serialized] = card[field.id] || null;
+	for (let field of fields) {
+		field = Object.assign(CardCreatr.defaults.getBaseField(), field);
+		let serialized = CardCreatr.utils.serializeFieldKey(field);
+		output[serialized] = card[field.id] || null;
 	}
 	return output;
 }
@@ -55,11 +58,74 @@ function fileSizeString(bytes) {
 	return (Math.round(bytes/divisor*10)/10) + " " + unit;
 }
 
+function createCard(existingIds, fields) {
+	var id;
+	var maxId = "";
+	var i = 0;
+	for (let _id of existingIds) {
+		if (_id > maxId) {
+			maxId = _id;
+		}
+	}
+	do {
+		id = "id" + (1e6 + (i++));
+	} while (id <= maxId);
+	let card = { id };
+	for (let field of fields) {
+		card[field.id] = null;
+	}
+	return card;
+}
+
+function createField(template) {
+	if (!template) template = {
+		name: "untitled"
+	};
+	let field = Object.assign(CardCreatr.defaults.getBaseField(), template);
+	field.id = minid();
+	return field;
+}
+
+function makePages(options, renderer, allCardOptions) {
+	if (!options || !renderer || !allCardOptions) return null;
+	let cardSvgStrings = [];
+	try {
+		for (let cardId of Object.keys(allCardOptions)) {
+			let cardOptions = allCardOptions[cardId];
+			if (!cardOptions) continue;
+			let str = renderer.render(cardOptions, options, options.get("/viewports/card"));
+			cardSvgStrings.push(str);
+		}
+	} catch(err) {
+		throw err;
+	}
+	// TODO: Multiply the SVG strings
+	// TODO: make strategy and reversed options
+	let strategy = "tight";
+	let reversed = false;
+	let pageRenderer = new (CardCreatr.PageRenderer)(options.get("/viewports/page"), strategy, reversed);
+	return pageRenderer.render(cardSvgStrings);
+}
+
+function finalizeSvg(innerSvg, dims, options) {
+	if (!innerSvg || !dims || !options) return null;
+	let aspectRatio = dims.width / dims.height;
+	let svgHolder = new (CardCreatr.SvgHolder)(aspectRatio, 1, "0 0 1 1");
+	svgHolder.fonts = options.get("/fonts");
+	svgHolder.writeFontFaceCSS = (options.get("/fontRenderMode") === "auto");
+	svgHolder.content = innerSvg;
+	return svgHolder.finalizeToBuffer().toString("utf-8");
+}
+
 module.exports = {
 	setEquals,
 	toCardIdForm,
 	toCardCreatrForm,
 	uuid,
 	minid,
-	fileSizeString
+	fileSizeString,
+	createCard,
+	createField,
+	makePages,
+	finalizeSvg
 };

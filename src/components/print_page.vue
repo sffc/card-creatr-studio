@@ -1,11 +1,13 @@
 "use strict";
 
 var template = `
-<svg :width="withUnits.width" :height="withUnits.height" viewBox="0 0 1 1" :style="{ top: withUnits.top }" preserveAspectRatio="none" v-html="svgString"></svg>
+<svg :width="withUnits.width" :height="withUnits.height" :viewBox="viewBox" :style="{ top: withUnits.top }" preserveAspectRatio="none" v-html="outerSvg"></svg>
 `;
 
 //<script>
 const Vue = require("vue/dist/vue");
+const Utils = require("../lib/utils");
+const store = require("../store");
 
 Vue.component("print-page", {
 	template: template,
@@ -17,6 +19,20 @@ Vue.component("print-page", {
 				height: this.dims.height + this.dims.unit,
 				top: (this.pageIndex * this.dims.height) + this.dims.unit
 			};
+		},
+		viewBox: function() {
+			return "0 0 " + this.aspectRatio + " 1";
+		},
+		dims: function() {
+			let options = store.getters.globalOptions;
+			if (!options) return null;
+			return options.get("/dimensions/page");
+		},
+		aspectRatio: function() {
+			return this.dims ? this.dims.width / this.dims.height : 1;
+		},
+		outerSvg: function() {
+			return Utils.finalizeSvg(this.svgString, this.dims, store.getters.globalOptions);
 		}
 	}
 });

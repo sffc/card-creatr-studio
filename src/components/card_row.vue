@@ -5,15 +5,16 @@ var template = `
 	<td class="left-buffer"></td>
 	<td v-for="field in fields">
 		<template v-if="field.display == 'string'">
-			<template v-if="field.array">
-				<textarea-array v-model="card[field.id]" v-on:click.stop></textarea-array>
-			</template>
-			<template v-else>
-				<input v-model="card[field.id]" v-on:click.stop :placeholder="field.name"/>
-			</template>
+			<input v-model="card[field.id]" v-on:click.stop :placeholder="field.name"/>
+		</template>
+		<template v-if="field.display == 'multiline'">
+			<textarea-array v-model="card[field.id]" v-on:click.stop></textarea-array>
 		</template>
 		<template v-if="field.display == 'image'">
 			<image-chooser v-model="card[field.id]" :placeholder="field.name" :extra="optionsFor(field)"></image-chooser>
+		</template>
+		<template v-if="field.display == 'color'">
+			<color-picker v-model="card[field.id]"></color-picker>
 		</template>
 	</td>
 </tr>
@@ -22,6 +23,7 @@ var template = `
 //<script>
 const Vue = require("vue/dist/vue");
 require("./image_chooser");
+require("./color_picker");
 require("./textarea_array");
 
 Vue.component("card-row", {

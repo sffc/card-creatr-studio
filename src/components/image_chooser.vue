@@ -35,7 +35,7 @@ const mime = require("mime");
 
 Vue.component("image-chooser", {
 	template: template,
-	props: ["value", "placeholder", "error", "extra"],
+	props: ["value", "placeholder", "extra"],
 	computed: {
 		hasImage: function() {
 			return !!this.value;

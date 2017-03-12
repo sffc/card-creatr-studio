@@ -23,6 +23,7 @@ var template = `
 
 //<script>
 const Vue = require("vue/dist/vue");
+const Utils = require("../lib/utils");
 require("./card_row");
 
 Vue.component("card-list-table", {
@@ -38,7 +39,7 @@ Vue.component("card-list-table", {
 	computed: {
 		tableWidth: function() {
 			if (!this.fields) return 1;
-			return Object.keys(this.fields).reduce((s,fieldId) => { return s + this.fields[fieldId].width; }, 0);
+			return Object.keys(this.fields).reduce((s,fieldId) => { return s + parseInt(this.fields[fieldId].width); }, 0);
 		},
 	},
 	methods: {
@@ -78,17 +79,16 @@ Vue.component("card-list-table", {
 			return cardsArray;
 		},
 		newCard: function() {
-			alert("To do");
-			// this.resetSort();
-			// let id;
-			// let card = createCard(this.cards.map((c) => { return c.id }), this.fields);
-			// this.cards.push(card);
-			// this.sortedCards = this.doSort();
-			// this.$emit("input", card);
-			// // Let Vue re-render before setting focus to the new card
-			// setTimeout(() => {
-			// 	this.$el.querySelector(".card-list > tbody > tr.active input").focus();
-			// }, 50);
+			this.resetSort();
+			let card = Utils.createCard(Object.keys(this.cards), this.fields);
+			// TODO: Make this into a mutation
+			Vue.set(this.cards, card.id, card);
+			this.sortedCards = this.doSort();
+			this.$emit("input", card.id);
+			// Let Vue re-render before setting focus to the new card
+			setTimeout(() => {
+				this.$el.querySelector(".card-list > tbody > tr.active input").focus();
+			}, 50);
 		}
 	},
 	watch: {

@@ -22,7 +22,7 @@ Vue.component("asset-box", {
 			return Utils.fileSizeString(this.bytes);
 		},
 		buffer: function() {
-			store.getters.buffer(this.path);
+			return store.getters.buffer(this.path);
 		},
 		bytes: function() {
 			if (!this.buffer) return 0;
@@ -33,7 +33,7 @@ Vue.component("asset-box", {
 		deleteFile: function() {
 			if (confirm("Delete this asset?\n" + this.path)) {
 				ccsb.removeFile(this.path);
-				this.$emit("remove");
+				this.$emit("remove", this.path);
 			}
 		}
 	}

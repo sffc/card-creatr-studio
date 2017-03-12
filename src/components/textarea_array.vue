@@ -15,12 +15,16 @@ Vue.component("textarea-array", {
 			get: function() {
 				if (!this.value) {
 					return "";
+				} else if (typeof this.value === "string") {
+					// normal case
+					return this.value;
 				} else {
+					// special case: when an array of strings is provided
 					return this.value.join("\n");
 				}
 			},
 			set: function(newLines) {
-				this.$emit("input", newLines.split("\n"));
+				this.$emit("input", newLines);
 			}
 		}
 	},

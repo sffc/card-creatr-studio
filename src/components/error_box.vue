@@ -2,7 +2,7 @@
 
 var template = `
 <div>
-	<div class="error-entry" v-for="err in errorsArray">{{ err.toString() }}\n<span class="error-details" v-on:click="showDetails(err)">(technical details)</span></div>
+	<div class="error-entry" v-for="[key,err] in errorsArray">{{ err.toString() }} ({{ key }})\n<span class="error-details" v-on:click="showDetails(key, err)">(technical details)</span></div>
 </div>
 `;
 
@@ -16,20 +16,17 @@ Vue.component("error-box", {
 	computed: {
 		errorsArray: function() {
 			let result = [];
-			for (let key of Object.keys(this.show)) {
-				let err = this.show[key];
-				if (err !== null) {
-					result.push(err);
-				}
+			for (let [key, err] of this.show) {
+				result.push([key, err]);
 			}
 			return result;
 		},
 	},
 	methods: {
-		showDetails: function(err) {
+		showDetails: function(key, err) {
 			electron.remote.dialog.showMessageBox({
 				type: "error",
-				title: "Error Details",
+				title: "Error Details: " + key,
 				message: err.message,
 				detail: err.stack,
 				buttons: ["OK"],

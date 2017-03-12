@@ -49,7 +49,7 @@ function errors(collection) {
 	let result = [];
 	for (let key of Object.keys(collection)) {
 		if (collection[key].err) {
-			result.push(collection[key].err);
+			result.push(["cached/" + key, collection[key].err]);
 		}
 	}
 	return result;

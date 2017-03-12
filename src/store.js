@@ -18,29 +18,59 @@ const STORE = new Vuex.Store({
 		buffers: {},
 		cardData: {},
 		cardOptions: {},
-		rawFields: [],
+		fields: [],
+		fontsList: [],
 		currentId: null,
+		currentSvg: null,
 		printing: false,
+		allAssets: [],
 		errors: {},
 	},
 	mutations: {
-		setTemplateString(state, payload) {
-			state.templateString = payload;
+		setTemplateString(state, value) {
+			state.templateString = value;
 		},
-		setOptionsString(state, payload) {
-			state.optionsString = payload;
+		setOptionsString(state, value) {
+			state.optionsString = value;
 		},
-		setBuffer(state, payload) {
-			VuexCached.mutation(state.buffers, payload);
+		setBuffer(state, value) {
+			VuexCached.mutation(state.buffers, value);
 		},
-		addCardData(state, payload) {
-			Vue.set(state.cardData, payload.id, payload);
+		addCardData(state, card) {
+			Vue.set(state.cardData, card.id, card);
 		},
 		setCardDataField(state, [ cardId, fieldId, value ]) {
 			Vue.set(Vue.get(state.cardData, cardId, {}), fieldId, value);
 		},
-		addRawField(state, payload) {
-			state.rawFields.push(payload);
+		addField(state, field) {
+			state.fields.push(field);
+			for (let cardId of Object.keys(state.cardData)) {
+				let card = state.cardData[cardId]; // Vue.get() not needed
+				if (!card.hasOwnProperty(field.id)) {
+					Vue.set(card, field.id, null);
+				}
+			}
+		},
+		moveField(state, [ field, isDown ]) {
+			let idx = state.fields.indexOf(field);
+			if (idx === -1) throw new Error("Unknown field: " + field);
+			let newIdx = idx + (isDown ? 1 : -1);
+			if (newIdx < 0) newIdx += 1;
+			if (newIdx >= state.fields.length) newIdx -= 1;
+			state.fields.splice(idx, 1);
+			state.fields.splice(newIdx, 0, field);
+		},
+		deleteField(state, field) {
+			let idx = state.fields.indexOf(field);
+			if (idx === -1) throw new Error("Unknown field: " + field);
+			state.fields.splice(idx, 1);
+			for (let cardId of Object.keys(state.cardData)) {
+				let card = state.cardData[cardId]; // Vue.get() not needed
+				Vue.delete(card, field.id);
+			}
+		},
+		addFont(state, fontInfo) {
+			state.fontsList.push(Object.assign(CardCreatr.defaults.getBaseFontInfo(), fontInfo));
 		},
 		setCardOptions(state, [ id, value ]) {
 			Vue.set(state.cardOptions, id, value);
@@ -50,6 +80,12 @@ const STORE = new Vuex.Store({
 		},
 		setCurrentId(state, value) {
 			state.currentId = value;
+		},
+		setCurrentSvg(state, value) {
+			state.currentSvg = value;
+		},
+		updateAllAssets(state) {
+			state.allAssets = ccsb.listAllAssets();
 		},
 		setError(state, [ id, err ]) {
 			Vue.set(state.errors, id, err);
@@ -64,19 +100,16 @@ const STORE = new Vuex.Store({
 		}
 	},
 	getters: {
-		fields(state) {
-			let result = {};
-			state.rawFields.forEach((rawField) => {
-				let field = Object.assign({}, rawField);
-				field.serialized = CardCreatr.OptionsParser.serializeFieldKey(rawField);
-				result[field.id] = field;
-			});
-			return result;
+		buffer(state) {
+			return (filename) => {
+				return VuexCached.getter(state.buffers, filename, STORE, "updateBuffer");
+			};
 		},
 		errors(state) {
-			let allErrors = [].concat(VuexCached.errors(state.buffers));
+			// let allErrors = [].concat(VuexCached.errors(state.buffers));
+			let allErrors = [];
 			for (let key of Object.keys(state.errors)) {
-				allErrors.push(state.errors[key]);
+				allErrors.push([key, state.errors[key]]);
 			}
 			return allErrors;
 		},
@@ -93,13 +126,18 @@ const STORE = new Vuex.Store({
 				STORE.commit("setError", ["renderer", err]);
 			}
 		},
-		globalOptions(state) {
+		globalOptions(state, getters) {
 			if (state.optionsString == null) return null;
 			console.log("global options starting:", new Date().getTime() % 10000);
 			let globalOptions = new (CardCreatr.OptionsParser)();
 			try {
 				let parsed = Hjson.parse(state.optionsString);
-				globalOptions.addPrimary(parsed, ccsb.readFile.bind(ccsb));
+				globalOptions.addPrimary(parsed, getters.buffer); // This line is important! When this watcher attempts to load a file, it actually pulls it from the reactive cache of file buffers.
+				let intermediate = {};
+				for (let fontInfo of state.fontsList) {
+					intermediate[fontInfo.name + " (font)"] = fontInfo.filename;
+				}
+				globalOptions.addPrimary({ fonts: intermediate }, getters.buffer);
 				globalOptions.addDefaultFallback();
 				globalOptions.loadSync();
 				console.log("global options ending:", new Date().getTime() % 10000);
@@ -111,7 +149,7 @@ const STORE = new Vuex.Store({
 				return null;
 			}
 		},
-		currentSvg(state, getters) {
+		getCurrentSvg(state, getters) {
 			let cardOptions = Vue.get(state.cardOptions, state.currentId, null);
 			let globalOptions = getters.globalOptions;
 			let renderer = getters.renderer;
@@ -141,6 +179,14 @@ const STORE = new Vuex.Store({
 	}
 });
 
+// Update the SVG only once every 100 ms to reduce repaints when the user is typing fast.
+setInterval(() => {
+	let value = STORE.getters.getCurrentSvg;
+	if (value !== STORE.state.currentSvg) {
+		STORE.commit("setCurrentSvg", value);
+	}
+}, 100);
+
 var cardDataWatchers = {};
 STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 	return new Set(Object.keys(state.cardData));
@@ -164,28 +210,40 @@ STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 				console.log("card options watcher starting:", id, new Date().getTime() % 10000);
 				let rawCard = Vue.get(state.cardData, id, null);
 				let cardOptions = new (CardCreatr.OptionsParser)();
-				let card = Utils.toCardCreatrForm(rawCard, getters.fields);
-				cardOptions.addPrimary(card, getters.buffer);
+				let card = Utils.toCardCreatrForm(rawCard, state.fields);
+				cardOptions.addPrimary(card, getters.buffer); // This line is important! When this watcher attempts to load a file, it actually pulls it from the reactive cache of file buffers.
 				cardOptions.addPrimary(card, (filename) => {
-					return VuexCached.getter(state.buffers, filename, STORE, "updateBuffer");
+					return getters.buffer(filename);
 				});
 				try {
 					cardOptions.loadSync();
 				} catch(err) {
 					console.log("card options watcher failed:", id, err);
-					return null;
+					return {
+						success: false,
+						error: err
+					};
 				}
 				console.log("card options watcher ending:", id, new Date().getTime() % 10000);
-				return cardOptions;
-			}, (newOptions, oldOptions) => { // eslint-disable-line no-unused-vars
-				STORE.commit("setCardOptions", [ id, newOptions ]);
+				return {
+					success: true,
+					result: cardOptions
+				};
+			}, (newObj, oldObj) => { // eslint-disable-line no-unused-vars
+				if (newObj.success) {
+					STORE.commit("setCardOptions", [ id, newObj.result ]);
+					STORE.commit("clearError", "cardOptions/" + id);
+				} else {
+					STORE.commit("setError", [ "cardOptions/" + id, newObj.error ]);
+				}
 			}, { immediate: true });
 		}
 	}
 }, { immediate: true });
 
 STORE.subscribe((mutation, state) => { // eslint-disable-line no-unused-vars
-	console.log("Mutation:", mutation.type, mutation.payload);
+	let payload = mutation.payload ? (mutation.payload.length < 100 ? mutation.payload : "<long>") : "<empty>";
+	console.log("Mutation:", mutation.type, payload, new Date().getTime() % 10000);
 });
 
 if (global) {
