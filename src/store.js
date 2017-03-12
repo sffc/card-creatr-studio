@@ -8,6 +8,7 @@ const Vuex = require("vuex");
 const VuexCached = require("./lib/vuex_cached");
 const ccsb = require("./lib/ccsb");
 const rendererBuilder = require("./lib/renderer");
+const path = require("path");
 
 Vue.use(Vuex);
 
@@ -71,6 +72,11 @@ const STORE = new Vuex.Store({
 		},
 		addFont(state, fontInfo) {
 			state.fontsList.push(Object.assign(CardCreatr.defaults.getBaseFontInfo(), fontInfo));
+		},
+		removeFont(state, fontInfo) {
+			let idx = state.fontsList.indexOf(fontInfo);
+			if (idx === -1) return;
+			state.fontsList.splice(idx, 1);
 		},
 		setCardOptions(state, [ id, value ]) {
 			Vue.set(state.cardOptions, id, value);
@@ -179,13 +185,14 @@ const STORE = new Vuex.Store({
 	}
 });
 
-// Update the SVG only once every 100 ms to reduce repaints when the user is typing fast.
+// Update the SVG at a delay to reduce repaints when the user is typing fast.
+// NOTE: Change the frequency in the interval to increase the SVG repaint interval at the cost of lower performance.
 setInterval(() => {
 	let value = STORE.getters.getCurrentSvg;
 	if (value !== STORE.state.currentSvg) {
 		STORE.commit("setCurrentSvg", value);
 	}
-}, 100);
+}, 250);
 
 var cardDataWatchers = {};
 STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars

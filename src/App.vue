@@ -173,7 +173,7 @@ module.exports = {
 			let cards = this.$store.state.cardData;
 			let fields = this.$store.state.fields;
 			if (!cards || !fields) return null;
-			// Compute all paths that are linked to a card entry and omit them from the assets list.
+			// Ignore assets linked to a card entry
 			let usedPaths = {};
 			for (let field of fields) {
 				if (field.properties.indexOf("path") !== -1) {
@@ -182,6 +182,10 @@ module.exports = {
 						usedPaths[card[field.id]] = true;
 					}
 				}
+			}
+			// Ignore assets linked to a font
+			for (let fontInfo of this.$store.state.fontsList) {
+				usedPaths[fontInfo.filename] = true;
 			}
 			return this.$store.state.allAssets.filter((path) => {
 				return !usedPaths[path];

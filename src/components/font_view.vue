@@ -2,22 +2,32 @@
 
 var template = `
 <div class="font-view">
-	<div class="font-box" v-for="info of fonts">
-		<strong>{{ info.name }} ({{ info.sourceName }} {{ info.sourceVariant }})</strong>
+	<div class="font-box" v-for="info of defaults">
+		<div class="font-title">{{ info.name }}</div>
 		<div class="font-demo" v-html="fontDemo(info)"></div>
-		<label class="font-nickname">Nickname: <input v-model="info.name" /></label>
+	</div>
+	<div class="font-box" v-for="info of fonts">
+		<div class="font-title">
+			<input v-model="info.name" />
+			<small>({{ info.sourceName }} {{ info.sourceVariant }})</small>
+		</div>
+		<div class="font-demo" v-html="fontDemo(info)"></div>
+		<button v-on:click="removeFont(info)">\u232B Remove Font</button>
 	</div>
 	<div class="font-box">
-		<strong>Add New Font</strong>
+		<div class="font-title">Add New Font</div>
+		<small>Preview available fonts at <a href="https://fonts.google.com/" target="_blank">fonts.google.com</a></small><br/>
 		<select v-model="currentName">
 			<option v-for="name in allFontNames" v-bind:value="name">{{ name }}</option>
 		</select>
 		<template v-if="currentName">
+			<br/>
 			<select v-model="currentVariant">
 				<option v-for="variant in allVariants" v-bind:value="variant">{{ variant }}</option>
 			</select>
 		</template>
 		<template v-if="currentVariant">
+			<br/>
 			<button v-on:click="addFont">Add Font</button>
 		</template>
 	</div>
@@ -48,6 +58,24 @@ Vue.component("font-view", {
 			this.allFontNames = list;
 		});
 	},
+	computed: {
+		defaults: function() {
+			let options = store.getters.globalOptions;
+			if (!options) return [];
+			return [
+				{
+					name: "title",
+					filename: options.get("/fonts").title.path,
+					dataUri: options.get("/fonts").title.dataUri
+				},
+				{
+					name: "body",
+					filename: options.get("/fonts").body.path,
+					dataUri: options.get("/fonts").body.dataUri
+				}
+			];
+		}
+	},
 	methods: {
 		dataUri: function(filename) {
 			let buffer = store.getters.buffer(filename);
@@ -59,7 +87,7 @@ Vue.component("font-view", {
 			<style type="text/css" scoped>
 				@font-face {
 					font-family: "${info.name}";
-					src: url("` + this.dataUri(info.filename) + `");
+					src: url("` + (info.dataUri ? info.dataUri : this.dataUri(info.filename)) + `");
 				}
 			</style>
 			<span style="font-family: ${info.name};">The quick brown fox jumps over the lazy dog.</span>
@@ -76,10 +104,17 @@ Vue.component("font-view", {
 					sourceVariant: this.currentVariant
 				});
 			});
+		},
+		removeFont: function(fontInfo) {
+			if (confirm(`Are you sure you want to remove the font "${fontInfo.name}" (${fontInfo.sourceName} ${fontInfo.sourceVariant}) from this ccsb file?`)) {
+				store.commit("removeFont", fontInfo);
+				ccsb.removeFile(fontInfo.filename); // TODO: put in try/catch
+			}
 		}
 	},
 	watch: {
 		currentName: function() {
+			this.currentVariant = null;
 			google_fonts.getVariants(this.currentName, (err, variants) => {
 				this.allVariants = variants;
 			});

@@ -117,6 +117,45 @@ body {
 	}
 }
 
+.font-view {
+	position: absolute
+	top: 0
+	bottom: 0
+	left: 0
+	right: 0
+	overflow: auto
+
+	display: flex
+	flex-flow: row wrap
+	align-items: flex-start
+	background-color: $solarized_light
+
+	& > .font-box {
+		width: 170px
+		margin: 5px
+		padding: 5px
+		border: 2px solid $gutter_color
+		font-family: sans-serif
+		
+		.font-title {
+			border-bottom: 1px solid $gutter_color
+			margin-bottom: 5px
+			padding-bottom: 2px
+			
+			input {
+				display: block
+				width: 95%
+				font-size: 1em
+				background-color: inherit
+			}
+		}
+		
+		.font-demo {
+			font-size: 1.4em
+		}
+	}
+}
+
 .error-entry {
 	&:not(:first-child) {
 		border-top: 1px solid #FFF
