@@ -163,4 +163,5 @@ async.auto({
 		console.error(err);
 	}
 	makeDirtyWatchers();
+	store.commit("loaded", true);
 });

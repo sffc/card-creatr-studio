@@ -3,7 +3,7 @@
 var template = `
 <div>
 	<div id="f-main">
-		<template v-if="cards">
+		<template v-if="ready">
 			<div id="f-null" v-on:click="clearCurrentId" v-if="cards">
 			</div>
 			<div id="f-primary">
@@ -101,11 +101,11 @@ var template = `
 		</template>
 		<template v-else>
 			<div id="f-loading">
-				<img src="assets/splash.svg" alt="Card Creatr Studio" class="splash" />
+				<img src="../src/assets/splash.svg" alt="Card Creatr Studio" class="splash" v-on:click="ready = true" title="Click to dismiss loading screen" />
 			</div>
 		</template>
 	</div>
-	<div id="error-box" v-show="hasErrors">
+	<div id="error-box" v-show="hasErrors" v-bind:class="{ 'loading-screen': !ready }">
 		<error-box :show="errors"></error-box>
 	</div>
 	<div id="print" v-if="printing">
@@ -131,7 +131,8 @@ module.exports = {
 	data: () => {
 		return {
 			tab: "template",
-			currentField: null
+			currentField: null,
+			ready: false
 		};
 	},
 	computed: {
@@ -200,7 +201,7 @@ module.exports = {
 		printing() {
 			return this.$store.state.printing;
 		},
-		pages: function() {
+		pages() {
 			console.log("computing pages");
 			return Utils.makePages(
 				this.$store.getters.globalOptions,
@@ -247,6 +248,14 @@ module.exports = {
 		moveFieldDown(){
 			this.$store.commit("moveField", [ this.currentField, true ]);
 		},
+	},
+	watch: {
+		errors: function(newValue) {
+			if (this.ready) return;
+			if (this.$store.state.loaded && newValue.length === 0) {
+				this.ready = true;
+			}
+		}
 	}
 };
 //</script>

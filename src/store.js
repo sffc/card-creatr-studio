@@ -24,6 +24,7 @@ const STORE = new Vuex.Store({
 		currentId: null,
 		currentSvg: null,
 		printing: false,
+		loaded: false,
 		allAssets: [],
 		errors: {},
 	},
@@ -98,6 +99,9 @@ const STORE = new Vuex.Store({
 		},
 		clearError(state, id) {
 			Vue.delete(state.errors, id);
+		},
+		loaded(state, value) {
+			state.loaded = value;
 		}
 	},
 	actions: {
