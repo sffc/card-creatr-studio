@@ -1,0 +1,133 @@
+.card-list-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+table.card-list {
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+table.card-list > thead {
+  font-family: sans-serif;
+  font-size: 0.9em;
+}
+table.card-list > thead > tr {
+  border-bottom: 1px solid #333;
+}
+table.card-list > thead > tr > th {
+  padding-bottom: 3px;
+}
+table.card-list > thead > tr > th:nth-child(n+1) {
+  cursor: pointer;
+}
+table.card-list > thead > tr > th:nth-child(n+1).active {
+  font-style: italic;
+}
+table.card-list > thead > tr > th.active::after {
+  content: '\25BC';
+}
+table.card-list > thead.sortReversed > tr > th.active::after {
+  content: '\25B2';
+}
+table.card-list > tbody input,
+table.card-list > tbody textarea {
+  background-color: inherit;
+  border: none;
+}
+table.card-list > tbody input {
+  font-size: 1em;
+  display: block;
+  width: calc(100% - 4px);
+  margin: 0 2px;
+  padding: 0;
+}
+table.card-list > tbody textarea {
+  font-size: 0.9em;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin-top: 3px;
+}
+table.card-list > tbody > tr {
+  height: 3em;
+  cursor: pointer;
+}
+table.card-list > tbody > tr:nth-child(even) {
+  background-color: rgba(255,255,255,0.7);
+}
+table.card-list > tbody > tr:nth-child(even).active {
+  background-color: rgba(255,255,0,0.8);
+  box-shadow: 0 3px 10px #000;
+}
+table.card-list > tbody > tr:nth-child(odd) {
+  background-color: rgba(180,180,180,0.7);
+}
+table.card-list > tbody > tr:nth-child(odd).active {
+  background-color: rgba(255,255,0,0.8);
+  box-shadow: 0 3px 10px #000;
+}
+table.card-list th,
+table.card-list td {
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  border-right: 1px solid #333;
+}
+table.card-list th:last-child,
+table.card-list td:last-child {
+  border-right: none;
+}
+table.card-list th.left-buffer,
+table.card-list td.left-buffer {
+  width: 10px;
+  min-width: 10px;
+  max-width: 10px;
+  border-right: none;
+}
+.below-card-list {
+  margin: 5px;
+}
+.below-card-list > button {
+  font-size: 1em;
+}
+.image-chooser {
+  display: table;
+}
+.image-chooser span {
+  display: table-cell;
+  vertical-align: middle;
+  padding-left: 7px;
+}
+.image-chooser img.thumbnail {
+  height: 2em;
+  margin-top: 4px;
+}
+.image-chooser button.clearImage {
+  border: none;
+  background: inherit;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+.image-chooser button.clearImage:hover {
+  color: #900;
+}
+.color-picker .color-picker-preview {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #000;
+  margin-left: 5px;
+}
+.color-picker .color-picker-expanded {
+  display: inline-block;
+  font-size: 2em;
+  font-weight: bold;
+}
+.color-picker .color-picker-popout {
+  position: absolute;
+  margin-top: -35px;
+  margin-left: 50px;
+}
