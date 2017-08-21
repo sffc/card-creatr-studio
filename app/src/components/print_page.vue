@@ -1,7 +1,7 @@
 "use strict";
 
 var template = `
-<svg :width="withUnits.width" :height="withUnits.height" :viewBox="viewBox" :style="{ top: withUnits.top }" preserveAspectRatio="none" v-html="outerSvg"></svg>
+<div :style="{ top: withUnits.top }" v-html="outerSvg"></div>
 `;
 
 //<script>
@@ -32,7 +32,7 @@ Vue.component("print-page", {
 			return this.dims ? this.dims.width / this.dims.height : 1;
 		},
 		outerSvg: function() {
-			return Utils.finalizeSvg(this.svgString, this.dims, store.getters.globalOptions);
+			return Utils.finalizeSvg(this.svgString, this.dims, store.getters.globalOptions, false, 1, 1);
 		}
 	}
 });

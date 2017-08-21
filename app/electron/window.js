@@ -29,8 +29,8 @@ class CustomWindow extends EventEmitter {
 	saveAs(next) {
 		electron.dialog.showSaveDialog(this.browserWindow, {
 			filters: [
-				{name: "Card Creatr Studio Bundle Files", extensions: ["ccsb"]},
-				{name: "All Files", extensions: ["*"]}
+				{name: "Card Creatr Studio Template", extensions: ["ccst"]},
+				{name: "Card Creatr Studio Bundle", extensions: ["ccsb"]}
 			]
 		}, (filePath) => {
 			if (!filePath) return;
@@ -40,7 +40,8 @@ class CustomWindow extends EventEmitter {
 	}
 
 	saveOrSaveAs(next) {
-		if (this.path) {
+		// If a ccst file is open, do not overwrite it by default.
+		if (this.path && !/\.ccst$/.test(this.path)) {
 			this._save(next);
 		} else {
 			this.saveAs(next);
@@ -51,15 +52,35 @@ class CustomWindow extends EventEmitter {
 		this._sendMessage("print", options);
 	}
 
+	print2(options) {
+		this._sendMessage("print2", options);
+	}
+
+	print3(options) {
+		this._sendMessage("print3", options);
+	}
+
+	getSvg(options, next) {
+		this._sendAndReceive("getsvg", options, next);
+	}
+
+	addCard() {
+		this._sendMessage("addcard", {});
+	}
+
+	deleteCard() {
+		this._sendMessage("deletecard", {});
+	}
+
 	_addListeners() {
 		console.log("Adding listeners for window " + this.id);
 		this._onClose$bound = this._onClose.bind(this);
 		this._onClosed$bound = this._onClosed.bind(this);
-		this._onSaved$bound = this._onSaved.bind(this);
+		this._onSAR$bound = this._onSAR.bind(this);
 		this._onDirty$bound = this._onDirty.bind(this);
 		this.browserWindow.on("close", this._onClose$bound);
 		this.browserWindow.on("closed", this._onClosed$bound);
-		electron.ipcMain.on("saved", this._onSaved$bound);
+		electron.ipcMain.on("_SAR", this._onSAR$bound);
 		electron.ipcMain.on("dirty", this._onDirty$bound);
 	}
 
@@ -67,23 +88,15 @@ class CustomWindow extends EventEmitter {
 		console.log("Removing listeners for window " + this.id);
 		this.browserWindow.removeListener("close", this._onClose$bound);
 		this.browserWindow.removeListener("closed", this._onClosed$bound);
-		electron.ipcMain.removeListener("saved", this._onSaved$bound);
+		electron.ipcMain.removeListener("_SAR", this._onSAR$bound);
 		electron.ipcMain.removeListener("dirty", this._onDirty$bound);
 	}
 
 	/** This method assumes that a file path is present. Should not be called directly; use #saveOrSaveAs() instead. */
 	_save(next) {
-		let id = globalCounter++;
-		this._sendMessage("save", { id });
-		let _next = (message) => {
-			if (message.id === id) {
-				this.removeListener("saved", _next);
-				if (next) {
-					next();
-				}
-			}
-		};
-		this.on("saved", _next);
+		this._sendAndReceive("save", {}, (response) => {
+			if (next) next(response);
+		});
 	}
 
 	_setPath(filePath) {
@@ -162,13 +175,6 @@ class CustomWindow extends EventEmitter {
 		this.emit("closed", { window: this });
 	}
 
-	_onSaved(event, message) {
-		if (event.sender === this.browserWindow.webContents) {
-			console.log("Saved event for window " + this.id, message);
-			this.emit("saved", { window: this, id: message.id });
-		}
-	}
-
 	_onDirty(event, message) {
 		if (event.sender === this.browserWindow.webContents) {
 			console.log("Dirty event for window " + this.id, message);
@@ -177,8 +183,26 @@ class CustomWindow extends EventEmitter {
 		}
 	}
 
+	_onSAR(event, message) {
+		if (event.sender === this.browserWindow.webContents) {
+			this.emit("_SAR", message);
+		}
+	}
+
 	_sendMessage(name, message) {
 		this.browserWindow.webContents.send(name, message);
+	}
+
+	_sendAndReceive(name, message, next) {
+		let id = globalCounter++;
+		let _next = (data) => {
+			if (data.id === id) {
+				this.removeListener("_SAR", _next);
+				next(data.response);
+			}
+		};
+		this.on("_SAR", _next);
+		this.browserWindow.webContents.send("_SAR", { id, name, message });
 	}
 }
 
@@ -211,6 +235,10 @@ class CustomWindowManager {
 			}
 		}
 		return null;
+	}
+
+	count() {
+		return this.windows.length;
 	}
 
 	_onClosed(message) {

@@ -1,0 +1,92 @@
+{
+  "main": "app/electron/main.js",
+  "scripts": {
+    "lint": "eslint --ext .js,.vue app/src",
+    "stylus": "stylus app/src/styl -w -o app/src/css",
+    "electron": "electron .",
+    "build-mac": "build -m",
+    "build-windows": "build -w --x64 --ia32",
+    "build-linux": "build -l --x64 --ia32",
+    "build-all": "build -mwl --x64 --ia32"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^1.4.15",
+    "electron-builder": "^15.3.0",
+    "electron-devtools-installer": "^2.1.0",
+    "eslint": "^3.14.1",
+    "stylus": "^0.54.5"
+  },
+  "engines": {
+    "node": ">= 4.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "extendInfo": {
+    "CFBundleDocumentTypes": [
+      {
+        "CFBundleTypeExtensions": [
+          "ccsb"
+        ],
+        "CFBundleTypeName": "ccstudio.ccsb",
+        "CFBundleTypeIconFiles": "ccsb.icns",
+        "CFBundleTypeRole": "Editor"
+      }
+    ]
+  },
+  "extraResource": [
+    "build/ccsb.icns"
+  ],
+  "build": {
+    "appId": "guru.shane.ccstudio",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/slimerjs",
+      "node_modules/slimerjs-capture",
+      "node_modules/tmp",
+      "node_modules/os-tmpdir"
+    ],
+    "mac": {
+      "category": "public.app-category.graphics-design"
+    },
+    "dmg": {
+      "title": "Card Creatr Studio",
+      "icon": "build/icon.icns",
+      "contents": [
+        {
+          "x": 398,
+          "y": 224,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 142,
+          "y": 224
+        }
+      ]
+    },
+    "nsis": {
+      "perMachine": true,
+      "oneClick": false
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ]
+    },
+    "fileAssociations": [
+      {
+        "ext": "ccsb",
+        "name": "Card Creatr Studio Bundle",
+        "role": "Editor"
+      },
+      {
+        "ext": "ccst",
+        "name": "Card Creatr Studio Template",
+        "role": "Viewer"
+      }
+    ]
+  },
+  "dependencies": {}
+}

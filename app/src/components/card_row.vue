@@ -7,6 +7,14 @@ var template = `
 		<template v-if="field.display == 'string'">
 			<input v-model="card[field.id]" v-on:click.stop :placeholder="field.name"/>
 		</template>
+		<template v-if="field.display == 'number'">
+			<template v-if="field.properties.indexOf('uint') !== -1">
+				<input v-model="card[field.id]" v-on:click.stop :placeholder="field.name" type="number" min="0"/>
+			</template>
+			<template v-else>
+				<input v-model="card[field.id]" v-on:click.stop :placeholder="field.name" type="number"/>
+			</template>
+		</template>
 		<template v-if="field.display == 'multiline'">
 			<textarea-array v-model="card[field.id]" v-on:click.stop></textarea-array>
 		</template>

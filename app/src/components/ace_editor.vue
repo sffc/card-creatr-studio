@@ -24,6 +24,7 @@ Vue.component("ace-editor", {
 		this._editor.setTheme("ace/theme/" + this.theme);
 		this._editor.getSession().setUseWrapMode(true);
 		this._editor.getSession().setTabSize(2);
+		this._editor.getSession().setUseSoftTabs(false);
 		this._editor.setHighlightActiveLine(false);
 		this._editor.setShowPrintMargin(false);
 		this._editor.renderer.setOption("showLineNumbers", false);

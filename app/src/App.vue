@@ -2,27 +2,32 @@
 
 var template = `
 <div>
-	<div id="f-main">
+	<div id="print" v-if="printing">
+		<print-page v-for="(page,pageIndex) in pages" :key="pageIndex" :svg-string="page" :page-index="pageIndex"></print-page>
+	</div>
+	<div id="f-main" v-if="!printing">
 		<template v-if="ready">
-			<div id="f-null" v-on:click="clearCurrentId" v-if="cards">
+			<div id="f-null" v-on:click="clearCurrentId" v-if="hasCards">
 			</div>
 			<div id="f-primary">
 				<div id="f-top">
 					<div id="f-list" v-on:click="clearCurrentId">
-						<div class="card-list-wrapper" v-if="hasCards">
-							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :fields="fields"></card-list-table>
+						<div v-if="hasCards" class="card-list-wrapper">
+							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIds="cardIds" :fields="fields" v-on:new="newCard"></card-list-table>
 						</div>
-						<div v-else>
-							Hello
-							<a v-on:click="newCard">Create New Card</a>
+						<div v-else class="card-empty-list">
+							<strong>Welcome.</strong>
+							<button v-on:click.stop="newCard">Create Your First Card</button>
 						</div>
+						<div id="bottom-expander" v-if="this.bottomFlexBasis===0" v-on:click.stop="bottomBigger">⇖ properties</div>
 					</div>
 					<div id="f-preview" v-bind:class="{ 'flex-hide': currentId === null }">
 						<card-svg :content="currentSvg"></card-svg>
 					</div>
 				</div>
-				<div id="f-bottom">
+				<div id="f-bottom" v-if="this.bottomFlexBasis>0" v-bind:style="{ flexBasis: bottomFlexBasis + 'px' }">
 					<div id="f-tabs">
+						<div class="f-tab" v-on:click="gotoTab('guide')" v-bind:class="{ active: tab === 'guide' }" v-if="showGuide"><span><b>Guide</b></span></div>
 						<div class="f-tab" v-on:click="gotoTab('template')" v-bind:class="{ active: tab === 'template' }"><span>Template</span></div>
 <!--
 						<div class="f-tab" v-on:click="gotoTab('template2')" v-bind:class="{ active: tab === 'template2' }"><span>Template 2</span></div>
@@ -31,6 +36,9 @@ var template = `
 						<div class="f-tab" v-on:click="gotoTab('fields')" v-bind:class="{ active: tab === 'fields' }"><span>Fields</span></div>
 						<div class="f-tab" v-on:click="gotoTab('assets')" v-bind:class="{ active: tab === 'assets' }"><span>Assets</span></div>
 						<div class="f-tab" v-on:click="gotoTab('advanced')" v-bind:class="{ active: tab === 'advanced' }"><span>Advanced</span></div>
+					</div>
+					<div id="f-editor" class="guide-container" v-if="tab === 'guide'">
+						<section v-html="guideHtml"></section>
 					</div>
 					<div id="f-editor" class="ace-container" v-if="tab === 'template'">
 						<ace-editor v-model="templateString" mode="jade" theme="solarized_light"></ace-editor>
@@ -60,12 +68,14 @@ var template = `
 										<option>img</option>
 										<option>path</option>
 										<option>font</option>
+										<option>uint</option>
 									</select>
 								</div>
 								<div class="field-box">
 									<strong>Display</strong>
 									<select v-model="currentField.display">
 										<option>string</option>
+										<option>number</option>
 										<option>multiline</option>
 										<option>image</option>
 										<option>color</option>
@@ -96,6 +106,10 @@ var template = `
 					<div id="f-editor" class="ace-container" v-if="tab === 'advanced'">
 						<ace-editor v-model="optionsString" mode="hjson" theme="solarized_light"></ace-editor>
 					</div>
+					<div id="f-bottom-size">
+						<span v-on:click="bottomBigger">▲</span>
+						<span v-on:click="bottomSmaller">▼</span>
+					</div>
 				</div>
 			</div>
 		</template>
@@ -107,9 +121,6 @@ var template = `
 	</div>
 	<div id="error-box" v-show="hasErrors" v-bind:class="{ 'loading-screen': !ready }">
 		<error-box :show="errors"></error-box>
-	</div>
-	<div id="print" v-if="printing">
-		<print-page v-for="(page,pageIndex) in pages" :key="pageIndex" :svg-string="page" :page-index="pageIndex"></print-page>
 	</div>
 </div>
 `;
@@ -130,9 +141,10 @@ module.exports = {
 	template: template,
 	data: () => {
 		return {
-			tab: "template",
+			tab: null,
 			currentField: null,
-			ready: false
+			ready: false,
+			bottomFlexBasis: 250
 		};
 	},
 	computed: {
@@ -140,7 +152,10 @@ module.exports = {
 			return this.$store.state.cardData;
 		},
 		hasCards() {
-			return Object.keys(this.$store.state.cardData).length > 0;
+			return this.$store.state.cardIds.size > 0;
+		},
+		cardIds() {
+			return this.$store.state.cardIds;
 		},
 		fields() {
 			return this.$store.state.fields;
@@ -153,6 +168,12 @@ module.exports = {
 		},
 		currentSvg() {
 			return this.$store.state.currentSvg;
+		},
+		guideHtml() {
+			return this.$store.getters.guideHtml;
+		},
+		showGuide() {
+			return !!this.$store.getters.guideHtml;
 		},
 		templateString: {
 			get: function() {
@@ -195,8 +216,14 @@ module.exports = {
 		errors() {
 			return this.$store.getters.errors;
 		},
+		loaded() {
+			return this.$store.state.loaded;
+		},
 		hasErrors() {
 			return this.$store.getters.errors.length > 0;
+		},
+		bottomFlexBasisPx() {
+			return this.$store.state.bottomFlexBasis + "px";
 		},
 		printing() {
 			return this.$store.state.printing;
@@ -206,7 +233,8 @@ module.exports = {
 			return Utils.makePages(
 				this.$store.getters.globalOptions,
 				this.$store.getters.renderer,
-				this.$store.state.cardOptions
+				this.$store.state.cardOptions,
+				false
 			);
 		},
 	},
@@ -226,6 +254,11 @@ module.exports = {
 		newCard(){
 			let card = Utils.createCard(Object.keys(this.cards), this.fields);
 			this.$store.commit("addCardData", card);
+			this.$store.commit("setCurrentId", card.id);
+			// Let Vue re-render before setting focus to the new card
+			setTimeout(() => {
+				this.$el.querySelector("#f-list .card-list > tbody > tr.active input").focus();
+			}, 50);
 		},
 		gotoTab(newTab) {
 			this.tab = newTab;
@@ -248,12 +281,46 @@ module.exports = {
 		moveFieldDown(){
 			this.$store.commit("moveField", [ this.currentField, true ]);
 		},
+		bottomBigger() {
+			if (this.bottomFlexBasis === 250) {
+				this.bottomFlexBasis = 1000;
+			} else {
+				this.bottomFlexBasis = 250;
+			}
+		},
+		bottomSmaller() {
+			if (this.bottomFlexBasis === 250) {
+				this.bottomFlexBasis = 0;
+			} else {
+				this.bottomFlexBasis = 250;
+			}
+		}
 	},
 	watch: {
 		errors: function(newValue) {
+			// A few heuristics to determine when to switch from the splash screen to the main editor view (here and below):
 			if (this.ready) return;
-			if (this.$store.state.loaded && newValue.length === 0) {
-				this.ready = true;
+			if (!this.loaded) return;
+			if (newValue.length > 0) return;
+			if (!this.$store.getters.globalOptions) return;
+			this.ready = true;
+		},
+		loaded: function(newValue) {
+			if (this.ready) return;
+			if (!newValue) return;
+			if (this.errors.length > 0) return;
+			if (!this.$store.getters.globalOptions) return;
+			this.ready = true;
+		},
+		ready: function(newValue) {
+			if (newValue) {
+				if (this.$store.getters.guideHtml) {
+					// If a guide is available, default to hiding the properties panel.
+					this.bottomSmaller();
+					this.gotoTab("guide");
+				} else {
+					this.gotoTab("template");
+				}
 			}
 		}
 	}

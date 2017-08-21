@@ -37,6 +37,20 @@
 
 				background-image: url(../assets/notebook/notebook.png)
 				background-repeat: repeat
+				
+				& > #bottom-expander {
+					position: fixed
+					bottom: 0
+					right: 0
+					padding: 0 3px
+					cursor: pointer
+					z-index: 10
+					font-family: sans-serif
+					
+					font-weight: bold
+					color: white
+					background-color: $gutter_color
+				}
 			}
 
 			& > #f-preview {
@@ -60,6 +74,8 @@
 
 		& > #f-bottom {
 			flex: 1 1 300px
+			position: relative
+			transition: flex-basis 0.2s
 
 			display: flex
 			flex-flow: row nowrap
@@ -113,6 +129,21 @@
 						flex: 10 1 630px
 						overflow: auto
 					}
+				}
+			}
+
+			& > #f-bottom-size {
+				position: absolute
+				top: 0
+				right: 0
+				padding: 0 3px
+				color: white
+				background-color: $gutter_color
+				z-index: 10
+				
+				& > span {
+					font-size: 1em
+					cursor: pointer
 				}
 			}
 		}

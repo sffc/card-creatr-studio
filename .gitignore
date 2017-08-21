@@ -58,3 +58,5 @@ typings/
 # CUSTOM
 dist/
 src/css/
+_old/
+local/

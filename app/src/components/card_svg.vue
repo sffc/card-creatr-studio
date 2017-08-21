@@ -25,7 +25,7 @@ Vue.component("card-svg", {
 			return this.dims ? this.dims.width / this.dims.height : 1;
 		},
 		outerSvg: function() {
-			return Utils.finalizeSvg(this.content, this.dims, store.getters.globalOptions);
+			return Utils.finalizeSvg(this.content, this.dims, store.getters.globalOptions, true, 1, 1);
 		}
 	}
 });

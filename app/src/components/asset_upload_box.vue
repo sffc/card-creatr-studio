@@ -23,10 +23,11 @@ Vue.component("asset-upload-box", {
 			fs.readFile(file.path, (err, buffer) => {
 				if (err) return alert(err);
 				let basename = path.basename(file.path);
-				while (ccsb.containsFile(path.join("assets", basename))) {
+				// no path.join() here because we are in the zip file, which always uses '/'
+				while (ccsb.containsFile("assets/" + basename)) {
 					basename = "_" + basename;
 				}
-				ccsb.writeFile(path.join("assets", basename), buffer);
+				ccsb.writeFile("assets/" + basename, buffer);
 				this.$emit("upload");
 			});
 			event.target.value = null;

@@ -38,7 +38,7 @@ function getTemplate() {
 				},
 				{
 					role: 'selectall'
-				}
+				},
 			]
 		},
 		{
@@ -181,20 +181,6 @@ class CustomMenu extends EventEmitter {
 			label: "File",
 			submenu: [
 				{
-					label: "New File",
-					accelerator: "CmdOrCtrl+N",
-					click: (item, focusedWindow) => {
-						this.emit("new", focusedWindow);
-					}
-				},
-				// {
-				// 	label: "New from Template…",
-				// 	accelerator: "CmdOrCtrl+Shift+N",
-				// 	click: (item, focusedWindow) => {
-				// 		this.emit("newfromtemplate", focusedWindow);
-				// 	}
-				// },
-				{
 					label: "Open…",
 					accelerator: "CmdOrCtrl+O",
 					click: (item, focusedWindow) => {
@@ -219,24 +205,89 @@ class CustomMenu extends EventEmitter {
 					type: "separator"
 				},
 				{
-					label: "Print…",
-					accelerator: "CmdOrCtrl+P",
+					label: "Export to PDF…",
+					accelerator: "CmdOrCtrl+Alt+E",
 					click: (item, focusedWindow) => {
-						this.emit("print", focusedWindow);
+						this.emit("print4", focusedWindow);
 					}
 				},
-				// {
-				// 	label: "Export to PDF…",
-				// 	accelerator: "CmdOrCtrl+Shift+E",
-				// 	click: (item, focusedWindow) => {
-				// 		this.emit("exporttopdf", focusedWindow);
-				// 	}
-				// }
+				{
+					type: "separator"
+				},
+				{
+					label: "Advanced",
+					submenu: [
+						{
+							label: "New Empty File",
+							click: (item, focusedWindow) => {
+								this.emit("new", focusedWindow);
+							}
+						},
+						{
+							type: "separator"
+						},
+						{
+							label: "Read About Print/Export Options",
+							click: (item, focusedWindow) => {
+								this.emit("printhelp", focusedWindow);
+							}
+						},
+						{
+							type: "separator"
+						},
+						{
+							label: "Print with Electron…",
+							click: (item, focusedWindow) => {
+								this.emit("print", focusedWindow);
+							}
+						},
+						{
+							label: "Export to PDF with Firefox…",
+							click: (item, focusedWindow) => {
+								this.emit("print3", focusedWindow);
+							}
+						},
+						{
+							label: "Export to PDF with Electron…",
+							click: (item, focusedWindow) => {
+								this.emit("print2", focusedWindow);
+							}
+						}
+					]
+				}
 			]
 		};
 
 		this.template = getTemplate();
-		this.template.splice(1, 0, fileMenu);
+
+		var editMenu;
+		if (process.platform === "darwin") {
+			this.template.splice(1, 0, fileMenu);
+			editMenu = this.template[2];
+		} else {
+			this.template.splice(0, 0, fileMenu);
+			editMenu = this.template[1];
+		}
+
+		editMenu.submenu.push(
+			{
+				type: "separator"
+			},
+			{
+				label: "Add Card",
+				accelerator: "CmdOrCtrl+Shift+N",
+				click: (item, focusedWindow) => {
+					this.emit("addcard", focusedWindow);
+				}
+			},
+			{
+				label: "Delete Current Card…",
+				accelerator: "CmdOrCtrl+Backspace",
+				click: (item, focusedWindow) => {
+					this.emit("deletecard", focusedWindow);
+				}
+			}
+		);
 	}
 
 	getMenuInstance() {

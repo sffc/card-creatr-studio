@@ -9,6 +9,7 @@ const VuexCached = require("./lib/vuex_cached");
 const ccsb = require("./lib/ccsb");
 const rendererBuilder = require("./lib/renderer");
 const path = require("path");
+const md = require("markdown-it")();
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ const STORE = new Vuex.Store({
 		optionsString: null,
 		buffers: {},
 		cardData: {},
+		cardIds: new Set(),
 		cardOptions: {},
 		fields: [],
 		fontsList: [],
@@ -39,10 +41,23 @@ const STORE = new Vuex.Store({
 			VuexCached.mutation(state.buffers, value);
 		},
 		addCardData(state, card) {
-			Vue.set(state.cardData, card.id, card);
+			// Vue.get prevents triggering other watchers
+			Vue.get(state.cardData, card.id, card);
+			var newSet = new Set(state.cardIds);
+			newSet.add(card.id);
+			state.cardIds = newSet;
 		},
 		setCardDataField(state, [ cardId, fieldId, value ]) {
 			Vue.set(Vue.get(state.cardData, cardId, {}), fieldId, value);
+		},
+		deleteCard(state, cardId) {
+			Vue.delete(state.cardData, cardId);
+			var newSet = new Set(state.cardIds);
+			newSet.delete(cardId);
+			state.cardIds = newSet;
+			if (state.currentId === cardId) {
+				state.currentId = null;
+			}
 		},
 		addField(state, field) {
 			state.fields.push(field);
@@ -123,6 +138,10 @@ const STORE = new Vuex.Store({
 			}
 			return allErrors;
 		},
+		currentCard(state) {
+			if (state.currentId === null) return null;
+			return Vue.get(state.cardData, state.currentId, null);
+		},
 		renderer(state) {
 			if (state.templateString == null) return null;
 			console.log("build renderer starting:", new Date().getTime() % 10000);
@@ -163,7 +182,10 @@ const STORE = new Vuex.Store({
 			let cardOptions = Vue.get(state.cardOptions, state.currentId, null);
 			let globalOptions = getters.globalOptions;
 			let renderer = getters.renderer;
-			if (!cardOptions || !globalOptions || !renderer) return null;
+			if (!cardOptions || !globalOptions || !renderer) {
+				STORE.commit("clearError", "currentSvg");
+				return null;
+			}
 			console.log("rendering svg starting:", new Date().getTime() % 10000);
 			try {
 				let result = renderer.render(cardOptions, globalOptions, globalOptions.get("/viewports/card"));
@@ -185,6 +207,13 @@ const STORE = new Vuex.Store({
 			styleString += "}";
 			document.getElementById("page-style").textContent = styleString;
 			return dims;
+		},
+		guideHtml(state, getters) {
+			let options = getters.globalOptions;
+			if (!options) return "no options";
+			let markdown = options.get("/guide");
+			if (!markdown) return "";
+			return md.render(markdown);
 		}
 	}
 });
@@ -200,8 +229,9 @@ setInterval(() => {
 
 var cardDataWatchers = {};
 STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
-	return new Set(Object.keys(state.cardData));
+	return state.cardIds;
 }, (newSet, oldSet) => {
+	console.log("card data watchers triggered")
 	if (!oldSet) oldSet = new Set();
 	if (Utils.setEquals(newSet, oldSet)) return;
 	// Cards have been added or removed.

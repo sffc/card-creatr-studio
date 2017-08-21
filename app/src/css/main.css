@@ -30,6 +30,18 @@
   background-image: url("../assets/notebook/notebook.png");
   background-repeat: repeat;
 }
+#f-main > #f-primary > #f-top > #f-list > #bottom-expander {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 0 3px;
+  cursor: pointer;
+  z-index: 10;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #fff;
+  background-color: #666;
+}
 #f-main > #f-primary > #f-top > #f-preview {
   flex: 1 1 200px;
   overflow: hidden;
@@ -47,6 +59,8 @@
 }
 #f-main > #f-primary > #f-bottom {
   flex: 1 1 300px;
+  position: relative;
+  transition: flex-basis 0.2s;
   display: flex;
   flex-flow: row nowrap;
 }
@@ -91,6 +105,19 @@
   flex: 10 1 630px;
   overflow: auto;
 }
+#f-main > #f-primary > #f-bottom > #f-bottom-size {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 3px;
+  color: #fff;
+  background-color: #666;
+  z-index: 10;
+}
+#f-main > #f-primary > #f-bottom > #f-bottom-size > span {
+  font-size: 1em;
+  cursor: pointer;
+}
 #f-main > #f-loading {
   flex: 1 1 800px;
   position: relative;
@@ -112,6 +139,20 @@
   bottom: 0;
   left: 0;
   right: 0;
+}
+#f-list .card-empty-list {
+  text-align: center;
+  font-family: sans-serif;
+}
+#f-list .card-empty-list strong {
+  display: block;
+  font-size: 1.5em;
+  margin: 0.5em;
+}
+#f-list .card-empty-list button {
+  display: inline-block;
+  font-size: 1em;
+  cursor: pointer;
 }
 #f-list table.card-list {
   table-layout: fixed;
@@ -267,6 +308,27 @@ body {
   width: 100%;
   height: 100%;
 }
+.guide-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: auto;
+  padding: 0 10px;
+  background-color: #fbf1d3 !important;
+}
+.guide-container > section {
+  font-family: sans-serif;
+}
+.guide-container > section h1,
+.guide-container > section h2,
+.guide-container > section h3,
+.guide-container > section h4,
+.guide-container > section h5,
+.guide-container > section h6 {
+  margin: 0.2em 0 0.5em;
+}
 .assets-container {
   position: absolute;
   top: 0;
@@ -374,14 +436,14 @@ body {
   text-decoration: underline;
   cursor: pointer;
 }
-#print {
-  display: none;
-}
 #print > * {
   position: absolute;
 }
 @media print {
   body {
+    margin: 0;
+  }
+  @page {
     margin: 0;
   }
   #f-main {

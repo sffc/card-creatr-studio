@@ -5,6 +5,20 @@
   left: 0;
   right: 0;
 }
+.card-empty-list {
+  text-align: center;
+  font-family: sans-serif;
+}
+.card-empty-list strong {
+  display: block;
+  font-size: 1.5em;
+  margin: 0.5em;
+}
+.card-empty-list button {
+  display: inline-block;
+  font-size: 1em;
+  cursor: pointer;
+}
 table.card-list {
   table-layout: fixed;
   border-collapse: collapse;

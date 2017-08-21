@@ -24,11 +24,12 @@ var template = `
 //<script>
 const Vue = require("vue/dist/vue");
 const Utils = require("../lib/utils");
+const store = require("../store");
 require("./card_row");
 
 Vue.component("card-list-table", {
 	template: template,
-	props: ["cards", "fields", "value"],
+	props: ["cards", "cardIds", "fields", "value"],
 	data: function() {
 		return {
 			sortField: null,
@@ -80,15 +81,7 @@ Vue.component("card-list-table", {
 		},
 		newCard: function() {
 			this.resetSort();
-			let card = Utils.createCard(Object.keys(this.cards), this.fields);
-			// TODO: Make this into a mutation
-			Vue.set(this.cards, card.id, card);
-			this.sortedCards = this.doSort();
-			this.$emit("input", card.id);
-			// Let Vue re-render before setting focus to the new card
-			setTimeout(() => {
-				this.$el.querySelector(".card-list > tbody > tr.active input").focus();
-			}, 50);
+			this.$emit("new");
 		}
 	},
 	watch: {
@@ -103,6 +96,11 @@ Vue.component("card-list-table", {
 				this.sortedCards = this.doSort();
 			},
 			immediate: true
+		},
+		cardIds: {
+			handler: function() {
+				this.sortedCards = this.doSort();
+			}
 		}
 	}
 });

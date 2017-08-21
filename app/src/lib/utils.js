@@ -72,7 +72,15 @@ function createCard(existingIds, fields) {
 	} while (id <= maxId);
 	let card = { id };
 	for (let field of fields) {
-		card[field.id] = null;
+		if (field.display === "color") {
+			// Default color (soft royal blue)
+			card[field.id] = "#5555FF";
+		} else if (field.display === "number") {
+			// Default number (1)
+			card[field.id] = 1;
+		} else {
+			card[field.id] = null;
+		}
 	}
 	return card;
 }
@@ -86,33 +94,48 @@ function createField(template) {
 	return field;
 }
 
-function makePages(options, renderer, allCardOptions) {
+function makePages(options, renderer, allCardOptions, concatenated) {
 	if (!options || !renderer || !allCardOptions) return null;
 	let cardSvgStrings = [];
 	try {
 		for (let cardId of Object.keys(allCardOptions)) {
 			let cardOptions = allCardOptions[cardId];
 			if (!cardOptions) continue;
+			let qty = parseInt(cardOptions.get("/qty"));
+			if (isNaN(qty)) qty = 1;
+			if (qty == 0) continue;
 			let str = renderer.render(cardOptions, options, options.get("/viewports/card"));
-			cardSvgStrings.push(str);
+			for (let q=0; q<qty; q++) {
+				cardSvgStrings.push(str);
+			}
 		}
 	} catch(err) {
 		throw err;
 	}
-	// TODO: Multiply the SVG strings
 	// TODO: make strategy and reversed options
 	let strategy = "tight";
 	let reversed = false;
 	let pageRenderer = new (CardCreatr.PageRenderer)(options.get("/viewports/page"), strategy, reversed);
-	return pageRenderer.render(cardSvgStrings);
+	if (concatenated) {
+		return pageRenderer.renderConcatenated(cardSvgStrings);
+	} else {
+		return pageRenderer.render(cardSvgStrings);
+	}
 }
 
-function finalizeSvg(innerSvg, dims, options) {
+function finalizeSvg(innerSvg, dims, options, noUnits, numPages, scale) {
 	if (!innerSvg || !dims || !options) return null;
 	let aspectRatio = dims.width / dims.height;
-	let svgHolder = new (CardCreatr.SvgHolder)(aspectRatio, 1, "0 0 1 1");
+	let _dims = noUnits ? { width: aspectRatio, height: 1, unit: "" } : Object.assign({}, dims);
+	if (!noUnits) {
+		_dims.width *= scale;
+		_dims.height *= scale;
+	}
+	let svgHolder = new (CardCreatr.SvgHolder)();
+	svgHolder.dims = _dims;
 	svgHolder.fonts = options.get("/fonts");
 	svgHolder.writeFontFaceCSS = (options.get("/fontRenderMode") === "auto");
+	svgHolder.numPages = numPages;
 	svgHolder.content = innerSvg;
 	return svgHolder.finalizeToBuffer().toString("utf-8");
 }
