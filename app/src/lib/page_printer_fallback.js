@@ -49,11 +49,11 @@ function printSlimerJS(options, next) {
 	});
 }
 
-function printCanvas(options, next) {
+function printCanvas(options, progress, next) {
 	var filePath = options.filePath;
 	if (!filePath) return;
 	let { svgString, pageWidth, pageHeight, scale, numPages } = getSvg(options);
-	CardCreatr.rasterize.canvasDrawImage(svgString, pageWidth, pageHeight, scale, numPages, filePath, (err) => {
+	CardCreatr.rasterize.canvasDrawImage(svgString, pageWidth, pageHeight, scale, numPages, filePath, progress, (err) => {
 		if (err) return next(err);
 		next(null);
 	});

@@ -301,6 +301,38 @@ body {
 #error-box.loading-screen {
   background-color: rgba(150,62,150,0.75);
 }
+#spinner-box {
+  position: fixed;
+  top: 20%;
+  bottom: 20%;
+  left: 50%;
+  right: 0;
+}
+#spinner-box > div {
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  left: -40%;
+  width: 80%;
+  background-color: rgba(255,255,255,0.75);
+  text-align: center;
+}
+#spinner-box > img {
+  position: absolute;
+  top: 5%;
+  left: -35%;
+  width: 70%;
+  height: 60%;
+}
+#spinner-box > #spinner-text {
+  position: absolute;
+  top: 70%;
+  left: -35%;
+  width: 70%;
+  height: 25%;
+  font-family: sans-serif;
+  background: none;
+}
 .ace-container > div {
   position: absolute;
   top: 0;

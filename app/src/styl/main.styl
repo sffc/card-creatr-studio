@@ -31,6 +31,44 @@ body {
 	}
 }
 
+#spinner-box {
+	position: fixed
+	top: 20%
+	bottom: 20%
+	left: 50%
+	right: 0
+
+	& > div {
+		position: absolute
+		top: 0%
+		bottom: 0%
+		left: -40%
+		width: 80%
+
+		background-color: rgba(255, 255, 255, 0.75)
+		text-align: center
+	}
+
+	& > img {
+		position: absolute
+		top: 5%
+		left: -35%
+		width: 70%
+		height: 60%
+	}
+
+	& > #spinner-text {
+		position: absolute
+		top: 70%
+		left: -35%
+		width: 70%
+		height: 25%
+
+		font-family: sans-serif
+		background: none
+	}
+}
+
 .ace-container {
 	& > div {
 		position: absolute

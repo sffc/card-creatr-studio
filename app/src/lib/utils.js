@@ -140,6 +140,29 @@ function finalizeSvg(innerSvg, dims, options, noUnits, numPages, scale) {
 	return svgHolder.finalizeToBuffer().toString("utf-8");
 }
 
+function resized() {
+	// Fire a window "resize" event to make sure everything adjusts,
+	// like the ACE editor
+	var evt = document.createEvent("UIEvents");
+	evt.initUIEvent("resize", true, false, window, 0);
+	window.dispatchEvent(evt);
+}
+
+function gridSvg(gridOptions, viewport) {
+	const size = gridOptions.size || 12;
+	const color = gridOptions.color || "skyblue";
+	const opacity = gridOptions.opacity || 0.5;
+	const weight = gridOptions.weight || 1;
+	return `
+pattern(id="cc-layout-grid", x=0, y=0, width=${size}, height=${size}, patternUnits="userSpaceOnUse")
+	rect(x=0, y=0, width=${weight/2}, height=${size}, fill="${color}", opacity=${opacity})
+	rect(x=${weight/2}, y=0, width=${size-weight}, height=${weight/2}, fill="${color}", opacity=${opacity})
+	rect(x=${size-weight/2}, y=0, width=${weight/2}, height=${size}, fill="${color}", opacity=${opacity})
+	rect(x=${weight/2}, y=${size-weight/2}, width=${size-weight}, height=${weight/2}, fill="${color}", opacity=${opacity})
+rect(fill="url(#cc-layout-grid)", width=${viewport.width}, height=${viewport.height})
+`;
+}
+
 module.exports = {
 	setEquals,
 	toCardIdForm,
@@ -150,5 +173,7 @@ module.exports = {
 	createCard,
 	createField,
 	makePages,
-	finalizeSvg
+	finalizeSvg,
+	resized,
+	gridSvg
 };

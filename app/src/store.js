@@ -27,6 +27,7 @@ const STORE = new Vuex.Store({
 		currentSvg: null,
 		printing: false,
 		loaded: false,
+		gridShown: false,
 		allAssets: [],
 		errors: {},
 	},
@@ -106,6 +107,9 @@ const STORE = new Vuex.Store({
 		setCurrentSvg(state, value) {
 			state.currentSvg = value;
 		},
+		toggleGrid(state) {
+			state.gridShown = !state.gridShown;
+		},
 		updateAllAssets(state) {
 			state.allAssets = ccsb.listAllAssets();
 		},
@@ -142,11 +146,19 @@ const STORE = new Vuex.Store({
 			if (state.currentId === null) return null;
 			return Vue.get(state.cardData, state.currentId, null);
 		},
-		renderer(state) {
-			if (state.templateString == null) return null;
+		renderer(state, getters) {
+			let templateString = state.templateString;
+			let globalOptions = getters.globalOptions;
+			let gridShown = state.gridShown;
+			if (!templateString || !globalOptions) return null;
 			console.log("build renderer starting:", new Date().getTime() % 10000);
 			try {
-				let result = rendererBuilder.buildCopy(state.templateString);
+				if (state.gridShown) {
+					let gridOptions = globalOptions.get("/grid") || {};
+					let viewport = globalOptions.get("/viewports/card") || {};
+					templateString += Utils.gridSvg(gridOptions, viewport);
+				}
+				let result = rendererBuilder.buildCopy(templateString);
 				console.log("build renderer ending:", new Date().getTime() % 10000);
 				STORE.commit("clearError", "renderer");
 				return result;
@@ -162,6 +174,7 @@ const STORE = new Vuex.Store({
 			try {
 				let parsed = Hjson.parse(state.optionsString);
 				globalOptions.addPrimary(parsed, getters.buffer); // This line is important! When this watcher attempts to load a file, it actually pulls it from the reactive cache of file buffers.
+				// TODO: The following is duplicated in read-and-render.js
 				let intermediate = {};
 				for (let fontInfo of state.fontsList) {
 					intermediate[fontInfo.name + " (font)"] = fontInfo.filename;
@@ -198,7 +211,7 @@ const STORE = new Vuex.Store({
 			}
 		},
 		pageDimensions(state) {
-			let globalOptions = state.globalOptions;
+			let globalOptions = getters.globalOptions;
 			if (!globalOptions) return null;
 			let dims = globalOptions.get("/dimensions/page");
 			let styleString = "@page{";

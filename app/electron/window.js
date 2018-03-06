@@ -72,6 +72,10 @@ class CustomWindow extends EventEmitter {
 		this._sendMessage("deletecard", {});
 	}
 
+	toggleGrid() {
+		this._sendMessage("toggleGrid", {});
+	}
+
 	_addListeners() {
 		console.log("Adding listeners for window " + this.id);
 		this._onClose$bound = this._onClose.bind(this);

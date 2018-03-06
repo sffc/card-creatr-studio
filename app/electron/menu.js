@@ -260,13 +260,15 @@ class CustomMenu extends EventEmitter {
 
 		this.template = getTemplate();
 
-		var editMenu;
+		var editMenu, viewMenu;
 		if (process.platform === "darwin") {
 			this.template.splice(1, 0, fileMenu);
 			editMenu = this.template[2];
+			viewMenu = this.template[3];
 		} else {
 			this.template.splice(0, 0, fileMenu);
 			editMenu = this.template[1];
+			viewMenu = this.template[2];
 		}
 
 		editMenu.submenu.push(
@@ -287,6 +289,19 @@ class CustomMenu extends EventEmitter {
 					this.emit("deletecard", focusedWindow);
 				}
 			}
+		);
+
+		viewMenu.submenu.push(
+			{
+				type: 'separator'
+			},
+			{
+				label: "Show/Hide Grid",
+				accelerator: "CmdOrCtrl+Alt+G",
+				click: (item, focusedWindow) => {
+					this.emit("toggleGrid", focusedWindow);
+				}
+			},
 		);
 	}
 

@@ -122,6 +122,11 @@ var template = `
 	<div id="error-box" v-show="hasErrors" v-bind:class="{ 'loading-screen': !ready }">
 		<error-box :show="errors"></error-box>
 	</div>
+	<div id="spinner-box" v-show="spinnerCount > 0">
+		<div></div>
+		<img src="../src/assets/loading.svg" alt="Loading…" />
+		<div id="spinner-text">{{ spinnerText }}</div>
+	</div>
 </div>
 `;
 
@@ -144,7 +149,9 @@ module.exports = {
 			tab: null,
 			currentField: null,
 			ready: false,
-			bottomFlexBasis: 250
+			bottomFlexBasis: 250,
+			spinnerCount: 0,
+			spinnerText: "Calculating…"
 		};
 	},
 	computed: {
@@ -287,6 +294,7 @@ module.exports = {
 			} else {
 				this.bottomFlexBasis = 250;
 			}
+			setTimeout(Utils.resized, 200); // resize Ace Editor
 		},
 		bottomSmaller() {
 			if (this.bottomFlexBasis === 250) {
@@ -294,6 +302,7 @@ module.exports = {
 			} else {
 				this.bottomFlexBasis = 250;
 			}
+			setTimeout(Utils.resized, 200); // resize Ace Editor
 		}
 	},
 	watch: {

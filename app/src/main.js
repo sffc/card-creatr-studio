@@ -63,7 +63,24 @@ electron.ipcRenderer.on("print2", (event, message) => {
 	});
 });
 electron.ipcRenderer.on("print3", (event, message) => {
-	pagePrinterFallback.printCanvas(message, (err) => {
+	vm.$children[0].$data.spinnerCount++;
+	vm.$children[0].$data.spinnerText = "Calculating…";
+	pagePrinterFallback.printCanvas(message, (status) => {
+		let action;
+		switch(status.name) {
+		case "init":
+			action = "Initialized";
+			break;
+		case "canvas":
+			action = "Rendered";
+			break;
+		case "blob":
+			action = "Processed";
+			break;
+		}
+		vm.$children[0].$data.spinnerText = action + " page #" + (status.page+1) + "…";
+	}, (err) => {
+		vm.$children[0].$data.spinnerCount--;
 		if (err) {
 			console.error(err);
 			alert("Error: " + err.message);
@@ -80,6 +97,9 @@ electron.ipcRenderer.on("deletecard", (event, message) => {
 	if (confirm("Are you sure you want to delete the current card?\n\n"+JSON.stringify(card))) {
 		store.commit("deleteCard", store.state.currentId);
 	}
+});
+electron.ipcRenderer.on("toggleGrid", (event, message) => {
+	store.commit("toggleGrid");
 });
 electron.ipcRenderer.on("_SAR", (event, data) => {
 	let id = data.id;

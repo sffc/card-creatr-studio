@@ -109,6 +109,11 @@ menu.on("deletecard", (browserWindow) => {
 	window.deleteCard();
 });
 
+menu.on("toggleGrid", (browserWindow) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.toggleGrid();
+});
+
 // Quit when all windows are closed.
 electron.app.on("window-all-closed", () => {
 	// On OS X it is common for applications and their menu bar
