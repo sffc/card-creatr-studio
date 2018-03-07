@@ -181,6 +181,13 @@ class CustomMenu extends EventEmitter {
 			label: "File",
 			submenu: [
 				{
+					label: "New Empty File",
+					accelerator: "CmdOrCtrl+N",
+					click: (item, focusedWindow) => {
+						this.emit("new", focusedWindow);
+					}
+				},
+				{
 					label: "Open…",
 					accelerator: "CmdOrCtrl+O",
 					click: (item, focusedWindow) => {
@@ -217,15 +224,6 @@ class CustomMenu extends EventEmitter {
 				{
 					label: "Advanced",
 					submenu: [
-						{
-							label: "New Empty File",
-							click: (item, focusedWindow) => {
-								this.emit("new", focusedWindow);
-							}
-						},
-						{
-							type: "separator"
-						},
 						{
 							label: "Read About Print/Export Options",
 							click: (item, focusedWindow) => {
