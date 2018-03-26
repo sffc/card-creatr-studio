@@ -3,9 +3,10 @@
 const CardCreatr = require("card-creatr");
 const store = require("../store");
 const Utils = require("./utils");
+const async = require("async");
 
-function getSvg(options) {
-	var result = Utils.makePages(
+function getPageSvg(options) {
+	var result = Utils.makePageSvg(
 		store.getters.globalOptions,
 		store.getters.renderer,
 		store.state.cardOptions,
@@ -39,25 +40,75 @@ function getSvg(options) {
 	};
 }
 
+function getCardSvgs(options) {
+	var cards = Utils.makeCardSvgs(
+		store.getters.globalOptions,
+		store.getters.renderer,
+		store.state.cardOptions,
+		false
+	);
+	var options = store.getters.globalOptions;
+	var dims = Object.assign({}, options.get("/dimensions/card"));
+	if (dims.unit !== "pt") {
+		alert("Units of 'pt' are required for printing");
+	}
+	dims.unit = "px";
+	// TODO: Conider dividing by window.devicePixelRatio below. In the Electron screen capture, the number of pixels gets doubled, but in Firefox, this does not happen.
+	var scale = Math.round(dims.dpi / 72);
+	console.log("scale: " + scale);
+	var svgStrings = cards.map((card) => {
+		return Utils.finalizeSvg(
+			card,
+			dims,
+			options,
+			false,
+			1,
+			scale
+		);
+	});
+	return {
+		svgStrings,
+		pageWidth: dims.width,
+		pageHeight: dims.height,
+		scale
+	};
+}
+
 function printSlimerJS(options, next) {
 	var filePath = options.filePath;
 	if (!filePath) return;
-	let { svgString, pageWidth, pageHeight, scale, numPages } = getSvg(options);
+	let { svgString, pageWidth, pageHeight, scale, numPages } = getPageSvg(options);
 	CardCreatr.rasterize.slimerjs(svgString, pageWidth, pageHeight, scale, numPages, "pdf", filePath, (err) => {
 		if (err) return next(err);
 		next(null);
 	});
 }
 
-function printCanvas(options, progress, next) {
+function printPageCanvasPdf(options, progress, next) {
 	var filePath = options.filePath;
 	if (!filePath) return;
-	let { svgString, pageWidth, pageHeight, scale, numPages } = getSvg(options);
-	CardCreatr.rasterize.canvasDrawImage(svgString, pageWidth, pageHeight, scale, numPages, filePath, progress, (err) => {
+	let { svgString, pageWidth, pageHeight, scale, numPages } = getPageSvg(options);
+	CardCreatr.rasterize.canvasDrawImage(svgString, pageWidth, pageHeight, scale, numPages, progress, (err, pngBuffers) => {
+		CardCreatr.rasterize.pngListToDestinationPdf(filePath, pngBuffers, pageWidth, pageHeight, next);
+	});
+}
+
+function printCardCanvasZip(options, progress, next) {
+	var filePath = options.filePath;
+	if (!filePath) return;
+	let { svgStrings, pageWidth, pageHeight, scale } = getCardSvgs(options);
+	async.times(svgStrings.length, (i, _next) => {
+		let svgString = svgStrings[i];
+		CardCreatr.rasterize.canvasDrawImage(svgString, pageWidth, pageHeight, scale, 1, (status) => {
+			status.page = i;
+			progress(status);
+		}, _next);
+	}, (err, pngBufferses) => {
 		if (err) return next(err);
-		next(null);
+		let pngBuffers = pngBufferses.map((v) => { return v[0]; });
+		CardCreatr.rasterize.pngListToPngsZip(filePath, pngBuffers, pageWidth, pageHeight, next);
 	});
 }
 
 
-module.exports = { getSvg, printSlimerJS, printCanvas };
+module.exports = { getPageSvg, getCardSvgs, printSlimerJS, printPageCanvasPdf, printCardCanvasZip };

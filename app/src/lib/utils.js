@@ -94,7 +94,7 @@ function createField(template) {
 	return field;
 }
 
-function makePages(options, renderer, allCardOptions, concatenated) {
+function makeCardSvgs(options, renderer, allCardOptions, useQty) {
 	if (!options || !renderer || !allCardOptions) return null;
 	let cardSvgStrings = [];
 	try {
@@ -102,7 +102,7 @@ function makePages(options, renderer, allCardOptions, concatenated) {
 			let cardOptions = allCardOptions[cardId];
 			if (!cardOptions) continue;
 			let qty = parseInt(cardOptions.get("/qty"));
-			if (isNaN(qty)) qty = 1;
+			if (isNaN(qty) || !useQty) qty = 1;
 			if (qty == 0) continue;
 			let str = renderer.render(cardOptions, options, options.get("/viewports/card"));
 			for (let q=0; q<qty; q++) {
@@ -112,6 +112,12 @@ function makePages(options, renderer, allCardOptions, concatenated) {
 	} catch(err) {
 		throw err;
 	}
+	return cardSvgStrings;
+}
+
+function makePageSvg(options, renderer, allCardOptions, concatenated) {
+	if (!options || !renderer || !allCardOptions) return null;
+	let cardSvgStrings = makeCardSvgs(options, renderer, allCardOptions, true);
 	// TODO: make strategy and reversed options
 	let strategy = "tight";
 	let reversed = false;
@@ -172,7 +178,8 @@ module.exports = {
 	fileSizeString,
 	createCard,
 	createField,
-	makePages,
+	makeCardSvgs,
+	makePageSvg,
 	finalizeSvg,
 	resized,
 	gridSvg

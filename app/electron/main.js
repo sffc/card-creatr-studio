@@ -56,6 +56,7 @@ menu.on("print", (browserWindow) => {
 
 menu.on("print2", (browserWindow) => {
 	electron.dialog.showSaveDialog(browserWindow, {
+		defaultPath: "print.pdf",
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
@@ -77,6 +78,7 @@ menu.on("print2", (browserWindow) => {
 
 menu.on("print3", (browserWindow) => {
 	electron.dialog.showSaveDialog(browserWindow, {
+		defaultPath: "print.pdf",
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
@@ -89,6 +91,7 @@ menu.on("print3", (browserWindow) => {
 
 menu.on("print4", (browserWindow) => {
 	electron.dialog.showSaveDialog(browserWindow, {
+		defaultPath: "print.pdf",
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
@@ -96,6 +99,19 @@ menu.on("print4", (browserWindow) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		window.print3({ filePath });
+	});
+});
+
+menu.on("cardImages1", (browserWindow) => {
+	electron.dialog.showSaveDialog(browserWindow, {
+		defaultPath: "cards.zip",
+		filters: [
+			{name: "Zip File", extensions: ["zip"]}
+		]
+	}, (filePath) => {
+		if (!filePath) return;
+		let window = global.windowManager.getByBrowserWindow(browserWindow);
+		window.cardImages1({ filePath });
 	});
 });
 

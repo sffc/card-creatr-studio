@@ -39,6 +39,22 @@ if (global) {
 	window.vm = vm;
 }
 
+function ipcStatusUpdate(status) {
+	let action;
+	switch(status.name) {
+	case "init":
+		action = "Initialized";
+		break;
+	case "canvas":
+		action = "Rendered";
+		break;
+	case "blob":
+		action = "Processed";
+		break;
+	}
+	vm.$children[0].$data.spinnerText = action + " page #" + (status.page+1) + "…";
+}
+
 // Messages from main process
 electron.ipcRenderer.on("path", (event, message) => {
 	ccsb.setPath(message.path);
@@ -65,21 +81,19 @@ electron.ipcRenderer.on("print2", (event, message) => {
 electron.ipcRenderer.on("print3", (event, message) => {
 	vm.$children[0].$data.spinnerCount++;
 	vm.$children[0].$data.spinnerText = "Calculating…";
-	pagePrinterFallback.printCanvas(message, (status) => {
-		let action;
-		switch(status.name) {
-		case "init":
-			action = "Initialized";
-			break;
-		case "canvas":
-			action = "Rendered";
-			break;
-		case "blob":
-			action = "Processed";
-			break;
+	pagePrinterFallback.printPageCanvasPdf(message, ipcStatusUpdate, (err) => {
+		vm.$children[0].$data.spinnerCount--;
+		if (err) {
+			console.error(err);
+			alert("Error: " + err.message);
 		}
-		vm.$children[0].$data.spinnerText = action + " page #" + (status.page+1) + "…";
-	}, (err) => {
+		else alert("File export is finished");
+	});
+});
+electron.ipcRenderer.on("cardImages1", (event, message) => {
+	vm.$children[0].$data.spinnerCount++;
+	vm.$children[0].$data.spinnerText = "Calculating…";
+	pagePrinterFallback.printCardCanvasZip(message, ipcStatusUpdate, (err) => {
 		vm.$children[0].$data.spinnerCount--;
 		if (err) {
 			console.error(err);
@@ -135,7 +149,7 @@ function electronDoSave(message, next) {
 
 function electronDoGetSvg(message, next) {
 	console.log("Getting SVG...");
-	let response = pagePrinterFallback.getSvg();
+	let response = pagePrinterFallback.getPageSvg();
 	next(response);
 }
 

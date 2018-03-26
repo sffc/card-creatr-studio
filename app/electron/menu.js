@@ -219,6 +219,13 @@ class CustomMenu extends EventEmitter {
 					}
 				},
 				{
+					label: "Export Card Images…",
+					accelerator: "CmdOrCtrl+Shift+E",
+					click: (item, focusedWindow) => {
+						this.emit("cardImages1", focusedWindow);
+					}
+				},
+				{
 					type: "separator"
 				},
 				{
