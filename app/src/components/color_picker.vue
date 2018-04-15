@@ -5,10 +5,10 @@ var template = `
 	<div class="color-picker-preview" v-on:click="openPopout1" v-bind:style="previewStyle"></div>
 	<div class="color-picker-expanded" v-on:click="openPopout2">···</div>
 	<div class="color-picker-popout" v-if="open1" v-on:click="preventClose">
-		<swatches v-model="colors" @change-color="onChange"></swatches>
+		<swatches v-model="colors" @input="onChange"></swatches>
 	</div>
 	<div class="color-picker-popout" v-if="open2" v-on:click="preventClose">
-		<sliders v-model="colors" @change-color="onChange"></sliders>
+		<sliders v-model="colors" @input="onChange"></sliders>
 	</div>
 </div>
 `;

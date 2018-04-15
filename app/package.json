@@ -1,7 +1,7 @@
 {
   "name": "ccstudio",
   "productName": "Card Creatr Studio",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A graphical user interface to Card Creatr",
   "author": "Shane F. Carr <shane.f.carr@outlook.com>",
   "homepage": "http://shane.guru/card-creatr/",
@@ -18,7 +18,7 @@
     "tmp": "0.0.31",
     "uuid": "^3.0.1",
     "vue": "git://github.com/sffc/vue.git#dev-build",
-    "vue-color": "^2.0.6",
+    "vue-color": "^2.2.0",
     "vue-router": "^2.2.0",
     "vuex": "^2.1.2"
   }
