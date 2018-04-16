@@ -18,7 +18,10 @@ class CustomWindow extends EventEmitter {
 			width: 800,
 			height: 600,
 			useContentSize: true,
-			backgroundColor: "#666" // gutter color
+			backgroundColor: "#666", // gutter color
+			webPreferences: {
+				nativeWindowOpen: true  // allows window.document after window.open()
+			}
 		});
 		this._addListeners();
 		this._setPath(filePath);
@@ -78,6 +81,10 @@ class CustomWindow extends EventEmitter {
 
 	toggleGrid() {
 		this._sendMessage("toggleGrid", {});
+	}
+
+	viewSvgXml() {
+		this._sendMessage("viewSvgXml", {});
 	}
 
 	_addListeners() {

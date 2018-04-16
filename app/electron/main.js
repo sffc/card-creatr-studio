@@ -130,6 +130,11 @@ menu.on("toggleGrid", (browserWindow) => {
 	window.toggleGrid();
 });
 
+menu.on("viewSvgXml", (browserWindow) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.viewSvgXml();
+});
+
 // Quit when all windows are closed.
 electron.app.on("window-all-closed", () => {
 	// On OS X it is common for applications and their menu bar

@@ -307,6 +307,12 @@ class CustomMenu extends EventEmitter {
 					this.emit("toggleGrid", focusedWindow);
 				}
 			},
+			{
+				label: "View SVG XML",
+				click: (item, focusedWindow) => {
+					this.emit("viewSvgXml", focusedWindow);
+				}
+			},
 		);
 	}
 

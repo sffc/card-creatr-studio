@@ -23,6 +23,7 @@ const store = require("./store");
 const ccsb = require("./lib/ccsb");
 const renderer = require("./lib/renderer");
 const pagePrinterFallback = require("./lib/page_printer_fallback");
+const svgXml = require("./lib/svg_xml");
 const electron = require("electron");
 
 /* eslint-disable no-new */
@@ -115,6 +116,9 @@ electron.ipcRenderer.on("deletecard", (event, message) => {
 electron.ipcRenderer.on("toggleGrid", (event, message) => {
 	store.commit("toggleGrid");
 });
+electron.ipcRenderer.on("viewSvgXml", (event, message) => {
+	svgXml.open(store.state.currentSvg);
+});
 electron.ipcRenderer.on("_SAR", (event, data) => {
 	let id = data.id;
 	let _sendResponse = (response) => {
@@ -186,6 +190,15 @@ function makeDirtyWatchers() {
 	store.watch((state) => state.templateString, (oldValue, newValue) => {
 		if (oldValue) {
 			electron.ipcRenderer.send("dirty", { isDirty: true });
+		}
+	});
+}
+
+// Other listeners
+function makeOtherWatchers() {
+	store.subscribe((mutation, state) => {
+		if (mutation.type === "setCurrentSvg") {
+			svgXml.update(mutation.payload);
 		}
 	});
 }
@@ -266,5 +279,6 @@ async.auto({
 		console.error(err);
 	}
 	makeDirtyWatchers();
+	makeOtherWatchers();
 	store.commit("loaded", true);
 });
