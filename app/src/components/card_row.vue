@@ -24,6 +24,9 @@ var template = `
 		<template v-if="field.display == 'color'">
 			<color-picker v-model="card[field.id]"></color-picker>
 		</template>
+		<template v-if="field.display == 'dropdown'">
+			<dropdown-field v-model="card[field.id]" :dropdownV1="field.dropdownV1"></dropdown-field>
+		</template>
 	</td>
 </tr>
 `;
@@ -33,6 +36,7 @@ const Vue = require("vue/dist/vue");
 require("./image_chooser");
 require("./color_picker");
 require("./textarea_array");
+require("./dropdown_field");
 
 Vue.component("card-row", {
 	template: template,

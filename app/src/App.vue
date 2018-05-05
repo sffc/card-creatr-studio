@@ -79,11 +79,17 @@ var template = `
 										<option>multiline</option>
 										<option>image</option>
 										<option>color</option>
+										<option>dropdown</option>
 									</select>
 								</div>
 								<div class="field-box">
 									<strong>Width</strong>
 									<input type="number" min="0" step="10" v-model="currentField.width"/>
+								</div>
+								<div class="field-box">
+									<strong>Dropdown Options</strong>
+									<p>Type one option per line.</p>
+									<textarea v-model="currentField.dropdownV1"></textarea>
 								</div>
 								<div class="field-box">
 									<strong>Other Options</strong>
