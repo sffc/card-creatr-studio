@@ -13,7 +13,7 @@ var template = `
 				<div id="f-top">
 					<div id="f-list" v-on:click="clearCurrentId">
 						<div v-if="hasCards" class="card-list-wrapper">
-							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIds="cardIds" :fields="fields" v-on:new="newCard"></card-list-table>
+							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" v-on:new="newCard"></card-list-table>
 						</div>
 						<div v-else class="card-empty-list">
 							<strong>Welcome.</strong>
@@ -171,6 +171,9 @@ module.exports = {
 		cardIds() {
 			return this.$store.state.cardIds;
 		},
+		cardIdSortOrder() {
+			return this.$store.state.cardIdSortOrder;
+		},
 		fields() {
 			return this.$store.state.fields;
 		},
@@ -273,6 +276,9 @@ module.exports = {
 			setTimeout(() => {
 				this.$el.querySelector("#f-list .card-list > tbody > tr.active input").focus();
 			}, 50);
+		},
+		moveCard(id, directionDown) {
+			this.$store.commit("moveCard", [ id, directionDown ]);
 		},
 		gotoTab(newTab) {
 			this.tab = newTab;

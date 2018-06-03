@@ -120,6 +120,16 @@ menu.on("addcard", (browserWindow) => {
 	window.addCard();
 });
 
+menu.on("movecardup", (browserWindow) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.moveCardUp();
+});
+
+menu.on("movecarddown", (browserWindow) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.moveCardDown();
+});
+
 menu.on("deletecard", (browserWindow) => {
 	let window = global.windowManager.getByBrowserWindow(browserWindow);
 	window.deleteCard();

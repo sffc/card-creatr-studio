@@ -288,6 +288,20 @@ class CustomMenu extends EventEmitter {
 				}
 			},
 			{
+				label: "Move Card Up",
+				accelerator: "CmdOrCtrl+Alt+Up",
+				click: (item, focusedWindow) => {
+					this.emit("movecardup", focusedWindow);
+				}
+			},
+			{
+				label: "Move Card Down",
+				accelerator: "CmdOrCtrl+Alt+Down",
+				click: (item, focusedWindow) => {
+					this.emit("movecarddown", focusedWindow);
+				}
+			},
+			{
 				label: "Delete Current Card…",
 				accelerator: "CmdOrCtrl+Backspace",
 				click: (item, focusedWindow) => {

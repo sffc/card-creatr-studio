@@ -106,6 +106,16 @@ electron.ipcRenderer.on("cardImages1", (event, message) => {
 electron.ipcRenderer.on("addcard", (event, message) => {
 	vm.$children[0].newCard();
 });
+electron.ipcRenderer.on("movecardup", (event, message) => {
+	let card = store.getters.currentCard;
+	if (!card) return alert("Please select a card first.");
+	vm.$children[0].moveCard(card.id, false);
+});
+electron.ipcRenderer.on("movecarddown", (event, message) => {
+	let card = store.getters.currentCard;
+	if (!card) return alert("Please select a card first.");
+	vm.$children[0].moveCard(card.id, true);
+});
 electron.ipcRenderer.on("deletecard", (event, message) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
@@ -138,7 +148,7 @@ function electronDoSave(message, next) {
 		fields: store.state.fields,
 		fonts: store.state.fontsList
 	})));
-	let intermediate = Object.keys(store.state.cardData).map((cardId) => {
+	let intermediate = store.state.cardIdSortOrder.map((cardId) => {
 		let card = store.state.cardData[cardId];
 		return Utils.toCardCreatrForm(card, store.state.fields);
 	});
@@ -164,32 +174,37 @@ function makeDirtyWatchers() {
 		return state.cardData;
 	}, (oldValue, newValue) => {
 		if (oldValue) {
-			electron.ipcRenderer.send("dirty", { isDirty: true });
+			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "card" });
 		}
 	}, { deep: true });
 	store.watch((state) => state.fields, (oldValue, newValue) => {
 		if (oldValue) {
-			electron.ipcRenderer.send("dirty", { isDirty: true });
+			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "field" });
 		}
 	}, { deep: true });
 	store.watch((state) => state.fontsList, (oldValue, newValue) => {
 		if (oldValue) {
-			electron.ipcRenderer.send("dirty", { isDirty: true });
+			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "font" });
 		}
 	}, { deep: true });
 	store.watch((state) => state.allAssets, (oldValue, newValue) => {
 		if (oldValue) {
-			electron.ipcRenderer.send("dirty", { isDirty: true });
+			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "asset" });
 		}
 	});
 	store.watch((state) => state.optionsString, (oldValue, newValue) => {
 		if (oldValue) {
-			electron.ipcRenderer.send("dirty", { isDirty: true });
+			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "options" });
 		}
 	});
 	store.watch((state) => state.templateString, (oldValue, newValue) => {
 		if (oldValue) {
-			electron.ipcRenderer.send("dirty", { isDirty: true });
+			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "template" });
+		}
+	});
+	store.watch((state) => state.cardIdSortOrder, (oldValue, newValue) => {
+		if (oldValue) {
+			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "sorting" });
 		}
 	});
 }
@@ -249,7 +264,7 @@ async.auto({
 		store.commit("setTemplateString", results.templateBuffer.toString("utf-8"));
 		_next(null);
 	}],
-	"resolveBuffer": ["jsonBuffer", (results, _next) => {
+	"resolveJson": ["jsonBuffer", (results, _next) => {
 		try {
 			let jsonObj = JSON.parse(results.jsonBuffer.toString("utf-8"));
 			if (!jsonObj) return _next(null);
@@ -265,7 +280,7 @@ async.auto({
 		}
 		_next(null);
 	}],
-	"resolveData": ["dataObjects", "resolveBuffer", "loadAssets", (results, _next) => {
+	"resolveData": ["dataObjects", "resolveJson", "loadAssets", (results, _next) => {
 		for (let card of results.dataObjects) {
 			let _card = Utils.toCardIdForm(card, store.state.fields);
 			_card.id = card.id;

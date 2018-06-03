@@ -29,7 +29,7 @@ require("./card_row");
 
 Vue.component("card-list-table", {
 	template: template,
-	props: ["cards", "cardIds", "fields", "value"],
+	props: ["cards", "cardIdSortOrder", "fields", "value"],
 	data: function() {
 		return {
 			sortField: null,
@@ -61,6 +61,16 @@ Vue.component("card-list-table", {
 		doSort: function() {
 			// This is in an explicit watch-method instead of a computed in order to avoid re-sorting rows when card content changes.
 			if (this.cards === null) return null;
+
+			if (!this.sortField) {
+				// Use the natural sort order from cardIdSortOrder
+				let cardsArray = [];
+				for (let cardId of this.cardIdSortOrder) {
+					cardsArray.push(this.cards[cardId]);
+				}
+				return cardsArray;
+			}
+
 			let cardsArray = Object.keys(this.cards).map((cardId) => { return this.cards[cardId]; });
 			let name = this.sortField ? this.sortField.id : "id";
 			let reversed = !!this.sortReversed;
@@ -105,7 +115,7 @@ Vue.component("card-list-table", {
 			},
 			immediate: true
 		},
-		cardIds: {
+		cardIdSortOrder: {
 			handler: function() {
 				this.sortedCards = this.doSort();
 			}
