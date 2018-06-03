@@ -64,14 +64,22 @@ Vue.component("card-list-table", {
 			let cardsArray = Object.keys(this.cards).map((cardId) => { return this.cards[cardId]; });
 			let name = this.sortField ? this.sortField.id : "id";
 			let reversed = !!this.sortReversed;
-			cardsArray.sort((a, b) => {
+			cardsArray.sort((cardA, cardB) => {
+				let a = cardA[name];
+				let b = cardB[name];
 				if (a instanceof Array && b instanceof Array) {
 					a = a.join("");
 					b = b.join("");
 				}
-				if (a[name] > b[name]) {
+				a = a || "";
+				b = b || "";
+				if (this.sortField && (this.sortField.properties.indexOf("uint") !== -1 || this.sortField.properties.indexOf("number") !== -1)) {
+					a = parseFloat(a) || 0;
+					b = parseFloat(b) || 0;
+				}
+				if (a > b) {
 					return reversed ? -1 : 1;
-				} else if (a[name] < b[name]) {
+				} else if (a < b) {
 					return reversed ? 1 : -1;
 				} else {
 					return 0;

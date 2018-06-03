@@ -65,10 +65,11 @@ var template = `
 								<div class="field-box">
 									<strong>Properties</strong>
 									<select v-model="currentField.properties" multiple>
+										<option>number</option>
+										<option>uint</option>
 										<option>img</option>
 										<option>path</option>
 										<option>font</option>
-										<option>uint</option>
 									</select>
 								</div>
 								<div class="field-box">
