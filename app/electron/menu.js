@@ -85,10 +85,6 @@ function getTemplate() {
 		{
 			role: 'help',
 			submenu: [
-				{
-					label: 'Learn More',
-					click () { require('electron').shell.openExternal('http://electron.atom.io') }
-				}
 			]
 		}
 	]
@@ -265,15 +261,17 @@ class CustomMenu extends EventEmitter {
 
 		this.template = getTemplate();
 
-		var editMenu, viewMenu;
+		var editMenu, viewMenu, helpMenu;
 		if (process.platform === "darwin") {
 			this.template.splice(1, 0, fileMenu);
 			editMenu = this.template[2];
 			viewMenu = this.template[3];
+			helpMenu = this.template[5];
 		} else {
 			this.template.splice(0, 0, fileMenu);
 			editMenu = this.template[1];
 			viewMenu = this.template[2];
+			helpMenu = this.template[4];
 		}
 
 		editMenu.submenu.push(
@@ -327,6 +325,15 @@ class CustomMenu extends EventEmitter {
 					this.emit("viewSvgXml", focusedWindow);
 				}
 			},
+		);
+
+		helpMenu.submenu.push(
+			{
+				label: "Check for Updates…",
+				click: (item, focusedWindow) => {
+					this.emit("checkForUpdates", focusedWindow);
+				}
+			}
 		);
 	}
 

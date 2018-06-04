@@ -4,6 +4,8 @@ const electron = require("electron");
 const capture = require("./capture");
 const CustomMenu = require("./menu");
 const CustomWindowManager = require("./window").CustomWindowManager;
+const http = require("http");
+const shell = require("electron").shell;
 
 const menu = new CustomMenu();
 
@@ -144,6 +146,51 @@ menu.on("viewSvgXml", (browserWindow) => {
 	let window = global.windowManager.getByBrowserWindow(browserWindow);
 	window.viewSvgXml();
 });
+
+menu.on("checkForUpdates", (browserWindow) => {
+	let request = http.get("http://cardcreatr.shane.guru/versions/latest.txt", (res) => {
+		let currentVersion = require("../package.json").version;
+		let latestVersion = "";
+		res.on("data", function(chunk) {
+			latestVersion += chunk;
+		});
+		res.on("end", function() {
+			if (currentVersion !== latestVersion) {
+				electron.dialog.showMessageBox({
+					type: "info",
+					message: "Updates Available",
+					detail: "Your version: " + currentVersion + "\nLatest version: " + latestVersion,
+					buttons: ["Download", "Cancel"],
+					defaultId: 0,
+					cancelId: 1
+				}, (response) => {
+					if (response === 0) {
+						shell.openExternal("http://cardcreatr.shane.guru/latestdist/");
+					}
+				});
+			} else {
+				electron.dialog.showMessageBox({
+					type: "info",
+					message: "All Up-to-Date!",
+					detail: "Version: " + currentVersion,
+					buttons: ["OK", "Download Page"],
+					defaultId: 0,
+					cancelId: 1
+				}, (response) => {
+					if (response === 1) {
+						shell.openExternal("http://cardcreatr.shane.guru/latestdist/");
+					}
+				});
+			}
+		});
+	}).on("error", (err) => {
+		electron.dialog.showMessageBox({
+			type: "warning",
+			message: "Internet Connection Required",
+			detail: "Could not connect to cardcreatr.shane.guru: " + err
+		});
+	});
+})
 
 // Quit when all windows are closed.
 electron.app.on("window-all-closed", () => {
