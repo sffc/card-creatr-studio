@@ -211,7 +211,7 @@ class CustomMenu extends EventEmitter {
 					label: "Export to PDF…",
 					accelerator: "CmdOrCtrl+Alt+E",
 					click: (item, focusedWindow) => {
-						this.emit("print4", focusedWindow);
+						this.emit("print5", focusedWindow);
 					}
 				},
 				{
@@ -252,6 +252,12 @@ class CustomMenu extends EventEmitter {
 							label: "Export to PDF with Electron…",
 							click: (item, focusedWindow) => {
 								this.emit("print2", focusedWindow);
+							}
+						},
+						{
+							label: "Export to PDF with Canvas v1…",
+							click: (item, focusedWindow) => {
+								this.emit("print4", focusedWindow);
 							}
 						}
 					]

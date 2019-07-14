@@ -91,6 +91,18 @@ electron.ipcRenderer.on("print3", (event, message) => {
 		else alert("File export is finished");
 	});
 });
+electron.ipcRenderer.on("print4", (event, message) => {
+	vm.$children[0].$data.spinnerCount++;
+	vm.$children[0].$data.spinnerText = "Calculating…";
+	pagePrinterFallback.printPageCanvasPdf2(message, ipcStatusUpdate, (err) => {
+		vm.$children[0].$data.spinnerCount--;
+		if (err) {
+			console.error(err);
+			alert("Error: " + err.message);
+		}
+		else alert("File export is finished");
+	});
+});
 electron.ipcRenderer.on("cardImages1", (event, message) => {
 	vm.$children[0].$data.spinnerCount++;
 	vm.$children[0].$data.spinnerText = "Calculating…";
