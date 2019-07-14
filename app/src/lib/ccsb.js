@@ -13,18 +13,18 @@ ccsb.writeFile = function() {
 	var ret = oldWriteFile.apply(ccsb, arguments);
 	require("../store").commit("updateAllAssets");
 	return ret;
-}
+};
 
 ccsb.createFile = function() {
 	var ret = oldCreateFile.apply(ccsb, arguments);
 	require("../store").commit("updateAllAssets");
 	return ret;
-}
+};
 
 ccsb.removeFile = function() {
 	var ret = oldRemoveFile.apply(ccsb, arguments);
 	require("../store").commit("updateAllAssets");
 	return ret;
-}
+};
 
 module.exports = ccsb;

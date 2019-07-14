@@ -43,7 +43,7 @@ menu.on("saveas", (browserWindow) => {
 	window.saveAs();
 });
 
-menu.on("printhelp", (browserWindow) => {
+menu.on("printhelp", (/* browserWindow */) => {
 	electron.dialog.showMessageBox({
 		type: "info",
 		message: "Print and Export Options",
@@ -160,8 +160,8 @@ menu.on("viewSvgXml", (browserWindow) => {
 	window.viewSvgXml();
 });
 
-menu.on("checkForUpdates", (browserWindow) => {
-	let request = http.get("http://cardcreatr.shane.guru/versions/latest.txt", (res) => {
+menu.on("checkForUpdates", (/* browserWindow */) => {
+	http.get("http://cardcreatr.shane.guru/versions/latest.txt", (res) => {
 		let currentVersion = require("../package.json").version;
 		let latestVersion = "";
 		res.on("data", function(chunk) {
@@ -203,14 +203,14 @@ menu.on("checkForUpdates", (browserWindow) => {
 			detail: "Could not connect to cardcreatr.shane.guru: " + err
 		});
 	});
-})
+});
 
 // Quit when all windows are closed.
 electron.app.on("window-all-closed", () => {
 	// On OS X it is common for applications and their menu bar
 	// to stay active until the user quits explicitly with Cmd + Q
 	if (process.platform !== "darwin") {
-		electron.app.quit()
+		electron.app.quit();
 	}
 });
 

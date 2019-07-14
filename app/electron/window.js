@@ -166,7 +166,7 @@ class CustomWindow extends EventEmitter {
 				path: this.path
 			}
 		});
-		console.log(_url)
+		console.log(_url);
 		this.browserWindow.loadURL(_url);
 	}
 
@@ -197,7 +197,7 @@ class CustomWindow extends EventEmitter {
 		}
 	}
 
-	_onClosed(event) {
+	_onClosed(/* event */) {
 		this._removeListeners();
 		this.emit("closed", { window: this });
 	}

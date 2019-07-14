@@ -5,7 +5,7 @@ const store = require("../store");
 const Utils = require("./utils");
 const async = require("async");
 
-function getPageSvg(options) {
+function getPageSvg(/* options */) {
 	var result = Utils.makePageSvg(
 		store.getters.globalOptions,
 		store.getters.renderer,
@@ -40,7 +40,7 @@ function getPageSvg(options) {
 	};
 }
 
-function getSinglePageSvgs(options, i) {
+function getSinglePageSvgs(/* options */) {
 	var strings = Utils.makePageSvg(
 		store.getters.globalOptions,
 		store.getters.renderer,
@@ -72,7 +72,7 @@ function getSinglePageSvgs(options, i) {
 	};
 }
 
-function getCardSvgs(options) {
+function getCardSvgs(/* options */) {
 	var cards = Utils.makeCardSvgs(
 		store.getters.globalOptions,
 		store.getters.renderer,
@@ -139,6 +139,7 @@ function printPageCanvasPdf2(options, progress, next) {
 	try {
 		let { svgStrings, pageWidth, pageHeight, scale } = getSinglePageSvgs(options);
 		CardCreatr.rasterize.canvasDrawImage2(svgStrings, pageWidth, pageHeight, scale, progress, (err, pngBuffers) => {
+			if (err) return next(err);
 			CardCreatr.rasterize.pngListToDestinationPdf(filePath, pngBuffers, pageWidth, pageHeight, next);
 		});
 	} catch(err) {

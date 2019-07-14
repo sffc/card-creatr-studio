@@ -27,7 +27,7 @@ Vue.component("ace-editor", {
 		this._editor.getSession().setUseSoftTabs(false);
 		this._editor.setHighlightActiveLine(false);
 		this._editor.setShowPrintMargin(false);
-		this._editor.renderer.setOption("showLineNumbers", false);
+		// this._editor.setOption("showLineNumbers", false);
 		this._editor.$blockScrolling = Infinity;
 		this._editor.setValue(this.value || "");
 		this._editor.gotoLine(0);

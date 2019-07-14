@@ -1,7 +1,6 @@
 "use strict";
 
 const Vue = require("vue/dist/vue");
-const Utils = require("./utils");
 
 var globalCounter = 0;
 

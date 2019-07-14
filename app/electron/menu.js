@@ -10,163 +10,163 @@ const EventEmitter = require("events");
 function getTemplate() {
 	let template = [
 		{
-			label: 'Edit',
+			label: "Edit",
 			submenu: [
 				{
-					role: 'undo'
+					role: "undo"
 				},
 				{
-					role: 'redo'
+					role: "redo"
 				},
 				{
-					type: 'separator'
+					type: "separator"
 				},
 				{
-					role: 'cut'
+					role: "cut"
 				},
 				{
-					role: 'copy'
+					role: "copy"
 				},
 				{
-					role: 'paste'
+					role: "paste"
 				},
 				{
-					role: 'pasteandmatchstyle'
+					role: "pasteandmatchstyle"
 				},
 				{
-					role: 'delete'
+					role: "delete"
 				},
 				{
-					role: 'selectall'
+					role: "selectall"
 				},
 			]
 		},
 		{
-			label: 'View',
+			label: "View",
 			submenu: [
 				{
-					role: 'resetzoom'
+					role: "resetzoom"
 				},
 				{
-					role: 'zoomin'
+					role: "zoomin"
 				},
 				{
-					role: 'zoomout'
+					role: "zoomout"
 				},
 				{
-					type: 'separator'
+					type: "separator"
 				},
 				{
-					role: 'togglefullscreen'
+					role: "togglefullscreen"
 				},
 				{
-					type: 'separator'
+					type: "separator"
 				},
 				{
-					label: 'Developer Tools (Advanced)',
-					accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+					label: "Developer Tools (Advanced)",
+					accelerator: process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
 					click (item, focusedWindow) {
-						if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+						if (focusedWindow) focusedWindow.webContents.toggleDevTools();
 					}
 				}
 			]
 		},
 		{
-			role: 'window',
+			role: "window",
 			submenu: [
 				{
-					role: 'minimize'
+					role: "minimize"
 				},
 				{
-					role: 'close'
+					role: "close"
 				}
 			]
 		},
 		{
-			role: 'help',
+			role: "help",
 			submenu: [
 			]
 		}
-	]
+	];
 
-	if (process.platform === 'darwin') {
+	if (process.platform === "darwin") {
 		template.unshift({
 			label: electron.app.getName(),
 			submenu: [
 				{
-					role: 'about'
+					role: "about"
 				},
 				{
-					type: 'separator'
+					type: "separator"
 				},
 				{
-					role: 'services',
+					role: "services",
 					submenu: []
 				},
 				{
-					type: 'separator'
+					type: "separator"
 				},
 				{
-					role: 'hide'
+					role: "hide"
 				},
 				{
-					role: 'hideothers'
+					role: "hideothers"
 				},
 				{
-					role: 'unhide'
+					role: "unhide"
 				},
 				{
-					type: 'separator'
+					type: "separator"
 				},
 				{
-					role: 'quit'
+					role: "quit"
 				}
 			]
-		})
+		});
 		// Edit menu.
 		template[1].submenu.push(
 			{
-				type: 'separator'
+				type: "separator"
 			},
 			{
-				label: 'Speech',
+				label: "Speech",
 				submenu: [
 					{
-						role: 'startspeaking'
+						role: "startspeaking"
 					},
 					{
-						role: 'stopspeaking'
+						role: "stopspeaking"
 					}
 				]
 			}
-		)
+		);
 		// Window menu.
 		template[3].submenu = [
 			{
-				label: 'Close',
-				accelerator: 'CmdOrCtrl+W',
-				role: 'close'
+				label: "Close",
+				accelerator: "CmdOrCtrl+W",
+				role: "close"
 			},
 			{
-				label: 'Minimize',
-				accelerator: 'CmdOrCtrl+M',
-				role: 'minimize'
+				label: "Minimize",
+				accelerator: "CmdOrCtrl+M",
+				role: "minimize"
 			},
 			{
-				label: 'Zoom',
-				role: 'zoom'
+				label: "Zoom",
+				role: "zoom"
 			},
 			{
-				type: 'separator'
+				type: "separator"
 			},
 			{
-				label: 'Bring All to Front',
-				role: 'front'
+				label: "Bring All to Front",
+				role: "front"
 			}
-		]
-	};
+		];
+	}
 
-	return template
+	return template;
 }
 
 
@@ -316,7 +316,7 @@ class CustomMenu extends EventEmitter {
 
 		viewMenu.submenu.push(
 			{
-				type: 'separator'
+				type: "separator"
 			},
 			{
 				label: "Show/Hide Grid",
@@ -330,7 +330,7 @@ class CustomMenu extends EventEmitter {
 				click: (item, focusedWindow) => {
 					this.emit("viewSvgXml", focusedWindow);
 				}
-			},
+			}
 		);
 
 		helpMenu.submenu.push(

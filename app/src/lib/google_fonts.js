@@ -31,7 +31,7 @@ function ensureLoaded(next) {
 		next();
 	} else {
 		if (!fontListPromise) {
-			fontListPromise = new Promise((resolve, reject) => {
+			fontListPromise = new Promise((resolve) => {
 				getUrl("https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key="+apiKey, (err, string) => {
 					if (err) {
 						console.error(err);

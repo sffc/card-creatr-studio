@@ -107,7 +107,7 @@ var template = `
 					<div id="f-editor" v-if="tab === 'assets'">
 						<div class="assets-container">
 							<asset-upload-box v-on:upload="updateAsset"></asset-upload-box>
-							<asset-box v-for="path in assets" :path="path" v-on:remove="removeAsset"></asset-box>
+							<asset-box v-for="path in assets" :path="path" v-on:remove="removeAsset" v-bind:key="path"></asset-box>
 						</div>
 					</div>
 					<div id="f-editor" class="ace-container" v-if="tab === 'advanced'">

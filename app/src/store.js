@@ -8,7 +8,6 @@ const Vuex = require("vuex");
 const VuexCached = require("./lib/vuex_cached");
 const ccsb = require("./lib/ccsb");
 const rendererBuilder = require("./lib/renderer");
-const path = require("path");
 const md = require("markdown-it")();
 
 Vue.use(Vuex);
@@ -224,7 +223,7 @@ const STORE = new Vuex.Store({
 				STORE.commit("setError", ["currentSvg", err]);
 			}
 		},
-		pageDimensions(state) {
+		pageDimensions(state, getters) {
 			let globalOptions = getters.globalOptions;
 			if (!globalOptions) return null;
 			let dims = globalOptions.get("/dimensions/page");
@@ -258,7 +257,7 @@ var cardDataWatchers = {};
 STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 	return state.cardIds;
 }, (newSet, oldSet) => {
-	console.log("card data watchers triggered")
+	console.log("card data watchers triggered");
 	if (!oldSet) oldSet = new Set();
 	if (Utils.setEquals(newSet, oldSet)) return;
 	// Cards have been added or removed.

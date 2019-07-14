@@ -2,7 +2,6 @@
 
 const uuidV4 = require("uuid/v4");
 const CardCreatr = require("card-creatr");
-const Vue = require("vue/dist/vue");
 
 // // Custom function: Vue.get()
 // Vue.get = function(obj, key, defaultValue) {

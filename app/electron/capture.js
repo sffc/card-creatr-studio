@@ -6,9 +6,6 @@ const fs = require("fs");
 const tmp = require("tmp");
 const url = require("url");
 const rasterize = require("card-creatr/lib/rasterize");
-const Jimp = require("jimp");
-
-const WINDOW_SIZE = 200;
 
 function renderAndSavePdf(pdfPath, options, next) {
 	var svgString = options.svgString;
@@ -43,8 +40,9 @@ function renderAndSavePdf(pdfPath, options, next) {
 	});
 }
 
+/*
 function scrollWindow(window, dx, dy) {
-	console.log("scrolling:", dx, dy)
+	console.log("scrolling:", dx, dy);
 	window.webContents.sendInputEvent({
 		type: "mouseWheel",
 		x: 0,
@@ -54,6 +52,8 @@ function scrollWindow(window, dx, dy) {
 		canScroll: true
 	});
 }
+
+const WINDOW_SIZE = 200;
 
 // The following function scrolls the page through WINDOW_SIZExWINDOW_SIZE blocks in order to capture the full area.  This workaround is necessary due to https://github.com/electron/electron/issues/8314
 function capturePageMosaic(window, n, pageWidth, pageHeight, scale, next) {
@@ -78,10 +78,10 @@ function capturePageMosaic(window, n, pageWidth, pageHeight, scale, next) {
 			p++;
 			setTimeout(() => {
 				if ((p%maxI) === 0) {
-					console.log("scroll case 1")
+					console.log("scroll case 1");
 					scrollWindow(window, -WINDOW_SIZE*(maxI-1), WINDOW_SIZE);
 				} else {
-					console.log("scroll case 2")
+					console.log("scroll case 2");
 					scrollWindow(window, WINDOW_SIZE, 0);
 				}
 				_next();
@@ -91,6 +91,7 @@ function capturePageMosaic(window, n, pageWidth, pageHeight, scale, next) {
 		next(err);
 	});
 }
+*/
 
 function createWindowFromString(svgString, windowWidth, windowHeight, next) {
 	var tmpPath, fd, cleanupCallback, window;

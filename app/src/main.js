@@ -8,7 +8,7 @@ if (__dirname.indexOf("app.asar") !== -1) {
 	const unpackedPath = path.resolve(__dirname, "../../app.asar.unpacked/node_modules");
 	Module._nodeModulePaths = function() {
 		return [unpackedPath].concat(oldNodeModulePaths.apply(this, arguments));
-	}
+	};
 	console.log("Added node module search path:", unpackedPath);
 }
 
@@ -52,6 +52,9 @@ function ipcStatusUpdate(status) {
 	case "blob":
 		action = "Processed";
 		break;
+	case "error":
+		action = "Error";
+		break;
 	}
 	vm.$children[0].$data.spinnerText = action + " page #" + (status.page+1) + "…";
 }
@@ -60,7 +63,7 @@ function ipcStatusUpdate(status) {
 electron.ipcRenderer.on("path", (event, message) => {
 	ccsb.setPath(message.path);
 });
-electron.ipcRenderer.on("print", (event, message) => {
+electron.ipcRenderer.on("print", (/* event, message */) => {
 	store.state.printing = true;
 	// TODO: Setting a nonzero timeout here is a hack.  Without it, the browser does not always render fonts correctly in the SVG.  Could be a bug in Chromium.
 	setTimeout(() => {
@@ -115,37 +118,37 @@ electron.ipcRenderer.on("cardImages1", (event, message) => {
 		else alert("File export is finished");
 	});
 });
-electron.ipcRenderer.on("addcard", (event, message) => {
+electron.ipcRenderer.on("addcard", (/* event, message */) => {
 	vm.$children[0].newCard();
 });
-electron.ipcRenderer.on("movecardup", (event, message) => {
+electron.ipcRenderer.on("movecardup", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
 	vm.$children[0].moveCard(card.id, false);
 });
-electron.ipcRenderer.on("movecarddown", (event, message) => {
+electron.ipcRenderer.on("movecarddown", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
 	vm.$children[0].moveCard(card.id, true);
 });
-electron.ipcRenderer.on("deletecard", (event, message) => {
+electron.ipcRenderer.on("deletecard", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
 	if (confirm("Are you sure you want to delete the current card?\n\n"+JSON.stringify(card))) {
 		store.commit("deleteCard", store.state.currentId);
 	}
 });
-electron.ipcRenderer.on("toggleGrid", (event, message) => {
+electron.ipcRenderer.on("toggleGrid", (/* event, message */) => {
 	store.commit("toggleGrid");
 });
-electron.ipcRenderer.on("viewSvgXml", (event, message) => {
+electron.ipcRenderer.on("viewSvgXml", (/* event, message */) => {
 	svgXml.open(store.state.currentSvg);
 });
 electron.ipcRenderer.on("_SAR", (event, data) => {
 	let id = data.id;
 	let _sendResponse = (response) => {
 		electron.ipcRenderer.send("_SAR", { id, response });
-	}
+	};
 	if (data.name === "save") {
 		electronDoSave(data.message, _sendResponse);
 	} else if (data.name === "getsvg") {
@@ -171,7 +174,7 @@ function electronDoSave(message, next) {
 			next();
 		});
 	});
-};
+}
 
 function electronDoGetSvg(message, next) {
 	console.log("Getting SVG...");
@@ -184,37 +187,37 @@ function makeDirtyWatchers() {
 	store.watch((state) => {
 		for (let cardId of state.cardIds) Vue.get(state.cardData, cardId, null);
 		return state.cardData;
-	}, (oldValue, newValue) => {
+	}, (oldValue /* , newValue */) => {
 		if (oldValue) {
 			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "card" });
 		}
 	}, { deep: true });
-	store.watch((state) => state.fields, (oldValue, newValue) => {
+	store.watch((state) => state.fields, (oldValue /* , newValue */) => {
 		if (oldValue) {
 			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "field" });
 		}
 	}, { deep: true });
-	store.watch((state) => state.fontsList, (oldValue, newValue) => {
+	store.watch((state) => state.fontsList, (oldValue /* , newValue */) => {
 		if (oldValue) {
 			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "font" });
 		}
 	}, { deep: true });
-	store.watch((state) => state.allAssets, (oldValue, newValue) => {
+	store.watch((state) => state.allAssets, (oldValue /* , newValue */) => {
 		if (oldValue) {
 			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "asset" });
 		}
 	});
-	store.watch((state) => state.optionsString, (oldValue, newValue) => {
+	store.watch((state) => state.optionsString, (oldValue /* , newValue */) => {
 		if (oldValue) {
 			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "options" });
 		}
 	});
-	store.watch((state) => state.templateString, (oldValue, newValue) => {
+	store.watch((state) => state.templateString, (oldValue /* , newValue */) => {
 		if (oldValue) {
 			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "template" });
 		}
 	});
-	store.watch((state) => state.cardIdSortOrder, (oldValue, newValue) => {
+	store.watch((state) => state.cardIdSortOrder, (oldValue /* , newValue */) => {
 		if (oldValue) {
 			electron.ipcRenderer.send("dirty", { isDirty: true, cause: "sorting" });
 		}
@@ -223,7 +226,7 @@ function makeDirtyWatchers() {
 
 // Other listeners
 function makeOtherWatchers() {
-	store.subscribe((mutation, state) => {
+	store.subscribe((mutation /* , state */) => {
 		if (mutation.type === "setCurrentSvg") {
 			svgXml.update(mutation.payload);
 		}
