@@ -5,10 +5,11 @@
     "lint": "eslint  --ext .js,.vue .",
     "stylus": "stylus app/src/styl -w -o app/src/css",
     "electron": "electron .",
-    "build-mac": "build -m",
-    "build-windows": "build -w --x64 --ia32",
-    "build-linux": "build -l --x64 --ia32",
-    "build-all": "build -mwl --x64 --ia32",
+    "build-mac": "electron-builder -m",
+    "build-mac-linux": "electron-builder -ml --x64 --ia32",
+    "build-windows": "electron-builder -w --x64 --ia32",
+    "build-linux": "electron-builder -l --x64 --ia32",
+    "build-all": "electron-builder -mwl --x64 --ia32",
     "start": "electron ."
   },
   "homepage": "https://cardcreatr.sffc.xyz/",
@@ -34,18 +35,25 @@
         "CFBundleTypeName": "ccstudio.ccsb",
         "CFBundleTypeIconFiles": "ccsb.icns",
         "CFBundleTypeRole": "Editor"
+      },
+      {
+        "CFBundleTypeExtensions": [
+          "ccst"
+        ],
+        "CFBundleTypeName": "ccstudio.ccst",
+        "CFBundleTypeIconFiles": "ccst.icns",
+        "CFBundleTypeRole": "Editor"
       }
     ]
   },
   "extraResource": [
-    "build/ccsb.icns"
+    "build/ccsb.icns",
+    "build/ccst.icns"
   ],
   "build": {
     "appId": "guru.shane.ccstudio",
     "asar": true,
     "asarUnpack": [
-      "node_modules/slimerjs",
-      "node_modules/slimerjs-capture",
       "node_modules/tmp",
       "node_modules/os-tmpdir"
     ],
