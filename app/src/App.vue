@@ -45,7 +45,7 @@ var template = `
 								<input type="checkbox" id="show-back-cb" v-model="showBack" />
 								Back
 							</label>
-							<a class="info-btn" onclick="alert('hi')">🛈</a>
+							<a class="info-btn" href="https://cardcreatr.sffc.xyz/general/2019/08/04/card-backs/" target="_blank" title="More Info">🛈</a>
 						</div>
 					</div>
 				</div>

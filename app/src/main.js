@@ -76,6 +76,15 @@ function ipcStatusUpdate(status) {
 	vm.$children[0].$data.spinnerText = action + " page #" + (status.page+1) + "…";
 }
 
+document.body.addEventListener("click", (event) => {
+	const element = event.target;
+	if (element && element.matches("a[target='_blank']")) {
+		event.preventDefault();
+		electron.shell.openExternal(element.href);
+	}
+});
+
+
 // Messages from main process
 electron.ipcRenderer.on("path", (event, message) => {
 	ccsb.setPath(message.path);
