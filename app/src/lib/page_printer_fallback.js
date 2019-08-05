@@ -27,7 +27,10 @@ function getPageSvg(/* options */) {
 		store.getters.globalOptions,
 		store.getters.renderer,
 		store.state.cardOptions,
-		true
+		{
+			concatenated: true,
+			showBack: store.state.showBack
+		}
 	);
 	var string = result.string;
 	var numPages = result.numPages;
@@ -62,7 +65,10 @@ function getSinglePageSvgs(/* options */) {
 		store.getters.globalOptions,
 		store.getters.renderer,
 		store.state.cardOptions,
-		false
+		{
+			concatenated: false,
+			showBack: store.state.showBack
+		}
 	);
 	var options = store.getters.globalOptions;
 	var dims = Object.assign({}, options.get("/dimensions/page"));
@@ -94,7 +100,10 @@ function getCardSvgs(/* options */) {
 		store.getters.globalOptions,
 		store.getters.renderer,
 		store.state.cardOptions,
-		false
+		{
+			showBack: store.state.showBack,
+			useQty: false
+		}
 	);
 	var options = store.getters.globalOptions;
 	var dims = Object.assign({}, options.get("/dimensions/card"));

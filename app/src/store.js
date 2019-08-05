@@ -42,6 +42,7 @@ const STORE = new Vuex.Store({
 		fontsList: [],
 		currentId: null,
 		currentSvg: null,
+		showBack: false,
 		printing: false,
 		loaded: false,
 		gridShown: false,
@@ -137,6 +138,9 @@ const STORE = new Vuex.Store({
 		setCurrentSvg(state, value) {
 			state.currentSvg = value;
 		},
+		setShowBack(state, value) {
+			state.showBack = value;
+		},
 		toggleGrid(state) {
 			state.gridShown = !state.gridShown;
 		},
@@ -231,7 +235,9 @@ const STORE = new Vuex.Store({
 			}
 			console.log("rendering svg starting:", new Date().getTime() % 10000);
 			try {
-				let result = renderer.render(cardOptions, globalOptions, globalOptions.get("/viewports/card"));
+				let result = renderer.render(cardOptions, globalOptions, globalOptions.get("/viewports/card"), {
+					__BACK: state.showBack
+				});
 				console.log("rendering svg ending:", new Date().getTime() % 10000);
 				STORE.commit("clearError", "currentSvg");
 				return result;

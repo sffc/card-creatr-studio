@@ -110,7 +110,7 @@ function createField(template) {
 	return field;
 }
 
-function makeCardSvgs(options, renderer, allCardOptions, useQty) {
+function makeCardSvgs(options, renderer, allCardOptions, { showBack, useQty }) {
 	if (!options || !renderer || !allCardOptions) return null;
 	let cardSvgStrings = [];
 	try {
@@ -120,7 +120,9 @@ function makeCardSvgs(options, renderer, allCardOptions, useQty) {
 			let qty = parseInt(cardOptions.get("/qty"));
 			if (isNaN(qty) || !useQty) qty = 1;
 			if (qty == 0) continue;
-			let str = renderer.render(cardOptions, options, options.get("/viewports/card"));
+			let str = renderer.render(cardOptions, options, options.get("/viewports/card"), {
+				__BACK: showBack
+			});
 			for (let q=0; q<qty; q++) {
 				cardSvgStrings.push(str);
 			}
@@ -131,13 +133,13 @@ function makeCardSvgs(options, renderer, allCardOptions, useQty) {
 	return cardSvgStrings;
 }
 
-function makePageSvg(options, renderer, allCardOptions, concatenated) {
+function makePageSvg(options, renderer, allCardOptions, { concatenated, showBack }) {
 	if (!options || !renderer || !allCardOptions) return null;
-	let cardSvgStrings = makeCardSvgs(options, renderer, allCardOptions, true);
-	// TODO: make strategy and reversed options
-	let strategy = "tight";
-	let reversed = false;
-	let pageRenderer = new (CardCreatr.PageRenderer)(options.get("/viewports/page"), strategy, reversed);
+	let cardSvgStrings = makeCardSvgs(options, renderer, allCardOptions, {
+		showBack,
+		useQty: true
+	});
+	let pageRenderer = new (CardCreatr.PageRenderer)(options.get("/viewports/page"), options.get("/layoutStrategy"), !!showBack);
 	if (concatenated) {
 		return pageRenderer.renderConcatenated(cardSvgStrings);
 	} else {

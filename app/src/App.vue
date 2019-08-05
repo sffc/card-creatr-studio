@@ -40,6 +40,13 @@ var template = `
 					</div>
 					<div id="f-preview" v-bind:class="{ 'flex-hide': currentId === null }">
 						<card-svg :content="currentSvg"></card-svg>
+						<div id="preview-options">
+							<label>
+								<input type="checkbox" id="show-back-cb" v-model="showBack" />
+								Back
+							</label>
+							<a class="info-btn" onclick="alert('hi')">🛈</a>
+						</div>
 					</div>
 				</div>
 				<div id="f-bottom" v-if="this.bottomFlexBasis>0" v-bind:style="{ flexBasis: bottomFlexBasis + 'px' }">
@@ -223,6 +230,14 @@ module.exports = {
 			},
 			set: function(newValue) {
 				this.$store.commit("setOptionsString", newValue);
+			}
+		},
+		showBack: {
+			get: function() {
+				return this.$store.state.showBack;
+			},
+			set: function(newValue) {
+				this.$store.commit("setShowBack", newValue);
 			}
 		},
 		assets() {
