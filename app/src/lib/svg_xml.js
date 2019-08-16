@@ -45,7 +45,7 @@ function update(rawSvgXml) {
 	let cleanSvgXml = rawSvgXml || "{{ no current SVG }}";
 
 	// Shorten data URIs
-	cleanSvgXml = cleanSvgXml.replace(/data:.*?;base64,[\w\/\+\=]*/g, "…");
+	cleanSvgXml = cleanSvgXml.replace(/data:.*?;base64,[\w/+=]*/g, "…");
 
 	// Pretty-print
 	cleanSvgXml = pd.xml(cleanSvgXml);

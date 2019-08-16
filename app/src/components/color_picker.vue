@@ -34,7 +34,7 @@ var template = `
 const Vue = require("vue/dist/vue");
 const VueColor = require("vue-color/dist/vue-color");
 
-const REGEX_RGBA = /^rgba?\s*\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d\.]+))?\s*\)$/;
+const REGEX_RGBA = /^rgba?\s*\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$/;
 
 Vue.component("color-picker", {
 	template: template,
