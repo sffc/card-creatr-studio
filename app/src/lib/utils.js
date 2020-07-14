@@ -59,6 +59,7 @@ function uuid() {
 }
 
 var globalCounterMinid = 1;
+
 function minid() {
 	var sn = "0000" + (globalCounterMinid++);
 	if (sn.length < 9) {
@@ -68,10 +69,10 @@ function minid() {
 }
 
 function fileSizeString(bytes) {
-	let pow1k = Math.floor(Math.log10(bytes)/3);
+	let pow1k = Math.floor(Math.log10(bytes) / 3);
 	let unit = (pow1k <= 4) ? ["bytes", "kB", "MB", "GB", "TB"][pow1k] : "giant";
 	let divisor = Math.pow(1000, pow1k);
-	return (Math.round(bytes/divisor*10)/10) + " " + unit;
+	return (Math.round(bytes / divisor * 10) / 10) + " " + unit;
 }
 
 function createCard(existingIds, fields) {
@@ -86,7 +87,7 @@ function createCard(existingIds, fields) {
 	do {
 		id = "id" + (1e6 + (i++));
 	} while (id <= maxId);
-	let card = { id };
+	let card = {id};
 	for (let field of fields) {
 		if (field.display === "color") {
 			// Default color (soft royal blue)
@@ -110,8 +111,9 @@ function createField(template) {
 	return field;
 }
 
-function makeCardSvgs(options, renderer, allCardOptions, { showBack, useQty }) {
+function makeCardSvgs(options, renderer, allCardOptions, {showBack, useQty}) {
 	if (!options || !renderer || !allCardOptions) return null;
+
 	let cardSvgStrings = [];
 	try {
 		for (let cardId of Object.keys(allCardOptions)) {
@@ -119,38 +121,76 @@ function makeCardSvgs(options, renderer, allCardOptions, { showBack, useQty }) {
 			if (!cardOptions) continue;
 			let qty = parseInt(cardOptions.get("/qty"));
 			if (isNaN(qty) || !useQty) qty = 1;
-			if (qty == 0) continue;
+			if (qty === 0) continue;
 			let str = renderer.render(cardOptions, options, options.get("/viewports/card"), {
 				__BACK: showBack
 			});
-			for (let q=0; q<qty; q++) {
+			for (let q = 0; q < qty; q++) {
 				cardSvgStrings.push(str);
 			}
 		}
-	} catch(err) {
+	} catch (err) {
 		throw err;
 	}
 	return cardSvgStrings;
 }
 
-function makePageSvg(options, renderer, allCardOptions, { concatenated, showBack }) {
+function emptyCard(viewport) {
+	return '<svg width="1" height="1" viewBox="0 0 ' + viewport.cardWidth + ' ' + viewport.cardHeight + '" preserveAspectRatio="none"><image x="0" y="0" width="' + viewport.cardWidth + '" height="' + viewport.cardHeight + '" preserveAspectRatio="xMidYMid slice"></image></svg>';
+}
+
+function makePageSvg(options, renderer, allCardOptions, {concatenated, showBack}) {
 	if (!options || !renderer || !allCardOptions) return null;
-	let cardSvgStrings = makeCardSvgs(options, renderer, allCardOptions, {
-		showBack,
+	// create front and back svg's
+	let frontSvgArr = makeCardSvgs(options, renderer, allCardOptions, {
+		showBack: false,
 		useQty: true
 	});
-	let pageRenderer = new (CardCreatr.PageRenderer)(options.get("/viewports/page"), options.get("/layoutStrategy"), !!showBack);
+	let tempBackSvgArr = makeCardSvgs(options, renderer, allCardOptions, {
+		showBack: true,
+		useQty: true
+	});
+	const pageRenderer = new (CardCreatr.PageRenderer)(options.get("/viewports/page"), options.get("/layoutStrategy"), !!showBack);
+	const viewport = pageRenderer.viewport;
+	// reorder back array for printing
+	let backSvgArr = [];
+	const finalSvgArr = [];
+	const columnsPerPage = Math.trunc(viewport.width / viewport.cardWidth);
+	const numberOfCardsPerPage = Math.trunc(viewport.height / viewport.cardHeight) * columnsPerPage;
+	for (let i = 0; i < tempBackSvgArr.length; i++) {
+		const row = Math.trunc(i / columnsPerPage);
+		const newIndex = (columnsPerPage * (row + 1) - 1) - (i - row * columnsPerPage);
+		backSvgArr[newIndex] = tempBackSvgArr[i];
+	}
+	// mix front and back arrays
+	do {
+		for (let i = 0; i < numberOfCardsPerPage; i++) {
+			if (frontSvgArr.length === 0) {
+				finalSvgArr.push(emptyCard(viewport));
+				continue;
+			}
+			finalSvgArr.push(frontSvgArr.shift());
+		}
+		for (let i = 0; i < numberOfCardsPerPage; i++) {
+			if (backSvgArr.length === 0) {
+				finalSvgArr.push(emptyCard(viewport));
+				continue;
+			}
+			finalSvgArr.push(backSvgArr.shift());
+		}
+	} while (frontSvgArr.length !== 0);
+	// render
 	if (concatenated) {
-		return pageRenderer.renderConcatenated(cardSvgStrings);
+		return pageRenderer.renderConcatenated(finalSvgArr);
 	} else {
-		return pageRenderer.render(cardSvgStrings);
+		return pageRenderer.render(finalSvgArr);
 	}
 }
 
 function finalizeSvg(innerSvg, dims, options, noUnits, numPages, scale) {
 	if (!innerSvg || !dims || !options) return null;
 	let aspectRatio = dims.width / dims.height;
-	let _dims = noUnits ? { width: aspectRatio, height: 1, unit: "" } : Object.assign({}, dims);
+	let _dims = noUnits ? {width: aspectRatio, height: 1, unit: ""} : Object.assign({}, dims);
 	if (!noUnits) {
 		_dims.width *= scale;
 		_dims.height *= scale;
@@ -179,10 +219,10 @@ function gridSvg(gridOptions, viewport) {
 	const weight = gridOptions.weight || 1;
 	return `
 pattern(id="cc-layout-grid", x=0, y=0, width=${size}, height=${size}, patternUnits="userSpaceOnUse")
-	rect(x=0, y=0, width=${weight/2}, height=${size}, fill="${color}", opacity=${opacity})
-	rect(x=${weight/2}, y=0, width=${size-weight}, height=${weight/2}, fill="${color}", opacity=${opacity})
-	rect(x=${size-weight/2}, y=0, width=${weight/2}, height=${size}, fill="${color}", opacity=${opacity})
-	rect(x=${weight/2}, y=${size-weight/2}, width=${size-weight}, height=${weight/2}, fill="${color}", opacity=${opacity})
+	rect(x=0, y=0, width=${weight / 2}, height=${size}, fill="${color}", opacity=${opacity})
+	rect(x=${weight / 2}, y=0, width=${size - weight}, height=${weight / 2}, fill="${color}", opacity=${opacity})
+	rect(x=${size - weight / 2}, y=0, width=${weight / 2}, height=${size}, fill="${color}", opacity=${opacity})
+	rect(x=${weight / 2}, y=${size - weight / 2}, width=${size - weight}, height=${weight / 2}, fill="${color}", opacity=${opacity})
 rect(fill="url(#cc-layout-grid)", width=${viewport.width}, height=${viewport.height})
 `;
 }
