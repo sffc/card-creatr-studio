@@ -136,7 +136,7 @@ function makeCardSvgs(options, renderer, allCardOptions, {showBack, useQty}) {
 }
 
 function emptyCard(viewport) {
-	return '<svg width="1" height="1" viewBox="0 0 ' + viewport.cardWidth + ' ' + viewport.cardHeight + '" preserveAspectRatio="none"><image x="0" y="0" width="' + viewport.cardWidth + '" height="' + viewport.cardHeight + '" preserveAspectRatio="xMidYMid slice"></image></svg>';
+	return "<svg width='1' height='1' viewBox='0 0 " + viewport.cardWidth + " " + viewport.cardHeight + "' preserveAspectRatio='none'><image x='0' y='0' width='" + viewport.cardWidth + "' height='" + viewport.cardHeight + "' preserveAspectRatio='xMidYMid slice'></image></svg>";
 }
 
 function makePageSvg(options, renderer, allCardOptions, {concatenated, showBack}) {
