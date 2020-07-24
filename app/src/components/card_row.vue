@@ -61,7 +61,7 @@ Vue.component("card-row", {
 	data: function() {
 		return {
 			active: false
-		}
+		};
 	},
 	computed: {
 	},

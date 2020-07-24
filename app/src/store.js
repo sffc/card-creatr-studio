@@ -168,7 +168,7 @@ const STORE = new Vuex.Store({
 				if (index === -1) {
 					uniquePush(state.selectedCardIds, id);
 				} else {
-					state.selectedCardIds.splice(index, 1)
+					state.selectedCardIds.splice(index, 1);
 				}
 			}
 
