@@ -41,6 +41,7 @@ const STORE = new Vuex.Store({
 		fields: [],
 		fontsList: [],
 		currentId: null,
+		selectedCardIds: [],
 		currentSvg: null,
 		showBack: false,
 		printing: false,
@@ -70,26 +71,36 @@ const STORE = new Vuex.Store({
 		setCardDataField(state, [ cardId, fieldId, value ]) {
 			Vue.set(Vue.get(state.cardData, cardId, {}), fieldId, value);
 		},
-		moveCard(state, [ cardId, directionDown ]) {
-			var oldIndex = state.cardIdSortOrder.indexOf(cardId);
-			state.cardIdSortOrder.splice(oldIndex, 1);
-			if (directionDown) {
-				// Note: splice inserts at end if index > length
-				state.cardIdSortOrder.splice(oldIndex + 1, 0, cardId);
-			} else {
-				// Note: splice inserts at beginning if index < 0
-				state.cardIdSortOrder.splice(oldIndex - 1, 0, cardId);
+		moveCards(state, directionDown) {
+			// order before moving
+			let selectedOrdered = state.cardIdSortOrder.slice();
+			selectedOrdered = selectedOrdered.filter(cardId => state.selectedCardIds.indexOf(cardId) !== -1);
+			if(directionDown) {
+				selectedOrdered = selectedOrdered.reverse();
+			}
+			// move them
+			for(let cardId of selectedOrdered) {
+				const oldIndex = state.cardIdSortOrder.indexOf(cardId);
+				state.cardIdSortOrder.splice(oldIndex, 1);
+				if (directionDown) {
+					// Note: splice inserts at end if index > length
+					state.cardIdSortOrder.splice(oldIndex + 1, 0, cardId);
+				} else {
+					// Note: splice inserts at beginning if index < 0
+					state.cardIdSortOrder.splice(oldIndex - 1, 0, cardId);
+				}
 			}
 		},
-		deleteCard(state, cardId) {
-			Vue.delete(state.cardData, cardId);
-			var newSet = new Set(state.cardIds);
-			newSet.delete(cardId);
-			state.cardIds = newSet;
-			state.cardIdSortOrder.splice(state.cardIdSortOrder.indexOf(cardId), 1);
-			if (state.currentId === cardId) {
-				state.currentId = null;
+		deleteCards(state) {
+			const newSet = new Set(state.cardIds);
+			for(let cardId of state.selectedCardIds) {
+				Vue.delete(state.cardData, cardId);
+				newSet.delete(cardId);
+				state.cardIdSortOrder.splice(state.cardIdSortOrder.indexOf(cardId), 1);
 			}
+			state.cardIds = newSet;
+			state.currentId = null;
+			state.selectedCardIds = [];
 		},
 		addField(state, field) {
 			state.fields.push(field);
@@ -132,8 +143,40 @@ const STORE = new Vuex.Store({
 		clearCardOptions(state, id) {
 			Vue.delete(state.cardOptions, id);
 		},
-		setCurrentId(state, value) {
-			state.currentId = value;
+		setCurrentId(state, [id, ctrlKey]) {
+			state.currentId = (ctrlKey && state.selectedCardIds.indexOf(id) !== -1) ? null : id;
+		},
+		updateSelectedCardIds(state, [id, ctrlKey, shiftKey]) {
+			if (!ctrlKey && !shiftKey) {
+				state.selectedCardIds = [id];
+			} else if (shiftKey && state.selectedCardIds.length > 0) {
+				const lastId = state.selectedCardIds[state.selectedCardIds.length - 1];
+				let inside = false;
+				for (let cardId of state.cardIdSortOrder) {
+					if (cardId === id || cardId === lastId) {
+						uniquePush(state.selectedCardIds, cardId);
+						inside = !inside;
+						if (!inside) {
+							break;
+						}
+					} else if (inside) {
+						uniquePush(state.selectedCardIds, cardId);
+					}
+				}
+			} else {
+				const index = state.selectedCardIds.indexOf(id);
+				if (index === -1) {
+					uniquePush(state.selectedCardIds, id);
+				} else {
+					state.selectedCardIds.splice(index, 1)
+				}
+			}
+
+			function uniquePush(array, value) {
+				if (array.indexOf(value) === -1) {
+					array.push(value);
+				}
+			}
 		},
 		setCurrentSvg(state, value) {
 			state.currentSvg = value;
@@ -179,6 +222,9 @@ const STORE = new Vuex.Store({
 		currentCard(state) {
 			if (state.currentId === null) return null;
 			return Vue.get(state.cardData, state.currentId, null);
+		},
+		selectedCards(state) {
+			return state.selectedCardIds;
 		},
 		renderer(state, getters) {
 			let templateString = state.templateString;

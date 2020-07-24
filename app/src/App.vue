@@ -30,7 +30,7 @@ var template = `
 				<div id="f-top">
 					<div id="f-list" v-on:click="clearCurrentId">
 						<div v-if="hasCards" class="card-list-wrapper">
-							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" v-on:new="newCard"></card-list-table>
+							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" :selectedCardIds="selectedCardIds" v-on:new="newCard"></card-list-table>
 						</div>
 						<div v-else class="card-empty-list">
 							<strong>Welcome.</strong>
@@ -198,6 +198,9 @@ module.exports = {
 		cardIdSortOrder() {
 			return this.$store.state.cardIdSortOrder;
 		},
+		selectedCardIds() {
+			return this.$store.state.selectedCardIds;
+		},
 		fields() {
 			return this.$store.state.fields;
 		},
@@ -289,10 +292,11 @@ module.exports = {
 	},
 	methods: {
 		clearCurrentId() {
-			this.$store.commit("setCurrentId", null);
+			this.$store.commit("setCurrentId", [null, false]);
 		},
-		setCurrentId(id) {
-			this.$store.commit("setCurrentId", id);
+		setCurrentId(e) {
+			this.$store.commit("setCurrentId", [e.cardId, e.event.ctrlKey]);
+			this.$store.commit("updateSelectedCardIds", [e.cardId, e.event.ctrlKey, e.event.shiftKey]);
 		},
 		updateAsset(){
 			// noop
@@ -303,14 +307,11 @@ module.exports = {
 		newCard(){
 			let card = Utils.createCard(Object.keys(this.cards), this.fields);
 			this.$store.commit("addCardData", card);
-			this.$store.commit("setCurrentId", card.id);
+			this.$store.commit("setCurrentId", [card.id, false]);
 			// Let Vue re-render before setting focus to the new card
 			setTimeout(() => {
 				this.$el.querySelector("#f-list .card-list > tbody > tr.active input").focus();
 			}, 50);
-		},
-		moveCard(id, directionDown) {
-			this.$store.commit("moveCard", [ id, directionDown ]);
 		},
 		gotoTab(newTab) {
 			this.tab = newTab;
