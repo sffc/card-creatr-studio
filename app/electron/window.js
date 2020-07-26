@@ -93,6 +93,10 @@ class CustomWindow extends EventEmitter {
 		this._sendMessage("addcard", {});
 	}
 
+	copyCard() {
+		this._sendMessage("copycard", {});
+	}
+
 	moveCardUp() {
 		this._sendMessage("movecardup", {});
 	}

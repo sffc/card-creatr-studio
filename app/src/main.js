@@ -131,6 +131,11 @@ electron.ipcRenderer.on("addcard", (/* event, message */) => {
 	vm.newCard();
 });
 // eslint-disable-next-line consistent-return
+electron.ipcRenderer.on("copycard", (/* event, message */) => {
+	if (!store.getters.currentCard) return alert("Please select a card first.");
+	vm.copyCard();
+});
+// eslint-disable-next-line consistent-return
 electron.ipcRenderer.on("movecardup", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
