@@ -34,6 +34,7 @@ let template = `
 	</table>
 	<div class="below-card-list">
 		<button v-on:click.stop="newCard">+ Add Card</button>
+		<button v-if="modelValue" v-on:click.stop="copyCard">+ Copy Card</button>
 	</div>
 </div>
 `;
@@ -116,6 +117,10 @@ module.exports = {
 		newCard() {
 			this.resetSort();
 			this.$emit("new");
+		},
+		copyCard: function () {
+			this.resetSort();
+			this.$emit("copy");
 		}
 	},
 	watch: {
