@@ -75,7 +75,7 @@ Vue.component("card-row", {
 			return cardOptions.get("/" + field.name);
 		},
 		isActive() {
-			return this.selectedCardIds.indexOf(this.card.id) !== -1
+			return this.selectedCardIds.indexOf(this.card.id) !== -1;
 		}
 	},
 	watch: {

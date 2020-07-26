@@ -147,6 +147,10 @@ electron.ipcRenderer.on("cardImages1", (event, message) => {
 electron.ipcRenderer.on("addcard", (/* event, message */) => {
 	vm.$children[0].newCard();
 });
+electron.ipcRenderer.on("copycard", (/* event, message */) => {
+	if(store.getters.selectedCards.length === 0) return alert("Please select a card first.");
+	vm.$children[0].copyCard();
+});
 electron.ipcRenderer.on("movecardup", (/* event, message */) => {
 	if (store.getters.selectedCards.length === 0) return alert("Please select a card first.");
 	store.commit("moveCards", false);

@@ -152,6 +152,11 @@ menu.on("addcard", (browserWindow) => {
 	window.addCard();
 });
 
+menu.on("copycard", (browserWindow) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.copyCard();
+});
+
 menu.on("movecardup", (browserWindow) => {
 	let window = global.windowManager.getByBrowserWindow(browserWindow);
 	window.moveCardUp();
