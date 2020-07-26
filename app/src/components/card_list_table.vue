@@ -34,6 +34,7 @@ var template = `
 	</table>
 	<div class="below-card-list">
 		<button v-on:click.stop="newCard">+ Add Card</button>
+		<button v-if="selectedCardIds.length !== 0" v-on:click.stop="copyCard">+ Copy Card</button>
 	</div>
 </div>
 `;
@@ -115,6 +116,10 @@ Vue.component("card-list-table", {
 		newCard: function() {
 			this.resetSort();
 			this.$emit("new");
+		},
+		copyCard: function () {
+			this.resetSort();
+			this.$emit("copy");
 		}
 	},
 	watch: {

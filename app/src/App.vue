@@ -30,7 +30,7 @@ var template = `
 				<div id="f-top">
 					<div id="f-list" v-on:click="clearCurrentId">
 						<div v-if="hasCards" class="card-list-wrapper">
-							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" :selectedCardIds="selectedCardIds" v-on:new="newCard"></card-list-table>
+							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" :selectedCardIds="selectedCardIds" v-on:new="newCard" v-on:copy="copyCard"></card-list-table>
 						</div>
 						<div v-else class="card-empty-list">
 							<strong>Welcome.</strong>
@@ -292,11 +292,10 @@ module.exports = {
 	},
 	methods: {
 		clearCurrentId() {
-			this.$store.commit("setCurrentId", [null, false]);
+			this.$store.commit("setCurrentId", [null, false, false]);
 		},
 		setCurrentId(e) {
-			this.$store.commit("setCurrentId", [e.cardId, e.event.ctrlKey]);
-			this.$store.commit("updateSelectedCardIds", [e.cardId, e.event.ctrlKey, e.event.shiftKey]);
+			this.$store.commit("setCurrentId", [e.cardId, e.event.ctrlKey, e.event.shiftKey]);
 		},
 		updateAsset(){
 			// noop
@@ -304,10 +303,22 @@ module.exports = {
 		removeAsset(/* filename */){
 			// this.$store.dispatch("updateBuffer", filename);
 		},
-		newCard(){
+		newCard() {
 			let card = Utils.createCard(Object.keys(this.cards), this.fields);
+			this.addCard(card);
+		},
+		copyCard() {
+			let oldCard = this.$store.getters.currentCard;
+			if(!oldCard) {
+				return;
+			}
+			const copy = Object.assign({}, oldCard);
+			copy.id = Utils.createCard(Object.keys(this.cards), this.fields).id;
+			this.addCard(copy);
+		},
+		addCard(card) {
 			this.$store.commit("addCardData", card);
-			this.$store.commit("setCurrentId", [card.id, false]);
+			this.$store.commit("setCurrentId", [card.id, false, false]);
 			// Let Vue re-render before setting focus to the new card
 			setTimeout(() => {
 				this.$el.querySelector("#f-list .card-list > tbody > tr.active input").focus();

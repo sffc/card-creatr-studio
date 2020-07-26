@@ -60,7 +60,7 @@ Vue.component("card-row", {
 	props: ["card", "fields", "selectedCardIds"],
 	data: function() {
 		return {
-			active: false
+			active: this.isActive()
 		};
 	},
 	computed: {
@@ -73,11 +73,14 @@ Vue.component("card-row", {
 			let cardOptions = this.$store.state.cardOptions[this.card.id];
 			if (!cardOptions) return null;
 			return cardOptions.get("/" + field.name);
+		},
+		isActive() {
+			return this.selectedCardIds.indexOf(this.card.id) !== -1
 		}
 	},
 	watch: {
 		selectedCardIds: function () {
-			this.active = this.selectedCardIds.indexOf(this.card.id) !== -1;
+			this.active = this.isActive();
 		}
 	}
 });

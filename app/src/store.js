@@ -143,8 +143,9 @@ const STORE = new Vuex.Store({
 		clearCardOptions(state, id) {
 			Vue.delete(state.cardOptions, id);
 		},
-		setCurrentId(state, [id, ctrlKey]) {
+		setCurrentId(state, [id, ctrlKey, shiftKey]) {
 			state.currentId = (ctrlKey && state.selectedCardIds.indexOf(id) !== -1) ? null : id;
+			STORE.commit("updateSelectedCardIds", [id, ctrlKey, shiftKey]);
 		},
 		updateSelectedCardIds(state, [id, ctrlKey, shiftKey]) {
 			if (!ctrlKey && !shiftKey) {
@@ -367,7 +368,8 @@ STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 				};
 			}, (newObj, oldObj) => { // eslint-disable-line no-unused-vars
 				if (newObj.success) {
-					STORE.commit("setCardOptions", [ id, newObj.result ]);
+					STORE.commit("" +
+						"setCardOptions", [ id, newObj.result ]);
 					STORE.commit("clearError", "cardOptions/" + id);
 				} else {
 					STORE.commit("setError", [ "cardOptions/" + id, newObj.error ]);
