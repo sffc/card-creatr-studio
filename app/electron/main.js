@@ -32,7 +32,7 @@ global.windowManager = new CustomWindowManager();
 // default settings
 global.settings = {
 	printFrontAndBack: false
-}
+};
 
 function showOpenDialog(next) {
 	electron.dialog.showOpenDialog({
@@ -288,7 +288,7 @@ electron.app.on("browser-window-focus", (event, browserWindow) => {
 });
 
 function updateMenuEntries(browserWindow) {
-	const window = global.windowManager.getByBrowserWindow(browserWindow)
+	const window = global.windowManager.getByBrowserWindow(browserWindow);
 	window.printFrontAndBack(global.settings.printFrontAndBack);
 	electron.Menu.getApplicationMenu().getMenuItemById("printFrontBack").checked = global.settings.printFrontAndBack;
 }
