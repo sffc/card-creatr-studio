@@ -47,6 +47,7 @@ const STORE = new Vuex.Store({
 		printing: false,
 		loaded: false,
 		gridShown: false,
+		printFrontAndBack: false,
 		allAssets: [],
 		errors: {},
 	},

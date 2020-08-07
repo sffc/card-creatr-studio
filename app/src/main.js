@@ -89,6 +89,9 @@ document.body.addEventListener("click", (event) => {
 electron.ipcRenderer.on("path", (event, message) => {
 	ccsb.setPath(message.path);
 });
+electron.ipcRenderer.on("printfrontback", (event, message) => {
+	store.state.printFrontAndBack = message;
+});
 electron.ipcRenderer.on("print", (/* event, message */) => {
 	store.state.printing = true;
 	// TODO: Setting a nonzero timeout here is a hack.  Without it, the browser does not always render fonts correctly in the SVG.  Could be a bug in Chromium.

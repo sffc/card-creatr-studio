@@ -68,6 +68,10 @@ class CustomWindow extends EventEmitter {
 		}
 	}
 
+	printFrontAndBack(checked) {
+		this._sendMessage("printfrontback", checked);
+	}
+
 	print(options) {
 		this._sendMessage("print", options);
 	}

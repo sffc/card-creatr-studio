@@ -139,8 +139,29 @@ function emptyCard(viewport) {
 	return "<svg width='1' height='1' viewBox='0 0 " + viewport.cardWidth + " " + viewport.cardHeight + "' preserveAspectRatio='none'><image x='0' y='0' width='" + viewport.cardWidth + "' height='" + viewport.cardHeight + "' preserveAspectRatio='xMidYMid slice'></image></svg>";
 }
 
-function makePageSvg(options, renderer, allCardOptions, {concatenated, showBack}) {
+function makePageSvg(options, renderer, allCardOptions, { printFrontAndBack, concatenated, showBack }) {
 	if (!options || !renderer || !allCardOptions) return null;
+	if(printFrontAndBack) {
+		return _makePageSvgMulti(options, renderer, allCardOptions, {concatenated, showBack});
+	} else {
+		return _makePageSvgSingle(options, renderer, allCardOptions, {concatenated, showBack});
+	}
+}
+
+function _makePageSvgSingle(options, renderer, allCardOptions, { concatenated, showBack }) {
+	let cardSvgStrings = makeCardSvgs(options, renderer, allCardOptions, {
+		showBack,
+		useQty: true
+	});
+	let pageRenderer = new (CardCreatr.PageRenderer)(options.get("/viewports/page"), options.get("/layoutStrategy"), !!showBack);
+	if (concatenated) {
+		return pageRenderer.renderConcatenated(cardSvgStrings);
+	} else {
+		return pageRenderer.render(cardSvgStrings);
+	}
+}
+
+function _makePageSvgMulti(options, renderer, allCardOptions, {concatenated, showBack}) {
 	// create front and back svg's
 	let frontSvgArr = makeCardSvgs(options, renderer, allCardOptions, {
 		showBack: false,
