@@ -279,7 +279,7 @@ electron.app.on("open-file", (event, filePath) => {
 });
 
 // Populate filesToOpen on non-Mac OS
-if (process.platform !== "darwin") {
+if (process.platform !== "darwin" && process.argv[1] !== ".") {
 	filesToOpen.push(process.argv[1]);
 }
 
@@ -289,8 +289,10 @@ electron.app.on("browser-window-focus", (event, browserWindow) => {
 
 function updateMenuEntries(browserWindow) {
 	const window = global.windowManager.getByBrowserWindow(browserWindow);
-	window.printFrontAndBack(global.settings.printFrontAndBack);
-	electron.Menu.getApplicationMenu().getMenuItemById("printFrontBack").checked = global.settings.printFrontAndBack;
+	if (window) {
+		window.printFrontAndBack(global.settings.printFrontAndBack);
+		electron.Menu.getApplicationMenu().getMenuItemById("printFrontBack").checked = global.settings.printFrontAndBack;
+	}
 }
 
 // This method will be called when Electron has finished
