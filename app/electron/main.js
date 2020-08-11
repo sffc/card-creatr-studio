@@ -279,8 +279,12 @@ electron.app.on("open-file", (event, filePath) => {
 });
 
 // Populate filesToOpen on non-Mac OS
-if (process.platform !== "darwin" && process.argv[1] !== ".") {
-	filesToOpen.push(process.argv[1]);
+if (process.platform !== "darwin") {
+	for (let arg of process.argv) {
+		if (arg.endsWith(".ccsb") || arg.endsWith(".ccst")) {
+			filesToOpen.push(arg);
+		}
+	}
 }
 
 electron.app.on("browser-window-focus", (event, browserWindow) => {
