@@ -4,7 +4,7 @@ Software for creating card game prototypes, made for Mac, Windows, and Linux. Po
 
 This project is a GUI for [sffc/card-creatr](https://github.com/sffc/card-creatr). For more information, including downloads and tutorials, see [cardcreatr.sffc.xyz](http://cardcreatr.sffc.xyz).
 
-[![Build Status](https://travis-ci.com/sffc/card-creatr-studio.svg?branch=master)](https://travis-ci.com/sffc/card-creatr-studio)
+[![Node.js CI](https://github.com/sffc/card-creatr-studio/workflows/Node.js%20CI/badge.svg)](https://github.com/sffc/card-creatr-studio/actions)
 
 ## Quick Start
 
