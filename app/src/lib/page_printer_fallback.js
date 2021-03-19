@@ -28,6 +28,7 @@ function getPageSvg(/* options */) {
 		store.getters.renderer,
 		store.state.cardOptions,
 		{
+			printFrontAndBack: store.state.printFrontAndBack,
 			concatenated: true,
 			showBack: store.state.showBack
 		}
@@ -66,6 +67,7 @@ function getSinglePageSvgs(/* options */) {
 		store.getters.renderer,
 		store.state.cardOptions,
 		{
+			printFrontAndBack: store.state.printFrontAndBack,
 			concatenated: false,
 			showBack: store.state.showBack
 		}

@@ -68,6 +68,10 @@ class CustomWindow extends EventEmitter {
 		}
 	}
 
+	printFrontAndBack(checked) {
+		this._sendMessage("printfrontback", checked);
+	}
+
 	print(options) {
 		this._sendMessage("print", options);
 	}
@@ -94,6 +98,10 @@ class CustomWindow extends EventEmitter {
 
 	addCard() {
 		this._sendMessage("addcard", {});
+	}
+
+	copyCard() {
+		this._sendMessage("copycard", {});
 	}
 
 	moveCardUp() {

@@ -18,7 +18,7 @@
 "use strict";
 
 var template = `
-<tr v-on:click="onClick" v-bind:class="{ active: active }">
+<tr v-on:click="onClick" :class="{ active: active }">
 	<td class="left-buffer"></td>
 	<td v-for="field in fields">
 		<template v-if="field.display == 'string'">
@@ -57,7 +57,12 @@ require("./dropdown_field");
 
 Vue.component("card-row", {
 	template: template,
-	props: ["card", "fields", "active"],
+	props: ["card", "fields", "selectedCardIds"],
+	data: function() {
+		return {
+			active: this.isActive()
+		};
+	},
 	computed: {
 	},
 	methods: {
@@ -68,6 +73,14 @@ Vue.component("card-row", {
 			let cardOptions = this.$store.state.cardOptions[this.card.id];
 			if (!cardOptions) return null;
 			return cardOptions.get("/" + field.name);
+		},
+		isActive() {
+			return this.selectedCardIds.indexOf(this.card.id) !== -1;
+		}
+	},
+	watch: {
+		selectedCardIds: function () {
+			this.active = this.isActive();
 		}
 	}
 });

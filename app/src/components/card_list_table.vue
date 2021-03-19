@@ -29,11 +29,12 @@ var template = `
 			</tr>
 		</thead>
 		<tbody>
-			<card-row v-for="card in sortedCards" :key="card.id" :card="card" :fields="fields" v-on:click.stop="onRowClick(card)" :active="value === card.id"></card-row>
+			<card-row v-for="card in sortedCards" :key="card.id" :card="card" :fields="fields" v-on:click.stop="onRowClick($event, card)" :selectedCardIds="selectedCardIds"></card-row>
 		</tbody>
 	</table>
 	<div class="below-card-list">
 		<button v-on:click.stop="newCard">+ Add Card</button>
+		<button v-if="selectedCardIds.length !== 0" v-on:click.stop="copyCard">+ Copy Card</button>
 	</div>
 </div>
 `;
@@ -44,7 +45,7 @@ require("./card_row");
 
 Vue.component("card-list-table", {
 	template: template,
-	props: ["cards", "cardIdSortOrder", "fields", "value"],
+	props: ["cards", "cardIdSortOrder", "fields", "selectedCardIds", "value"],
 	data: function() {
 		return {
 			sortField: null,
@@ -56,11 +57,11 @@ Vue.component("card-list-table", {
 		tableWidth: function() {
 			if (!this.fields) return 1;
 			return Object.keys(this.fields).reduce((s,fieldId) => { return s + parseInt(this.fields[fieldId].width); }, 0);
-		},
+		}
 	},
 	methods: {
-		onRowClick: function(card) {
-			this.$emit("input", card.id);
+		onRowClick: function (event, card) {
+			this.$emit("input", {event, cardId: card.id});
 		},
 		onColumnClick: function(field) {
 			if (this.sortField === field) {
@@ -115,6 +116,10 @@ Vue.component("card-list-table", {
 		newCard: function() {
 			this.resetSort();
 			this.$emit("new");
+		},
+		copyCard: function () {
+			this.resetSort();
+			this.$emit("copy");
 		}
 	},
 	watch: {

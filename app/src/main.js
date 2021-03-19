@@ -89,6 +89,9 @@ document.body.addEventListener("click", (event) => {
 electron.ipcRenderer.on("path", (event, message) => {
 	ccsb.setPath(message.path);
 });
+electron.ipcRenderer.on("printfrontback", (event, message) => {
+	store.state.printFrontAndBack = message;
+});
 electron.ipcRenderer.on("print", (/* event, message */) => {
 	store.state.printing = true;
 	// TODO: Setting a nonzero timeout here is a hack.  Without it, the browser does not always render fonts correctly in the SVG.  Could be a bug in Chromium.
@@ -147,21 +150,23 @@ electron.ipcRenderer.on("cardImages1", (event, message) => {
 electron.ipcRenderer.on("addcard", (/* event, message */) => {
 	vm.$children[0].newCard();
 });
+electron.ipcRenderer.on("copycard", (/* event, message */) => {
+	if(store.getters.selectedCards.length === 0) return alert("Please select a card first.");
+	vm.$children[0].copyCard();
+});
 electron.ipcRenderer.on("movecardup", (/* event, message */) => {
-	let card = store.getters.currentCard;
-	if (!card) return alert("Please select a card first.");
-	vm.$children[0].moveCard(card.id, false);
+	if (store.getters.selectedCards.length === 0) return alert("Please select a card first.");
+	store.commit("moveCards", false);
 });
 electron.ipcRenderer.on("movecarddown", (/* event, message */) => {
-	let card = store.getters.currentCard;
-	if (!card) return alert("Please select a card first.");
-	vm.$children[0].moveCard(card.id, true);
+	if (store.getters.selectedCards.length === 0) return alert("Please select a card first.");
+	store.commit("moveCards", true);
 });
 electron.ipcRenderer.on("deletecard", (/* event, message */) => {
-	let card = store.getters.currentCard;
-	if (!card) return alert("Please select a card first.");
-	if (confirm("Are you sure you want to delete the current card?\n\n"+JSON.stringify(card))) {
-		store.commit("deleteCard", store.state.currentId);
+	let cards = store.getters.selectedCards;
+	if (cards.length === 0) return alert("Please select a card first.");
+	if (confirm("Are you sure you want to delete the selected cards?\n\n"+JSON.stringify(cards))) {
+		store.commit("deleteCards");
 	}
 });
 electron.ipcRenderer.on("toggleGrid", (/* event, message */) => {
