@@ -225,11 +225,22 @@ class CustomMenu extends EventEmitter {
 					type: "separator"
 				},
 				{
+					id: "printFrontBack",
+					label: "Print front and back in one document",
+					type: "checkbox",
+					click: (item, focusedWindow) => {
+						this.emit("printfrontback", focusedWindow, item.checked);
+					}
+				},
+				{
 					label: "Export to PDF…",
 					accelerator: "CmdOrCtrl+Alt+E",
 					click: (item, focusedWindow) => {
 						this.emit("print5", focusedWindow);
 					}
+				},
+				{
+					type: "separator"
 				},
 				{
 					label: "Export Card Images…",
@@ -306,6 +317,13 @@ class CustomMenu extends EventEmitter {
 				accelerator: "CmdOrCtrl+Shift+N",
 				click: (item, focusedWindow) => {
 					this.emit("addcard", focusedWindow);
+				}
+			},
+			{
+				label: "Copy Card",
+				accelerator: "CmdOrCtrl+Shift+C",
+				click: (item, focusedWindow) => {
+					this.emit("copycard", focusedWindow);
 				}
 			},
 			{

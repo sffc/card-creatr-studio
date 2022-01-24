@@ -18,6 +18,7 @@
 "use strict";
 
 const electron = require("electron");
+const storage = require("electron-json-storage");
 const capture = require("./capture");
 const CustomMenu = require("./menu");
 const CustomWindowManager = require("./window").CustomWindowManager;
@@ -28,6 +29,10 @@ const menu = new CustomMenu();
 
 // Global reference, which keeps windows from being garbage collected.
 global.windowManager = new CustomWindowManager();
+// default settings
+global.settings = {
+	printFrontAndBack: false
+};
 
 function showOpenDialog(next) {
 	electron.dialog.showOpenDialog({
@@ -65,6 +70,21 @@ menu.on("printhelp", (/* browserWindow */) => {
 		type: "info",
 		message: "Print and Export Options",
 		detail: "Card Creatr Studio gives four options for exporting your cards as a printable PDF file in order to work around numerous known bugs in the underlying rendering engines.\n\n1) The default \"Export to PDF\" uses HTML5 Canvas to render the PDF. This is the best option for almost all users.\n\n2) \"Print with Electron\" uses Electron's own printing engine. This has a number of bugs from upstream Chromium that cause image cropping and masking to not work.\n\n3) \"Export to PDF with Firefox\" spawns an instance of Firefox in the background and uses Firefox's rendering engine. This is a viable alternative if you encounter a bug in Chromium's SVG renderer.\n\n4) \"Export to PDF with Electron\" uses Electron's screen capture functionality. This should be attempted only if the other options do not work for you.\n\n5) \"Export to PDF with Canvas v1\" is the same as the default \"Export to PDF\" except that it renders all pages from a single snapshot. This can be attempted if the other options are not successful."
+	});
+});
+
+menu.on("printfrontback", (browserWindow, checked) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.printFrontAndBack(checked);
+	global.settings.printFrontAndBack = checked;
+	storage.set("card-creatr-studio-settings", global.settings, function(error) {
+		if (error) {
+			electron.dialog.showMessageBox({
+				type: "warning",
+				message: "Unable to store card creatr settings.",
+				detail: error.toString()
+			});
+		}
 	});
 });
 
@@ -150,6 +170,11 @@ menu.on("cardImages1", (browserWindow) => {
 menu.on("addcard", (browserWindow) => {
 	let window = global.windowManager.getByBrowserWindow(browserWindow);
 	window.addCard();
+});
+
+menu.on("copycard", (browserWindow) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.copyCard();
 });
 
 menu.on("movecardup", (browserWindow) => {
@@ -255,7 +280,23 @@ electron.app.on("open-file", (event, filePath) => {
 
 // Populate filesToOpen on non-Mac OS
 if (process.platform !== "darwin") {
-	filesToOpen.push(process.argv[1]);
+	for (let arg of process.argv) {
+		if (arg.endsWith(".ccsb") || arg.endsWith(".ccst")) {
+			filesToOpen.push(arg);
+		}
+	}
+}
+
+electron.app.on("browser-window-focus", (event, browserWindow) => {
+	updateMenuEntries(browserWindow);
+});
+
+function updateMenuEntries(browserWindow) {
+	const window = global.windowManager.getByBrowserWindow(browserWindow);
+	if (window) {
+		window.printFrontAndBack(global.settings.printFrontAndBack);
+		electron.Menu.getApplicationMenu().getMenuItemById("printFrontBack").checked = global.settings.printFrontAndBack;
+	}
 }
 
 // This method will be called when Electron has finished
@@ -267,6 +308,14 @@ electron.app.on("ready", () => {
 		global.openFile(filePath);
 	}
 	electron.Menu.setApplicationMenu(menu.getMenuInstance());
+	storage.get("card-creatr-studio-settings", (error, settings) => {
+		if (error) {
+			console.error(error);
+			settings = {};
+		}
+		global.settings = settings;
+		updateMenuEntries(electron.BrowserWindow.getFocusedWindow());
+	});
 	if (global.windowManager.count() === 0) {
 		showOpenDialog(global.openFile);
 	}
