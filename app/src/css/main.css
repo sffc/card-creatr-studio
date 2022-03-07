@@ -91,8 +91,8 @@
   display: inline;
 }
 #f-main > #f-primary > #f-top > #f-preview > #preview-options input[type=checkbox] {
-  margin: 0;
-  transform: scale(0.8);
+  margin: -3px 0 0 0;
+  transform: scale(0.8) translate(0, 3px);
 }
 #f-main > #f-primary > #f-top > #f-preview > #preview-options a {
   color: inherit;
