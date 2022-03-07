@@ -80,6 +80,7 @@ document.body.addEventListener("click", (event) => {
 	const element = event.target;
 	if (element && element.matches("a[target='_blank']")) {
 		event.preventDefault();
+		console.log("Opening link in new window");
 		electron.shell.openExternal(element.href);
 	}
 });

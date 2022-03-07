@@ -36,7 +36,7 @@ function showOpenDialog(next) {
 			{name: "Card Creatr Studio Files", extensions: ["ccsb", "ccst"]},
 			{name: "All Files", extensions: ["*"]}
 		]
-	}, (filePaths) => {
+	}).then(({ filePaths }) => {
 		if (!filePaths) return next(null);
 		next(filePaths[0]);
 	});
@@ -79,7 +79,7 @@ menu.on("print2", (browserWindow) => {
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		console.log("Requesting SVG...");
@@ -101,7 +101,7 @@ menu.on("print3", (browserWindow) => {
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		window.print2({ filePath });
@@ -114,7 +114,7 @@ menu.on("print4", (browserWindow) => {
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		window.print3({ filePath });
@@ -127,7 +127,7 @@ menu.on("print5", (browserWindow) => {
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		window.print4({ filePath });
@@ -140,7 +140,7 @@ menu.on("cardImages1", (browserWindow) => {
 		filters: [
 			{name: "Zip File", extensions: ["zip"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		window.cardImages1({ filePath });
@@ -193,7 +193,7 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 					buttons: ["Download", "Cancel"],
 					defaultId: 0,
 					cancelId: 1
-				}, (response) => {
+				}).then(({ response }) => {
 					if (response === 0) {
 						shell.openExternal("http://cardcreatr.shane.guru/latestdist/");
 					}
@@ -206,7 +206,7 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 					buttons: ["OK", "Download Page"],
 					defaultId: 0,
 					cancelId: 1
-				}, (response) => {
+				}).then(({ response }) => {
 					if (response === 1) {
 						shell.openExternal("http://cardcreatr.shane.guru/latestdist/");
 					}

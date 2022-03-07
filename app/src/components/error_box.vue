@@ -41,7 +41,7 @@ Vue.component("error-box", {
 	},
 	methods: {
 		showDetails: function(key, err) {
-			electron.remote.dialog.showMessageBox({
+			electron.ipcRenderer.send("showMessageBox", {
 				type: "error",
 				title: "Error Details: " + key,
 				message: err.message,

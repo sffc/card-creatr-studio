@@ -37,7 +37,10 @@ class CustomWindow extends EventEmitter {
 			useContentSize: true,
 			backgroundColor: "#666", // gutter color
 			webPreferences: {
-				nativeWindowOpen: true  // allows window.document after window.open()
+				nativeWindowOpen: true,  // allows window.document after window.open()
+				// https://stackoverflow.com/a/55908510/1407170
+				nodeIntegration: true,
+				contextIsolation: false,
 			}
 		});
 		this._addListeners();
@@ -52,7 +55,7 @@ class CustomWindow extends EventEmitter {
 				{name: "Card Creatr Studio Template", extensions: ["ccst"]},
 				{name: "Card Creatr Studio Bundle", extensions: ["ccsb"]}
 			]
-		}, (filePath) => {
+		}).then(({ filePath }) => {
 			if (!filePath) return;
 			this._setPath(filePath);
 			this._save(next);
@@ -122,10 +125,12 @@ class CustomWindow extends EventEmitter {
 		this._onClosed$bound = this._onClosed.bind(this);
 		this._onSAR$bound = this._onSAR.bind(this);
 		this._onDirty$bound = this._onDirty.bind(this);
+		this._onShowMessageBox$bound = this._onShowMessageBox.bind(this);
 		this.browserWindow.on("close", this._onClose$bound);
 		this.browserWindow.on("closed", this._onClosed$bound);
 		electron.ipcMain.on("_SAR", this._onSAR$bound);
 		electron.ipcMain.on("dirty", this._onDirty$bound);
+		electron.ipcMain.on("showMessageBox", this._onShowMessageBox$bound);
 	}
 
 	_removeListeners() {
@@ -134,6 +139,7 @@ class CustomWindow extends EventEmitter {
 		this.browserWindow.removeListener("closed", this._onClosed$bound);
 		electron.ipcMain.removeListener("_SAR", this._onSAR$bound);
 		electron.ipcMain.removeListener("dirty", this._onDirty$bound);
+		electron.ipcMain.removeListener("showMessageBox", this._onShowMessageBox$bound);
 	}
 
 	/** This method assumes that a file path is present. Should not be called directly; use #saveOrSaveAs() instead. */
@@ -198,12 +204,12 @@ class CustomWindow extends EventEmitter {
 				detail: "Your changes will be lost if you don't save them.",
 				buttons: ["Save", "Discard", "Cancel"],
 				defaultId: 0
-			}, (btnClicked) => {
-				if (btnClicked === 0) {
+			}).then(({ response }) => {
+				if (response === 0) {
 					this.saveOrSaveAs(() => {
 						this.browserWindow.destroy();
 					});
-				} else if (btnClicked === 1) {
+				} else if (response === 1) {
 					this.browserWindow.destroy();
 				} else {
 					// Do nothing
@@ -230,6 +236,12 @@ class CustomWindow extends EventEmitter {
 	_onSAR(event, message) {
 		if (event.sender === this.browserWindow.webContents) {
 			this.emit("_SAR", message);
+		}
+	}
+
+	_onShowMessageBox(event, message) {
+		if (event.sender === this.browserWindow.webContents) {
+			electron.dialog.showMessageBox(message);
 		}
 	}
 

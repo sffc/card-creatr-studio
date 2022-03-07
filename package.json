@@ -16,10 +16,10 @@
   "license": "GPL-3.0",
   "repository": "sffc/cc-studio",
   "devDependencies": {
-    "electron": "^1.4.15",
-    "electron-builder": "^21.0.16",
-    "electron-devtools-installer": "^2.1.0",
-    "eslint": "^4.18.2",
+    "electron": "^17.1.0",
+    "electron-builder": "^22.14.13",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^8.10.0",
     "stylus": "^0.54.5"
   },
   "engines": {
@@ -103,6 +103,5 @@
         "role": "Viewer"
       }
     ]
-  },
-  "dependencies": {}
+  }
 }
