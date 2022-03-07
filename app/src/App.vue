@@ -180,7 +180,7 @@ module.exports = {
 			tab: null,
 			currentField: null,
 			ready: false,
-			bottomFlexBasis: 250,
+			bottomFlexBasis: 50,
 			spinnerCount: 0,
 			spinnerText: "Calculating…"
 		};
@@ -334,18 +334,18 @@ module.exports = {
 			this.$store.commit("moveField", [ this.currentField, true ]);
 		},
 		bottomBigger() {
-			if (this.bottomFlexBasis === 250) {
-				this.bottomFlexBasis = 1000;
-			} else {
-				this.bottomFlexBasis = 250;
+			if (this.bottomFlexBasis === 50) {
+				this.bottomFlexBasis = 600;
+			} else if (this.bottomFlexBasis === 0) {
+				this.bottomFlexBasis = 50;
 			}
 			setTimeout(Utils.resized, 200); // resize Ace Editor
 		},
 		bottomSmaller() {
-			if (this.bottomFlexBasis === 250) {
-				this.bottomFlexBasis = 0;
+			if (this.bottomFlexBasis === 600) {
+				this.bottomFlexBasis = 50;
 			} else {
-				this.bottomFlexBasis = 250;
+				this.bottomFlexBasis = 0;
 			}
 			setTimeout(Utils.resized, 200); // resize Ace Editor
 		}
