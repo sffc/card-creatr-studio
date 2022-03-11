@@ -19,10 +19,7 @@
 
 var template = `
 <div>
-	<div id="print" v-if="printing">
-		<print-page v-for="(page,pageIndex) in pages" :key="pageIndex" :svg-string="page" :page-index="pageIndex"></print-page>
-	</div>
-	<div id="f-main" v-if="!printing">
+	<div id="f-main">
 		<template v-if="ready">
 			<div id="f-null" v-on:click="clearCurrentId" v-if="hasCards">
 			</div>
@@ -169,7 +166,6 @@ require("./components/ace_editor");
 require("./components/asset_upload_box");
 require("./components/asset_box");
 require("./components/error_box");
-require("./components/print_page");
 require("./components/template_editor");
 require("./components/font_view");
 
@@ -273,18 +269,6 @@ module.exports = {
 		},
 		bottomFlexBasisPx() {
 			return this.$store.state.bottomFlexBasis + "px";
-		},
-		printing() {
-			return this.$store.state.printing;
-		},
-		pages() {
-			console.log("computing pages");
-			return Utils.makePages(
-				this.$store.getters.globalOptions,
-				this.$store.getters.renderer,
-				this.$store.state.cardOptions,
-				false
-			);
 		},
 	},
 	methods: {

@@ -68,11 +68,6 @@ menu.on("printhelp", (/* browserWindow */) => {
 	});
 });
 
-menu.on("print", (browserWindow) => {
-	let window = global.windowManager.getByBrowserWindow(browserWindow);
-	window.print();
-});
-
 menu.on("print2", (browserWindow) => {
 	electron.dialog.showSaveDialog(browserWindow, {
 		defaultPath: "print.pdf",

@@ -43,7 +43,6 @@ const STORE = new Vuex.Store({
 		currentId: null,
 		currentSvg: null,
 		showBack: false,
-		printing: false,
 		loaded: false,
 		gridShown: false,
 		allAssets: [],

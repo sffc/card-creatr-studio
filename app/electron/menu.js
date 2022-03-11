@@ -254,12 +254,6 @@ class CustomMenu extends EventEmitter {
 							type: "separator"
 						},
 						{
-							label: "Print with Electron…",
-							click: (item, focusedWindow) => {
-								this.emit("print", focusedWindow);
-							}
-						},
-						{
 							label: "Export to PDF with Electron…",
 							click: (item, focusedWindow) => {
 								this.emit("print2", focusedWindow);
