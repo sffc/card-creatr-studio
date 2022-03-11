@@ -95,19 +95,6 @@ menu.on("print2", (browserWindow) => {
 	});
 });
 
-menu.on("print3", (browserWindow) => {
-	electron.dialog.showSaveDialog(browserWindow, {
-		defaultPath: "print.pdf",
-		filters: [
-			{name: "PDF File", extensions: ["pdf"]}
-		]
-	}).then(({ filePath }) => {
-		if (!filePath) return;
-		let window = global.windowManager.getByBrowserWindow(browserWindow);
-		window.print2({ filePath });
-	});
-});
-
 menu.on("print4", (browserWindow) => {
 	electron.dialog.showSaveDialog(browserWindow, {
 		defaultPath: "print.pdf",

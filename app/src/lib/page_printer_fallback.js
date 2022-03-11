@@ -132,20 +132,6 @@ function getCardSvgs(/* options */) {
 	};
 }
 
-function printSlimerJS(options, next) {
-	var filePath = options.filePath;
-	if (!filePath) return;
-	try {
-		let { svgString, pageWidth, pageHeight, scale, numPages } = getPageSvg(options);
-		CardCreatr.rasterize.slimerjs(svgString, pageWidth, pageHeight, scale, numPages, "pdf", filePath, (err) => {
-			if (err) return next(err);
-			next(null);
-		});
-	} catch(err) {
-		next(err);
-	}
-}
-
 function printPageCanvasPdf(options, progress, next) {
 	var filePath = options.filePath;
 	if (!filePath) return;
@@ -195,4 +181,4 @@ function printCardCanvasZip(options, progress, next) {
 }
 
 
-module.exports = { getPageSvg, getCardSvgs, printSlimerJS, printPageCanvasPdf, printPageCanvasPdf2, printCardCanvasZip };
+module.exports = { getPageSvg, getCardSvgs, printPageCanvasPdf, printPageCanvasPdf2, printCardCanvasZip };

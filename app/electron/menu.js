@@ -260,12 +260,6 @@ class CustomMenu extends EventEmitter {
 							}
 						},
 						{
-							label: "Export to PDF with Firefox…",
-							click: (item, focusedWindow) => {
-								this.emit("print3", focusedWindow);
-							}
-						},
-						{
 							label: "Export to PDF with Electron…",
 							click: (item, focusedWindow) => {
 								this.emit("print2", focusedWindow);

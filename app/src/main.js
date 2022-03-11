@@ -100,15 +100,6 @@ electron.ipcRenderer.on("print", (/* event, message */) => {
 		}, 500);
 	}, 1000);
 });
-electron.ipcRenderer.on("print2", (event, message) => {
-	pagePrinterFallback.printSlimerJS(message, (err) => {
-		if (err) {
-			console.error(err);
-			alert("Error: " + err.message);
-		}
-		else alert("File export is finished");
-	});
-});
 electron.ipcRenderer.on("print3", (event, message) => {
 	vm.$children[0].$data.spinnerCount++;
 	vm.$children[0].$data.spinnerText = "Calculating…";
