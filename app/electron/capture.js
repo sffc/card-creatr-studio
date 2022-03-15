@@ -40,11 +40,11 @@ function renderAndSavePdf(pdfPath, options, next) {
 				height: pageHeight*scale
 			};
 			console.log("Capturing page", rectangle);
-			window.capturePage(rectangle, (nativeImage) => {
+			window.capturePage(rectangle).then((nativeImage) => {
 				var outputSize = nativeImage.getSize();
 				console.log("Captured page", outputSize);
 				_next(null, nativeImage.toPNG());
-			});
+			}).catch(_next);
 		}, (err, pngBuffers) => {
 			if (err) return cleanupCallback() && next(err);
 			var writeStream = fs.createWriteStream(pdfPath);
@@ -89,7 +89,7 @@ function capturePageMosaic(window, n, pageWidth, pageHeight, scale, next) {
 			height: WINDOW_SIZE
 		};
 		console.log("Capturing page", n, rectangle);
-		window.webContents.capturePage(rectangle, (img) => {
+		window.webContents.capturePage(rectangle).then((img) => {
 			console.log("Captured mosaic", p, img.getSize());
 			fs.writeFileSync("p"+p+".png", img.toPNG());
 			p++;
@@ -103,7 +103,7 @@ function capturePageMosaic(window, n, pageWidth, pageHeight, scale, next) {
 				}
 				_next();
 			}, 500);
-		});
+		}).catch(_next);
 	}, (err) => {
 		next(err);
 	});

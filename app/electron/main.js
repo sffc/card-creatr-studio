@@ -64,7 +64,7 @@ menu.on("printhelp", (/* browserWindow */) => {
 	electron.dialog.showMessageBox({
 		type: "info",
 		message: "Print and Export Options",
-		detail: "Card Creatr Studio gives four options for exporting your cards as a printable PDF file in order to work around numerous known bugs in the underlying rendering engines.\n\n1) The default \"Export to PDF\" uses HTML5 Canvas to render the PDF. This is the best option for almost all users.\n\n2) \"Print with Electron\" uses Electron's own printing engine. This has a number of bugs from upstream Chromium that cause image cropping and masking to not work.\n\n3) \"Export to PDF with Firefox\" spawns an instance of Firefox in the background and uses Firefox's rendering engine. This is a viable alternative if you encounter a bug in Chromium's SVG renderer.\n\n4) \"Export to PDF with Electron\" uses Electron's screen capture functionality. This should be attempted only if the other options do not work for you.\n\n5) \"Export to PDF with Canvas v1\" is the same as the default \"Export to PDF\" except that it renders all pages from a single snapshot. This can be attempted if the other options are not successful."
+		detail: "Card Creatr Studio gives multiple options for exporting your cards as a printable PDF file in order to work around numerous known bugs in the underlying rendering engines.\n\n1) The default \"Export to PDF\" uses HTML5 Canvas to render the PDF. This is the best option for almost all users.\n\n2) \"Export to PDF with Electron\" uses Electron's screen capture functionality. This should be attempted only if the other options do not work for you.\n\n3) \"Export to PDF with Canvas v1\" is the same as the default \"Export to PDF\" except that it renders all pages from a single snapshot. This can be attempted if the other options are not successful."
 	});
 });
 
@@ -82,7 +82,7 @@ menu.on("print2", (browserWindow) => {
 			capture.renderAndSavePdf(filePath, response, (err) => {
 				electron.dialog.showMessageBox({
 					type: (err ? "warning" : "info"),
-					message: "Export using Blink",
+					message: "Export with Electron Capture",
 					detail: (err ? err.toString() : "The export is complete.")
 				});
 			});
