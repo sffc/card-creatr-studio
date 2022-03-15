@@ -71,10 +71,6 @@ class CustomWindow extends EventEmitter {
 		}
 	}
 
-	print2(options) {
-		this._sendMessage("print2", options);
-	}
-
 	print3(options) {
 		this._sendMessage("print3", options);
 	}
