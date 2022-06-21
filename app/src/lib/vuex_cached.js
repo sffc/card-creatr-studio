@@ -53,7 +53,7 @@ function mutation(collection, { err, stamp, key, value }) {
 }
 
 function getter(collection, key, store, actionName) {
-	if (!collection.hasOwnProperty(key)) {
+	if (!Object.prototype.hasOwnProperty.call(collection, key)) {
 		// Request that the key be loaded
 		console.log("Getter load dispatch for:", key);
 		store.dispatch(actionName, key);

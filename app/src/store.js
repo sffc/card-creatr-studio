@@ -94,7 +94,7 @@ const STORE = new Vuex.Store({
 			state.fields.push(field);
 			for (let cardId of Object.keys(state.cardData)) {
 				let card = state.cardData[cardId]; // Vue.get() not needed
-				if (!card.hasOwnProperty(field.id)) {
+				if (!Object.prototype.hasOwnProperty.call(card, field.id)) {
 					Vue.set(card, field.id, null);
 				}
 			}
