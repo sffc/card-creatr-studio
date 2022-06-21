@@ -10,7 +10,7 @@
   "repository": "sffc/cc-studio",
   "dependencies": {
     "ace-builds": "^1.2.5",
-    "async": "^2.1.4",
+    "async": "^2.6.4",
     "card-creatr": "^0.2.3",
     "hjson": "^2.4.1",
     "html-entities": "^1.2.1",
