@@ -60,14 +60,14 @@ const STORE = new Vuex.Store({
 		},
 		addCardData(state, card) {
 			// Vue.get prevents triggering other watchers
-			Vue.get(state.cardData, card.id, card);
+			Utils.vueGetOrDefault(state.cardData, card.id, card);
 			var newSet = new Set(state.cardIds);
 			newSet.add(card.id);
 			state.cardIds = newSet;
 			state.cardIdSortOrder.push(card.id);
 		},
 		setCardDataField(state, [ cardId, fieldId, value ]) {
-			Vue.set(Vue.get(state.cardData, cardId, {}), fieldId, value);
+			Vue.set(Utils.vueGetOrDefault(state.cardData, cardId, {}), fieldId, value);
 		},
 		moveCard(state, [ cardId, directionDown ]) {
 			var oldIndex = state.cardIdSortOrder.indexOf(cardId);
@@ -177,7 +177,7 @@ const STORE = new Vuex.Store({
 		},
 		currentCard(state) {
 			if (state.currentId === null) return null;
-			return Vue.get(state.cardData, state.currentId, null);
+			return Utils.vueGetOrDefault(state.cardData, state.currentId, null);
 		},
 		renderer(state, getters) {
 			let templateString = state.templateString;
@@ -225,7 +225,7 @@ const STORE = new Vuex.Store({
 			}
 		},
 		getCurrentSvg(state, getters) {
-			let cardOptions = Vue.get(state.cardOptions, state.currentId, null);
+			let cardOptions = Utils.vueGetOrDefault(state.cardOptions, state.currentId, null);
 			let globalOptions = getters.globalOptions;
 			let renderer = getters.renderer;
 			if (!cardOptions || !globalOptions || !renderer) {
@@ -297,7 +297,7 @@ STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 			// Added card
 			cardDataWatchers[id] = STORE.watch((state, getters) => {
 				console.log("card options watcher starting:", id, new Date().getTime() % 10000);
-				let rawCard = Vue.get(state.cardData, id, null);
+				let rawCard = Utils.vueGetOrDefault(state.cardData, id, null);
 				let cardOptions = new (CardCreatr.OptionsParser)();
 				let card = Utils.toCardCreatrForm(rawCard, state.fields);
 				cardOptions.addPrimary(card, getters.buffer); // This line is important! When this watcher attempts to load a file, it actually pulls it from the reactive cache of file buffers.

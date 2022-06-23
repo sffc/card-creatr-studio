@@ -193,7 +193,9 @@ function electronDoGetSvg(message, next) {
 // Dirty watchers: update the title bar to show when the file has been modified
 function makeDirtyWatchers() {
 	store.watch((state) => {
-		for (let cardId of state.cardIds) Vue.get(state.cardData, cardId, null);
+		for (let cardId of state.cardIds) {
+			Utils.vueGetOrDefault(state.cardData, cardId, null);
+		}
 		return state.cardData;
 	}, (oldValue /* , newValue */) => {
 		if (oldValue) {

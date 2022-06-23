@@ -17,6 +17,7 @@
 
 "use strict";
 
+const Vue = require("vue/dist/vue");
 const uuidV4 = require("uuid/v4");
 const CardCreatr = require("card-creatr");
 
@@ -27,6 +28,23 @@ const CardCreatr = require("card-creatr");
 // 	}
 // 	return obj[key];
 // };
+
+/// Updated version of Vue.get() based on Vue.observable()
+/// Similar to Vue.set() but doesn't trigger notificatins on the container
+function vueGetOrDefault(obj, key, defaultVal) {
+	if (Array.isArray(obj)) {
+		return obj[key];
+	}
+	if (Object.prototype.hasOwnProperty.call(obj, key)) {
+		return obj[key];
+	}
+	if (!obj.__ob__) {
+		obj[key] = defaultVal;
+	} else {
+		obj[key] = Vue.observable(defaultVal);
+	}
+	return obj[key]
+}
 
 function setEquals(set1, set2) {
 	if (set1.size !== set2.size) return false;
@@ -188,6 +206,7 @@ rect(fill="url(#cc-layout-grid)", width=${viewport.width}, height=${viewport.hei
 }
 
 module.exports = {
+	vueGetOrDefault,
 	setEquals,
 	toCardIdForm,
 	toCardCreatrForm,

@@ -19,7 +19,7 @@
     "pretty-data": "^0.40.0",
     "tmp": "0.0.31",
     "uuid": "^3.0.1",
-    "vue": "git://github.com/sffc/vue.git#dev-build",
+    "vue": "^2.6",
     "vue-color": "^2.2.0",
     "vuex": "^2.1.2"
   }

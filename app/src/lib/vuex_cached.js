@@ -18,6 +18,7 @@
 "use strict";
 
 const Vue = require("vue/dist/vue");
+const Utils = require("./utils");
 
 var globalCounter = 0;
 
@@ -41,7 +42,7 @@ function action(store, mutationName, key, callback, ...callbackArgs) {
 }
 
 function mutation(collection, { err, stamp, key, value }) {
-	let obj = Vue.get(collection, key, makeDefault());
+	let obj = Utils.vueGetOrDefault(collection, key, makeDefault());
 	if (obj.errStamp < stamp) {
 		obj.err = err || null;
 		obj.errStamp = stamp;
@@ -58,7 +59,7 @@ function getter(collection, key, store, actionName) {
 		console.log("Getter load dispatch for:", key);
 		store.dispatch(actionName, key);
 	}
-	return Vue.get(collection, key, makeDefault()).value;
+	return Utils.vueGetOrDefault(collection, key, makeDefault()).value;
 }
 
 function errors(collection) {
