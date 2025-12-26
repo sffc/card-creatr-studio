@@ -43,7 +43,7 @@ function vueGetOrDefault(obj, key, defaultVal) {
 	} else {
 		obj[key] = Vue.observable(defaultVal);
 	}
-	return obj[key]
+	return obj[key];
 }
 
 function setEquals(set1, set2) {
