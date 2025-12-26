@@ -16,15 +16,15 @@
   "license": "GPL-3.0",
   "repository": "sffc/cc-studio",
   "devDependencies": {
-    "electron": "^19",
-    "electron-builder": "^23",
-    "electron-devtools-installer": "^3.2.0",
-    "eslint": "^8.10.0",
-    "stylus": "^0.54.5"
+    "electron": "^39",
+    "electron-builder": "^26",
+    "electron-devtools-installer": "^4",
+    "eslint": "^9",
+    "stylus": "^0.64"
   },
   "engines": {
-    "node": ">= 4.0.0",
-    "npm": ">= 3.0.0"
+    "node": ">= 24.0.0",
+    "npm": ">= 11.0.0"
   },
   "extendInfo": {
     "CFBundleDocumentTypes": [
