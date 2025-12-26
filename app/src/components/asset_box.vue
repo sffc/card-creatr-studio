@@ -28,10 +28,9 @@ var template = `
 //<script>
 const ccsb = require("../lib/ccsb");
 const store = require("../store");
-const Vue = require("vue/dist/vue");
 const Utils = require("../lib/utils");
 
-Vue.component("asset-box", {
+module.exports = {
 	template: template,
 	props: ["path"],
 	computed: {
@@ -54,5 +53,5 @@ Vue.component("asset-box", {
 			}
 		}
 	}
-});
+};
 //</script>

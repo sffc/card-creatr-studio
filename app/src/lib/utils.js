@@ -17,7 +17,7 @@
 
 "use strict";
 
-const Vue = require("vue/dist/vue");
+const Vue = require("@vue/compat");
 const uuidV4 = require("uuid/v4");
 const CardCreatr = require("card-creatr");
 

@@ -24,10 +24,9 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const electron = require("electron");
 
-Vue.component("error-box", {
+module.exports = {
 	template: template,
 	props: ["show"],
 	computed: {
@@ -51,5 +50,5 @@ Vue.component("error-box", {
 			});
 		}
 	}
-});
+};
 //</script>

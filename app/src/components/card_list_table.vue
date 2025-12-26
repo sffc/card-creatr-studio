@@ -39,11 +39,11 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
-require("./card_row");
-
-Vue.component("card-list-table", {
+module.exports = {
 	template: template,
+	components: {
+		"card-row": require("./card_row"),
+	},
 	props: ["cards", "cardIdSortOrder", "fields", "value"],
 	data: function() {
 		return {
@@ -136,5 +136,5 @@ Vue.component("card-list-table", {
 			}
 		}
 	}
-});
+};
 //</script>

@@ -22,7 +22,6 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const path = require("path");
 
 // Ace uses the old-school mechanism where it adds itself to the global object upon require.
@@ -32,7 +31,7 @@ require("ace-builds/src-noconflict/theme-solarized_light");
 require("../vendor/mode-hjson.js");
 window.ace.config.set("basePath", path.join(__dirname, "node_modules/ace-builds/src-noconflict"));
 
-Vue.component("ace-editor", {
+module.exports = {
 	template: template,
 	props: ["mode", "theme", "value"],
 	mounted: function() {
@@ -70,5 +69,5 @@ Vue.component("ace-editor", {
 			}
 		},
 	}
-});
+};
 //</script>

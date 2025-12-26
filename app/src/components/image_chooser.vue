@@ -44,13 +44,12 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const Utils = require("../lib/utils");
 const ccsb = require("../lib/ccsb");
 const fs = require("fs");
 const mime = require("mime");
 
-Vue.component("image-chooser", {
+module.exports = {
 	template: template,
 	props: ["value", "placeholder", "extra"],
 	computed: {
@@ -89,5 +88,5 @@ Vue.component("image-chooser", {
 			});
 		}
 	}
-});
+};
 //</script>

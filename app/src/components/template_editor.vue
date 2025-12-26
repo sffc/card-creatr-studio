@@ -32,7 +32,7 @@ var elementTemplate = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
+const Vue = require("@vue/compat");
 const pugLexer = require("pug-lexer");
 const pugParser = require("pug-parser");
 
@@ -172,6 +172,7 @@ function elementsToString(elements) {
 	return "xxx " + elements.length;
 }
 
+// TODO: Vue.component does not work any more
 Vue.component("template-editor", {
 	template: editorTemplate,
 	props: ["value"],
@@ -201,6 +202,7 @@ Vue.component("template-editor", {
 	}
 });
 
+// TODO: Vue.component does not work any more
 Vue.component("template-element", {
 	template: elementTemplate,
 	props: ["element"],

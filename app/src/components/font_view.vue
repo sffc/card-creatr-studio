@@ -52,13 +52,12 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const google_fonts = require("../lib/google_fonts");
 const store = require("../store");
 const ccsb = require("../lib/ccsb");
 const mime = require("mime");
 
-Vue.component("font-view", {
+module.exports = {
 	template: template,
 	props: ["fonts"],
 	data: function() {
@@ -137,5 +136,5 @@ Vue.component("font-view", {
 			});
 		}
 	}
-});
+};
 //</script>

@@ -64,9 +64,11 @@ var template = `
 					<div id="f-editor" class="ace-container" v-if="tab === 'template'">
 						<ace-editor v-model="templateString" mode="jade" theme="solarized_light"></ace-editor>
 					</div>
+					<!--
 					<div id="f-editor" class="template2-container" v-if="tab === 'template2'">
 						<template-editor v-model="templateString"></template-editor>
 					</div>
+					-->
 					<div id="f-editor" class="fonts-container" v-if="tab === 'fonts'">
 						<font-view :fonts="fontsList"></font-view>
 					</div>
@@ -160,17 +162,19 @@ var template = `
 
 //<script>
 const Utils = require("./lib/utils");
-require("./components/card_list_table");
-require("./components/card_svg");
-require("./components/ace_editor");
-require("./components/asset_upload_box");
-require("./components/asset_box");
-require("./components/error_box");
-require("./components/template_editor");
-require("./components/font_view");
 
 module.exports = {
 	template: template,
+	components: {
+		"card-list-table": require("./components/card_list_table"),
+		"card-svg": require("./components/card_svg"),
+		"ace-editor": require("./components/ace_editor"),
+		"asset-upload-box": require("./components/asset_upload_box"),
+		"asset-box": require("./components/asset_box"),
+		"error-box": require("./components/error_box"),
+		// "template-editor": require("./components/template_editor"),
+		"font-view": require("./components/font_view"),
+	},
 	data: () => {
 		return {
 			tab: null,

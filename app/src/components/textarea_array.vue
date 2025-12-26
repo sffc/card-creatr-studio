@@ -22,9 +22,7 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
-
-Vue.component("textarea-array", {
+module.exports = {
 	template: template,
 	props: ["value"],
 	computed: {
@@ -50,5 +48,5 @@ Vue.component("textarea-array", {
 			this.$emit("click", event);
 		}
 	}
-});
+};
 //</script>

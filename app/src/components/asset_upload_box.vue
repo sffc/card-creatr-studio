@@ -25,12 +25,11 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const ccsb = require("../lib/ccsb");
 const fs = require("fs");
 const path = require("path");
 
-Vue.component("asset-upload-box", {
+module.exports = {
 	template: template,
 	props: [],
 	methods: {
@@ -50,5 +49,5 @@ Vue.component("asset-upload-box", {
 			event.target.value = null;
 		}
 	}
-});
+};
 //</script>

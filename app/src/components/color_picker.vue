@@ -31,12 +31,11 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
-const VueColor = require("vue-color/dist/vue-color");
+const VueColor = require("vue-color");
 
 const REGEX_RGBA = /^rgba?\s*\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$/;
 
-Vue.component("color-picker", {
+module.exports = {
 	template: template,
 	props: ["value"],
 	data: function() {
@@ -108,5 +107,5 @@ Vue.component("color-picker", {
 		swatches: VueColor.Swatches,
 		sliders: VueColor.Chrome
 	}
-});
+};
 //</script>

@@ -22,11 +22,10 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const Utils = require("../lib/utils");
 const store = require("../store");
 
-Vue.component("card-svg", {
+module.exports = {
 	template: template,
 	props: ["dims", "content"],
 	computed: {
@@ -45,5 +44,5 @@ Vue.component("card-svg", {
 			return Utils.finalizeSvg(this.content, this.dims, store.getters.globalOptions, true, 1, 1);
 		}
 	}
-});
+};
 //</script>

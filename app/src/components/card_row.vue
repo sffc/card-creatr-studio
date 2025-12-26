@@ -49,14 +49,14 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
-require("./image_chooser");
-require("./color_picker");
-require("./textarea_array");
-require("./dropdown_field");
-
-Vue.component("card-row", {
+module.exports = {
 	template: template,
+	components: {
+		"image-chooser": require("./image_chooser"),
+		"color-picker": require("./color_picker"),
+		"textarea-array": require("./textarea_array"),
+		"dropdown-field": require("./dropdown_field"),
+	},
 	props: ["card", "fields", "active"],
 	computed: {
 	},
@@ -70,5 +70,5 @@ Vue.component("card-row", {
 			return cardOptions.get("/" + field.name);
 		}
 	}
-});
+};
 //</script>

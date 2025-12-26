@@ -31,7 +31,8 @@ if (__dirname.indexOf("app.asar") !== -1) {
 
 require.extensions[".vue"] = require.extensions[".js"];
 
-const Vue = require("vue/dist/vue");
+const Vue = require("@vue/compat");
+const Vue3 = require("vue");
 const App = require("./App");
 const CardCreatr = require("card-creatr");
 const Utils = require("./lib/utils");
@@ -43,13 +44,10 @@ const pagePrinterFallback = require("./lib/page_printer_fallback");
 const svgXml = require("./lib/svg_xml");
 const electron = require("electron");
 
-/* eslint-disable no-new */
-const vm = new Vue({
-	el: "#app",
-	template: "<App/>",
-	store,
-	components: { App }
-});
+const vm = Vue3.createApp(App);
+
+vm.use(store);
+vm.mount("#app");
 
 if (global) {
 	global.vm = vm;

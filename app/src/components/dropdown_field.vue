@@ -26,9 +26,7 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
-
-Vue.component("dropdown-field", {
+module.exports = {
 	template: template,
 	props: ["value", "dropdownV1"],
 	computed: {
@@ -49,5 +47,5 @@ Vue.component("dropdown-field", {
 			this.$emit("click", event);
 		}
 	}
-});
+};
 //</script>
