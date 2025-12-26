@@ -27,7 +27,7 @@ const store = require("../store");
 
 module.exports = {
 	template: template,
-	props: ["dims", "content"],
+	props: ["content"],
 	computed: {
 		viewBox: function() {
 			return "0 0 " + this.aspectRatio + " 1";
