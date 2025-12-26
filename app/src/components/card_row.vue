@@ -18,7 +18,7 @@
 "use strict";
 
 var template = `
-<tr v-on:click="onClick" v-bind:class="{ active: active }">
+<tr v-bind:class="{ active: active }">
 	<td class="left-buffer"></td>
 	<td v-for="field in fields">
 		<template v-if="field.display == 'string'">
@@ -61,9 +61,6 @@ module.exports = {
 	computed: {
 	},
 	methods: {
-		onClick: function(event) {
-			this.$emit("click", event);
-		},
 		optionsFor: function(field) {
 			let cardOptions = this.$store.state.cardOptions[this.card.id];
 			if (!cardOptions) return null;
