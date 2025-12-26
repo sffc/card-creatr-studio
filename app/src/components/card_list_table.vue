@@ -29,7 +29,7 @@ var template = `
 			</tr>
 		</thead>
 		<tbody>
-			<card-row v-for="card in sortedCards" :key="card.id" :card="card" :fields="fields" v-on:click.stop="onRowClick(card)" :active="value === card.id"></card-row>
+			<card-row v-for="card in sortedCards" :key="card.id" :card="card" :fields="fields" v-on:click.stop="onRowClick(card)" :active="modelValue === card.id"></card-row>
 		</tbody>
 	</table>
 	<div class="below-card-list">
@@ -44,7 +44,8 @@ module.exports = {
 	components: {
 		"card-row": require("./card_row"),
 	},
-	props: ["cards", "cardIdSortOrder", "fields", "value"],
+	props: ["cards", "cardIdSortOrder", "fields", "modelValue"],
+	emits: ["update:modelValue"],
 	data: function() {
 		return {
 			sortField: null,
@@ -60,7 +61,7 @@ module.exports = {
 	},
 	methods: {
 		onRowClick: function(card) {
-			this.$emit("input", card.id);
+			this.$emit("update:modelValue", card.id);
 		},
 		onColumnClick: function(field) {
 			if (this.sortField === field) {

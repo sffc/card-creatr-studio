@@ -51,10 +51,11 @@ const mime = require("mime");
 
 module.exports = {
 	template: template,
-	props: ["value", "placeholder", "extra"],
+	props: ["modelValue", "placeholder", "extra"],
+	emits: ["update:modelValue"],
 	computed: {
 		hasImage: function() {
-			return !!this.value;
+			return !!this.modelValue;
 		},
 		isCorrupted: function() {
 			if (!this.extra) return false;
@@ -74,8 +75,8 @@ module.exports = {
 	methods: {
 		clearImage: function() {
 			if (confirm("Remove this image?")) {
-				ccsb.removeFile(this.value);
-				this.$emit("input", null);
+				ccsb.removeFile(this.modelValue);
+				this.$emit("update:modelValue", null);
 			}
 		},
 		onFileChoosen: function(event) {
@@ -84,7 +85,7 @@ module.exports = {
 			fs.readFile(file.path, (err, buffer) => {
 				if (err) return alert(err);
 				let filePath = ccsb.createFile(mime.lookup(file.path), "card_assets", buffer);
-				this.$emit("input", filePath);
+				this.$emit("update:modelValue", filePath);
 			});
 		}
 	}

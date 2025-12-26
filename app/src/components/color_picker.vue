@@ -22,10 +22,10 @@ var template = `
 	<div class="color-picker-preview" v-on:click="openPopout1" v-bind:style="previewStyle"></div>
 	<div class="color-picker-expanded" v-on:click="openPopout2">···</div>
 	<div class="color-picker-popout" v-if="open1" v-on:click="preventClose">
-		<swatches v-model="colors" @input="onChange"></swatches>
+		<swatches v-model="colors" @update:modelValue="onChange"></swatches>
 	</div>
 	<div class="color-picker-popout" v-if="open2" v-on:click="preventClose">
-		<sliders v-model="colors" @input="onChange"></sliders>
+		<sliders v-model="colors" @update:modelValue="onChange"></sliders>
 	</div>
 </div>
 `;
@@ -37,7 +37,8 @@ const REGEX_RGBA = /^rgba?\s*\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$
 
 module.exports = {
 	template: template,
-	props: ["value"],
+	props: ["modelValue"],
+	emits: ["update:modelValue"],
 	data: function() {
 		return {
 			open1: false,
@@ -55,7 +56,7 @@ module.exports = {
 	},
 	computed: {
 		colors: function() {
-			let value = "" + this.value;
+			let value = "" + this.modelValue;
 			let match;
 			// Allow the input to be in hex syntax or rgba syntax
 			if (value[0] === "#") {
@@ -75,7 +76,7 @@ module.exports = {
 		},
 		previewStyle: function() {
 			return {
-				backgroundColor: this.value
+				backgroundColor: this.modelValue
 			};
 		}
 	},
@@ -83,10 +84,10 @@ module.exports = {
 		onChange: function(colors) {
 			if (colors.rgba.a < 1) {
 				// alpha channel: use rgba syntax
-				this.$emit("input", "rgba("+colors.rgba.r+","+colors.rgba.g+","+colors.rgba.b+","+colors.rgba.a+")");
+				this.$emit("update:modelValue", "rgba("+colors.rgba.r+","+colors.rgba.g+","+colors.rgba.b+","+colors.rgba.a+")");
 			} else {
 				// no alpha channel: use hex syntax
-				this.$emit("input", colors.hex);
+				this.$emit("update:modelValue", colors.hex);
 			}
 		},
 		openPopout1: function() {

@@ -175,7 +175,8 @@ function elementsToString(elements) {
 // TODO: Vue.component does not work any more
 Vue.component("template-editor", {
 	template: editorTemplate,
-	props: ["value"],
+	props: ["modelValue"],
+	emits: ["update:modelValue"],
 	data: function() {
 		return {
 			elements: []
@@ -186,7 +187,7 @@ Vue.component("template-editor", {
 	methods: {
 	},
 	watch: {
-		value: {
+		modelValue: {
 			handler: function(templateString) {
 				this.elements = stringToElements(templateString);
 			},
@@ -195,7 +196,7 @@ Vue.component("template-editor", {
 		elements: {
 			handler: function(newValue /* , oldValue */) {
 				let templateString = elementsToString(newValue);
-				this.$emit("input", templateString);
+				this.$emit("update:modelValue", templateString);
 			},
 			deep: true
 		}

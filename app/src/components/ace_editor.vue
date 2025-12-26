@@ -33,7 +33,8 @@ window.ace.config.set("basePath", path.join(__dirname, "node_modules/ace-builds/
 
 module.exports = {
 	template: template,
-	props: ["mode", "theme", "value"],
+	props: ["mode", "theme", "modelValue"],
+	emits: ["update:modelValue"],
 	mounted: function() {
 		this._editor = window.ace.edit(this.$el);
 		this._editor.getSession().setMode("ace/mode/" + this.mode);
@@ -45,11 +46,11 @@ module.exports = {
 		this._editor.setShowPrintMargin(false);
 		// this._editor.setOption("showLineNumbers", false);
 		this._editor.$blockScrolling = Infinity;
-		this._editor.setValue(this.value || "");
+		this._editor.setValue(this.modelValue || "");
 		this._editor.gotoLine(0);
 		this._editor.on("change", () => {
 			if (!this._editor._silent) {
-				this.$emit("input", this._editor.getValue());
+				this.$emit("update:modelValue", this._editor.getValue());
 			}
 		});
 	},
@@ -60,7 +61,7 @@ module.exports = {
 		theme: function(theme) {
 			this._editor.setTheme("ace/theme/" + theme);
 		},
-		value: function(value) {
+		modelValue: function(value) {
 			if (value !== this._editor.getValue()) {
 				this._editor._silent = true;
 				this._editor.setValue(value);

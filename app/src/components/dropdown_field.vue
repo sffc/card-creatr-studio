@@ -28,14 +28,15 @@ var template = `
 //<script>
 module.exports = {
 	template: template,
-	props: ["value", "dropdownV1"],
+	props: ["modelValue", "dropdownV1"],
+	emits: ["update:modelValue"],
 	computed: {
 		selected: {
 			get: function() {
-				return this.value || "";
+				return this.modelValue || "";
 			},
 			set: function(option) {
-				this.$emit("input", option);
+				this.$emit("update:modelValue", option);
 			}
 		},
 		options: function() {

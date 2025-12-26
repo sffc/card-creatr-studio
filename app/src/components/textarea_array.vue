@@ -24,22 +24,23 @@ var template = `
 //<script>
 module.exports = {
 	template: template,
-	props: ["value"],
+	props: ["modelValue"],
+	emits: ["update:modelValue"],
 	computed: {
 		lines: {
 			get: function() {
-				if (!this.value) {
+				if (!this.modelValue) {
 					return "";
-				} else if (typeof this.value === "string") {
+				} else if (typeof this.modelValue === "string") {
 					// normal case
-					return this.value;
+					return this.modelValue;
 				} else {
 					// special case: when an array of strings is provided
-					return this.value.join("\n");
+					return this.modelValue.join("\n");
 				}
 			},
 			set: function(newLines) {
-				this.$emit("input", newLines);
+				this.$emit("update:modelValue", newLines);
 			}
 		}
 	},

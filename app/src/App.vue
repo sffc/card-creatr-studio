@@ -27,7 +27,7 @@ var template = `
 				<div id="f-top">
 					<div id="f-list" v-on:click="clearCurrentId">
 						<div v-if="hasCards" class="card-list-wrapper">
-							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" v-on:new="newCard"></card-list-table>
+							<card-list-table v-model="currentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" v-on:new="newCard"></card-list-table>
 						</div>
 						<div v-else class="card-empty-list">
 							<strong>Welcome.</strong>
@@ -204,8 +204,13 @@ module.exports = {
 		fontsList() {
 			return this.$store.state.fontsList;
 		},
-		currentId() {
-			return this.$store.state.currentId;
+		currentId: {
+			get: function() {
+				return this.$store.state.currentId;
+			},
+			set: function(newValue) {
+				this.$store.commit("setCurrentId", newValue);
+			},
 		},
 		currentSvg() {
 			return this.$store.state.currentSvg;
@@ -278,9 +283,6 @@ module.exports = {
 	methods: {
 		clearCurrentId() {
 			this.$store.commit("setCurrentId", null);
-		},
-		setCurrentId(id) {
-			this.$store.commit("setCurrentId", id);
 		},
 		updateAsset(){
 			// noop
