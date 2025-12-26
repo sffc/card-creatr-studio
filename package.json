@@ -3,7 +3,7 @@
   "description": "A graphical user interface to Card Creatr",
   "scripts": {
     "lint": "eslint  --ext .js,.vue .",
-    "stylus": "stylus app/src/styl -w -o app/src/css",
+    "stylus": "stylus app/src/styl --include-css -w -o app/src/css",
     "electron": "electron .",
     "build-mac": "electron-builder -m",
     "build-mac-linux": "electron-builder -ml --x64",
