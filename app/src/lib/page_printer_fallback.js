@@ -150,6 +150,7 @@ function printPageCanvasPdf2(options, progress, next) {
 	if (!filePath) return;
 	try {
 		let { svgStrings, pageWidth, pageHeight, scale } = getSinglePageSvgs(options);
+		// eslint-disable-next-line consistent-return
 		CardCreatr.rasterize.canvasDrawImage2(svgStrings, pageWidth, pageHeight, scale, progress, (err, pngBuffers) => {
 			if (err) return next(err);
 			CardCreatr.rasterize.pngListToDestinationPdf(filePath, pngBuffers, pageWidth, pageHeight, next);
@@ -170,7 +171,7 @@ function printCardCanvasZip(options, progress, next) {
 				status.page = i;
 				progress(status);
 			}, _next);
-		}, (err, pngBufferses) => {
+		}, (err, pngBufferses) => { // eslint-disable-line consistent-return
 			if (err) return next(err);
 			let pngBuffers = pngBufferses.map((v) => { return v[0]; });
 			CardCreatr.rasterize.pngListToPngsZip(filePath, pngBuffers, pageWidth, pageHeight, next);

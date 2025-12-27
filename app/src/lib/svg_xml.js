@@ -34,7 +34,7 @@ function open(rawSvgXml) {
 		svgXmlWindow.document.title = "SVG XML Viewer";
 	}
 
-	update(rawSvgXml);
+	update(rawSvgXml); // eslint-disable-line no-use-before-define
 }
 
 function update(rawSvgXml) {
@@ -45,7 +45,7 @@ function update(rawSvgXml) {
 	let cleanSvgXml = rawSvgXml || "{{ no current SVG }}";
 
 	// Shorten data URIs
-	cleanSvgXml = cleanSvgXml.replace(/data:.*?;base64,[\w/+=]*/g, "…");
+	cleanSvgXml = cleanSvgXml.replace(/data:.*?;base64,[\w/+=]*/ug, "…");
 
 	// Pretty-print
 	cleanSvgXml = pd.xml(cleanSvgXml);

@@ -52,6 +52,7 @@ let template = `
 `;
 
 //<script>
+/* eslint camelcase: "off" */
 const google_fonts = require("../lib/google_fonts");
 const store = require("../store");
 const ccsb = require("../lib/ccsb");
@@ -113,7 +114,7 @@ module.exports = {
 			google_fonts.getBuffer(this.currentName, this.currentVariant, (err, mimeType, buffer) => {
 				let filePath = ccsb.createFile(mimeType, "fonts", buffer);
 				store.commit("addFont", {
-					name: this.currentName.toLowerCase().replace(/\W/, ""),
+					name: this.currentName.toLowerCase().replace(/\W/u, ""),
 					filename: filePath,
 					source: "google",
 					sourceName: this.currentName,

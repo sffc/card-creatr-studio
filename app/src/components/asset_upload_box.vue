@@ -37,6 +37,7 @@ module.exports = {
 		uploadFile(event) {
 			let file = event.target.files[0];
 			if (!file) return;
+			// eslint-disable-next-line consistent-return
 			fs.readFile(file.path, (err, buffer) => {
 				if (err) return alert(err);
 				let basename = path.basename(file.path);

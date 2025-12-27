@@ -36,7 +36,7 @@ function showOpenDialog(next) {
 			{name: "Card Creatr Studio Files", extensions: ["ccsb", "ccst"]},
 			{name: "All Files", extensions: ["*"]}
 		]
-	}).then(({ filePaths }) => {
+	}).then(({ filePaths }) => { // eslint-disable-line consistent-return
 		if (!filePaths) return next(null);
 		next(filePaths[0]);
 	});

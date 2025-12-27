@@ -33,7 +33,8 @@ let template = `
 //<script>
 const VueColor = require("vue-color");
 
-const REGEX_RGBA = /^rgba?\s*\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$/;
+// eslint-disable-next-line prefer-named-capture-group
+const REGEX_RGBA = /^rgba?\s*\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$/u;
 
 module.exports = {
 	template,

@@ -24,6 +24,7 @@ if (__dirname.indexOf("app.asar") !== -1) {
 	const oldNodeModulePaths = Module._nodeModulePaths;
 	const unpackedPath = path.resolve(__dirname, "../../app.asar.unpacked/node_modules");
 	Module._nodeModulePaths = function() {
+		// eslint-disable-next-line prefer-rest-params
 		return [unpackedPath].concat(oldNodeModulePaths.apply(this, arguments));
 	};
 	console.log("Added node module search path:", unpackedPath);
@@ -68,6 +69,9 @@ function ipcStatusUpdate(status) {
 		break;
 	case "error":
 		action = "Error";
+		break;
+	default:
+		action = "[[Unknown]]";
 		break;
 	}
 	vm.spinnerText = action + " page #" + (status.page+1) + "…";
@@ -126,16 +130,19 @@ electron.ipcRenderer.on("cardImages1", (event, message) => {
 electron.ipcRenderer.on("addcard", (/* event, message */) => {
 	vm.newCard();
 });
+// eslint-disable-next-line consistent-return
 electron.ipcRenderer.on("movecardup", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
 	vm.moveCard(card.id, false);
 });
+// eslint-disable-next-line consistent-return
 electron.ipcRenderer.on("movecarddown", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
 	vm.moveCard(card.id, true);
 });
+// eslint-disable-next-line consistent-return
 electron.ipcRenderer.on("deletecard", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
@@ -155,8 +162,10 @@ electron.ipcRenderer.on("_SAR", (event, data) => {
 		electron.ipcRenderer.send("_SAR", { id, response });
 	};
 	if (data.name === "save") {
+		// eslint-disable-next-line no-use-before-define
 		electronDoSave(data.message, _sendResponse);
 	} else if (data.name === "getsvg") {
+		// eslint-disable-next-line no-use-before-define
 		electronDoGetSvg(data.message, _sendResponse);
 	}
 });
@@ -300,7 +309,7 @@ async.auto({
 		} catch(_err) {
 			return _next(_err);
 		}
-		_next(null);
+		return _next(null);
 	}],
 	"resolveData": ["dataObjects", "resolveJson", "loadAssets", (results, _next) => {
 		for (let card of results.dataObjects) {

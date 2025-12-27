@@ -30,8 +30,13 @@ function renderAndSavePdf(pdfPath, options, next) {
 	let pageHeight = options.pageHeight;
 	let scale = options.scale;
 	let numPages = options.numPages;
+	// eslint-disable-next-line no-use-before-define
 	createWindowFromString(svgString, pageWidth*scale, pageHeight*scale*numPages, (err, window, cleanupCallback) => {
-		if (err) return cleanupCallback() && next(err);
+		if (err) {
+			cleanupCallback();
+			next(err);
+			return;
+		}
 		async.times(numPages, (i, _next) => {
 			let rectangle = {
 				x: 0,
@@ -45,8 +50,12 @@ function renderAndSavePdf(pdfPath, options, next) {
 				console.log("Captured page", outputSize);
 				_next(null, nativeImage.toPNG());
 			}).catch(_next);
-		}, (err, pngBuffers) => {
-			if (err) return cleanupCallback() && next(err);
+		}, (err, pngBuffers) => { // eslint-disable-line no-shadow
+			if (err) {
+				cleanupCallback();
+				next(err);
+				return;
+			}
 			let writeStream = fs.createWriteStream(pdfPath);
 			writeStream.on("finish", () => {
 				cleanupCallback();
@@ -158,7 +167,7 @@ function createWindowFromString(svgString, windowWidth, windowHeight, next) {
 			_realCleanup();
 			return next(err);
 		}
-		next(null, window, _realCleanup);
+		return next(null, window, _realCleanup);
 	});
 }
 

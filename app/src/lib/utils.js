@@ -120,6 +120,7 @@ function createCard(existingIds, fields) {
 }
 
 function createField(template) {
+	// eslint-disable-next-line no-param-reassign
 	if (!template) template = {
 		name: "untitled"
 	};
@@ -137,7 +138,7 @@ function makeCardSvgs(options, renderer, allCardOptions, { showBack, useQty }) {
 			if (!cardOptions) continue;
 			let qty = parseInt(cardOptions.get("/qty"));
 			if (isNaN(qty) || !useQty) qty = 1;
-			if (qty == 0) continue;
+			if (qty === 0) continue;
 			let str = renderer.render(cardOptions, options, options.get("/viewports/card"), {
 				__BACK: showBack
 			});

@@ -198,10 +198,11 @@ const STORE = new Vuex.Store({
 			} catch(err) {
 				console.log("build renderer failed:", new Date().getTime() % 10000);
 				STORE.commit("setError", ["renderer", err]);
+				return null;
 			}
 		},
 		globalOptions(state, getters) {
-			if (state.optionsString == null) return null;
+			if (!state.optionsString) return null;
 			console.log("global options starting:", new Date().getTime() % 10000);
 			let globalOptions = new (CardCreatr.OptionsParser)();
 			try {
@@ -243,6 +244,7 @@ const STORE = new Vuex.Store({
 			} catch(err) {
 				console.log("rendering svg failed:", new Date().getTime() % 10000);
 				STORE.commit("setError", ["currentSvg", err]);
+				return null;
 			}
 		},
 		pageDimensions(state, getters) {
@@ -280,6 +282,7 @@ STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 	return state.cardIds;
 }, (newSet, oldSet) => {
 	console.log("card data watchers triggered");
+	// eslint-disable-next-line no-param-reassign
 	if (!oldSet) oldSet = new Set();
 	if (Utils.setEquals(newSet, oldSet)) return;
 	// Cards have been added or removed.

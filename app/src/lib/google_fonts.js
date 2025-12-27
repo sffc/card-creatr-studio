@@ -85,7 +85,7 @@ function getVariants(fontName, next) {
 }
 
 function getBuffer(fontName, variant, next) {
-	ensureLoaded(() => {
+	ensureLoaded(() => { // eslint-disable-line consistent-return
 		for (let details of fontList) {
 			if (details.family === fontName) {
 				let url = details.files[variant];

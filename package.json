@@ -2,7 +2,7 @@
   "main": "app/electron/main.js",
   "description": "A graphical user interface to Card Creatr",
   "scripts": {
-    "lint": "eslint --quiet --ext .js,.vue .",
+    "lint": "eslint --ext .js,.vue .",
     "stylus": "stylus app/src/styl --include-css -w -o app/src/css",
     "electron": "electron .",
     "build-mac": "electron-builder -m",

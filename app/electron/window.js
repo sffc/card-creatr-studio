@@ -17,6 +17,8 @@
 
 "use strict";
 
+/* eslint max-classes-per-file: "off" */
+
 // A class running in the main thread representing a window object.
 
 const electron = require("electron");
@@ -64,7 +66,7 @@ class CustomWindow extends EventEmitter {
 
 	saveOrSaveAs(next) {
 		// If a ccst file is open, do not overwrite it by default.
-		if (this.path && !/\.ccst$/.test(this.path)) {
+		if (this.path && !/\.ccst$/u.test(this.path)) {
 			this._save(next);
 		} else {
 			this.saveAs(next);

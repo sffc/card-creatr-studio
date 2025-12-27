@@ -49,45 +49,45 @@ const ccsb = require("../lib/ccsb");
 const mime = require("mime");
 
 module.exports = {
-	template: template,
+	template,
 	props: ["modelValue", "placeholder", "extra"],
 	emits: ["update:modelValue"],
 	computed: {
-		hasImage: function() {
+		hasImage() {
 			return !!this.modelValue;
 		},
-		isCorrupted: function() {
+		isCorrupted() {
 			if (!this.extra) return false;
 			if (!this.extra.buffer || !this.extra.dataUri) return true;
 			return false;
 		},
-		dataUri: function() {
+		dataUri() {
 			if (!this.extra) return null;
 			return this.extra.dataUri;
 		},
-		fileSizeString: function() {
+		fileSizeString() {
 			if (!this.extra) return null;
 			let bytes = this.extra.buffer.length;
 			return Utils.fileSizeString(bytes);
 		}
 	},
 	methods: {
-		clearImage: function() {
+		clearImage() {
 			if (confirm("Remove this image?")) {
 				ccsb.removeFile(this.modelValue);
 				this.$emit("update:modelValue", null);
 			}
 		},
-		onFileChoosen: function(event) {
+		onFileChoosen(event) {
 			let file = event.target.files[0];
 			if (!file) return;
 			const reader = new FileReader();
-			reader.addEventListener("load", (event) => {
+			reader.addEventListener("load", (event) => { // eslint-disable-line no-shadow
 				console.log("Loaded file:", reader.result?.byteLength, event);
 				let filePath = ccsb.createFile(mime.lookup(file.name), "card_assets", reader.result);
 				this.$emit("update:modelValue", filePath);
 			});
-			reader.addEventListener("error", (event) => {
+			reader.addEventListener("error", (event) => { // eslint-disable-line no-shadow
 				alert(event);
 			});
 			reader.readAsArrayBuffer(file);
