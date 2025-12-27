@@ -24,7 +24,7 @@ const EventEmitter = require("events");
 const path = require("path");
 const url = require("url");
 
-var globalCounter = 0;
+let globalCounter = 0;
 
 class CustomWindow extends EventEmitter {
 	constructor(filePath) {
@@ -169,7 +169,7 @@ class CustomWindow extends EventEmitter {
 
 	_reload() {
 		// var port = process.env.PORT || appConfig.dev.port;
-		var _url = url.format({
+		let _url = url.format({
 			pathname: path.join(__dirname, "..", "electron", "index.html"),
 			protocol: "file:",
 			// pathname: "/",

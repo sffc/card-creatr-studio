@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div>
 	<div id="f-main">
 		<template v-if="ready">
@@ -164,7 +164,7 @@ var template = `
 const Utils = require("./lib/utils");
 
 module.exports = {
-	template: template,
+	template,
 	components: {
 		"card-list-table": require("./components/card_list_table"),
 		"card-svg": require("./components/card_svg"),
@@ -205,10 +205,10 @@ module.exports = {
 			return this.$store.state.fontsList;
 		},
 		currentId: {
-			get: function() {
+			get() {
 				return this.$store.state.currentId;
 			},
-			set: function(newValue) {
+			set(newValue) {
 				this.$store.commit("setCurrentId", newValue);
 			},
 		},
@@ -222,26 +222,26 @@ module.exports = {
 			return !!this.$store.getters.guideHtml;
 		},
 		templateString: {
-			get: function() {
+			get() {
 				return this.$store.state.templateString;
 			},
-			set: function(newValue) {
+			set(newValue) {
 				this.$store.commit("setTemplateString", newValue);
 			}
 		},
 		optionsString: {
-			get: function() {
+			get() {
 				return this.$store.state.optionsString;
 			},
-			set: function(newValue) {
+			set(newValue) {
 				this.$store.commit("setOptionsString", newValue);
 			}
 		},
 		showBack: {
-			get: function() {
+			get() {
 				return this.$store.state.showBack;
 			},
-			set: function(newValue) {
+			set(newValue) {
 				this.$store.commit("setShowBack", newValue);
 			}
 		},
@@ -342,7 +342,7 @@ module.exports = {
 	},
 	watch: {
 		errors: {
-			handler: function(newValue) {
+			handler(newValue) {
 				// A few heuristics to determine when to switch from the splash screen to the main editor view (here and below):
 				if (this.ready) return;
 				if (!this.loaded) return;
@@ -352,14 +352,14 @@ module.exports = {
 			},
 			deep: true
 		},
-		loaded: function(newValue) {
+		loaded(newValue) {
 			if (this.ready) return;
 			if (!newValue) return;
 			if (this.errors.length > 0) return;
 			if (!this.$store.getters.globalOptions) return;
 			this.ready = true;
 		},
-		ready: function(newValue) {
+		ready(newValue) {
 			if (newValue) {
 				if (this.$store.getters.guideHtml) {
 					// If a guide is available, default to hiding the properties panel.

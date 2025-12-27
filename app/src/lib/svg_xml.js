@@ -20,7 +20,7 @@
 const pd = require("pretty-data").pd;
 const entities = new (require("html-entities").XmlEntities)();
 
-var svgXmlWindow = null;
+let svgXmlWindow = null;
 
 function open(rawSvgXml) {
 	if (!rawSvgXml) {

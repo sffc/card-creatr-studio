@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div class="font-view">
 	<div class="font-box" v-for="info of defaults">
 		<div class="font-title">{{ info.name }}</div>
@@ -58,9 +58,9 @@ const ccsb = require("../lib/ccsb");
 const mime = require("mime");
 
 module.exports = {
-	template: template,
+	template,
 	props: ["fonts"],
-	data: function() {
+	data() {
 		return {
 			allFontNames: [],
 			currentName: null,
@@ -68,14 +68,14 @@ module.exports = {
 			currentVariant: null
 		};
 	},
-	created: function() {
+	created() {
 		google_fonts.getNameList((list) => {
 			list.sort();
 			this.allFontNames = list;
 		});
 	},
 	computed: {
-		defaults: function() {
+		defaults() {
 			let options = store.getters.globalOptions;
 			if (!options) return [];
 			return [
@@ -93,12 +93,12 @@ module.exports = {
 		}
 	},
 	methods: {
-		dataUri: function(filename) {
+		dataUri(filename) {
 			let buffer = store.getters.buffer(filename);
 			if (!buffer) return "about:null";
 			return `data:${ mime.lookup(filename) };base64,${ buffer.toString("base64") }`;
 		},
-		fontDemo: function(info) {
+		fontDemo(info) {
 			return `
 			<style type="text/css" scoped>
 				@font-face {
@@ -109,7 +109,7 @@ module.exports = {
 			<span style="font-family: ${info.name};">The quick brown fox jumps over the lazy dog.</span>
 			`;
 		},
-		addFont: function() {
+		addFont() {
 			google_fonts.getBuffer(this.currentName, this.currentVariant, (err, mimeType, buffer) => {
 				let filePath = ccsb.createFile(mimeType, "fonts", buffer);
 				store.commit("addFont", {
@@ -121,7 +121,7 @@ module.exports = {
 				});
 			});
 		},
-		removeFont: function(fontInfo) {
+		removeFont(fontInfo) {
 			if (confirm(`Are you sure you want to remove the font "${fontInfo.name}" (${fontInfo.sourceName} ${fontInfo.sourceVariant}) from this ccsb file?`)) {
 				store.commit("removeFont", fontInfo);
 				ccsb.removeFile(fontInfo.filename); // TODO: put in try/catch
@@ -129,7 +129,7 @@ module.exports = {
 		}
 	},
 	watch: {
-		currentName: function() {
+		currentName() {
 			this.currentVariant = null;
 			google_fonts.getVariants(this.currentName, (err, variants) => {
 				this.allVariants = variants;

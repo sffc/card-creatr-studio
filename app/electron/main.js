@@ -163,10 +163,10 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 	http.get("http://cardcreatr.shane.guru/versions/latest.txt", (res) => {
 		let currentVersion = require("../package.json").version;
 		let latestVersion = "";
-		res.on("data", function(chunk) {
+		res.on("data", (chunk) => {
 			latestVersion += chunk;
 		});
-		res.on("end", function() {
+		res.on("end", () => {
 			if (currentVersion !== latestVersion) {
 				electron.dialog.showMessageBox({
 					type: "info",

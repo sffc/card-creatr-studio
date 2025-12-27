@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div class="color-picker">
 	<div class="color-picker-preview" v-on:click="openPopout1" v-bind:style="previewStyle"></div>
 	<div class="color-picker-expanded" v-on:click="openPopout2">···</div>
@@ -36,17 +36,17 @@ const VueColor = require("vue-color");
 const REGEX_RGBA = /^rgba?\s*\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$/;
 
 module.exports = {
-	template: template,
+	template,
 	props: ["modelValue"],
 	emits: ["update:modelValue"],
-	data: function() {
+	data() {
 		return {
 			open1: false,
 			open2: false,
 			closeTimeout: null
 		};
 	},
-	created: function() {
+	created() {
 		window.addEventListener("click", () => {
 			this.closeTimeout = setTimeout(() => {
 				this.open1 = false;
@@ -56,7 +56,7 @@ module.exports = {
 	},
 	computed: {
 		colors: {
-			get: function() {
+			get() {
 				let value = "" + this.modelValue;
 				let match;
 				// Allow the input to be in hex syntax or rgba syntax
@@ -73,7 +73,7 @@ module.exports = {
 					return {};
 				}
 			},
-			set: function(newValue) {
+			set(newValue) {
 				if (newValue.a) {
 					// alpha channel: use rgba syntax
 					this.$emit("update:modelValue", "rgba("+newValue.r+","+newValue.g+","+newValue.b+","+newValue.a+")");
@@ -83,24 +83,24 @@ module.exports = {
 				}
 			},
 		},
-		previewStyle: function() {
+		previewStyle() {
 			return {
 				backgroundColor: this.modelValue
 			};
 		}
 	},
 	methods: {
-		openPopout1: function() {
+		openPopout1() {
 			this.open1 = true;
 			this.open2 = false;
 			this.preventClose();
 		},
-		openPopout2: function() {
+		openPopout2() {
 			this.open1 = false;
 			this.open2 = true;
 			this.preventClose();
 		},
-		preventClose: function() {
+		preventClose() {
 			clearTimeout(this.closeTimeout);
 		}
 	},

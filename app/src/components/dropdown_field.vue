@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <select v-model="selected">
   <option v-for="option in options" v-bind:value="option.value">
     {{ option.text }}
@@ -27,24 +27,24 @@ var template = `
 
 //<script>
 module.exports = {
-	template: template,
+	template,
 	props: ["modelValue", "dropdownV1"],
 	emits: ["update:modelValue", "click"],
 	computed: {
 		selected: {
-			get: function() {
+			get() {
 				return this.modelValue || "";
 			},
-			set: function(option) {
+			set(option) {
 				this.$emit("update:modelValue", option);
 			}
 		},
-		options: function() {
+		options() {
 			return [{ value: "", text: "<empty>" }].concat(this.dropdownV1.split("\n").map((line) => { return { value: line, text: line }; }));
 		}
 	},
 	methods: {
-		onClick: function(event) {
+		onClick(event) {
 			this.$emit("click", event);
 		}
 	}

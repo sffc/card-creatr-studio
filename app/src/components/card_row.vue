@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <tr v-bind:class="{ active: active }">
 	<td class="left-buffer"></td>
 	<td v-for="field in fields">
@@ -50,7 +50,7 @@ var template = `
 
 //<script>
 module.exports = {
-	template: template,
+	template,
 	components: {
 		"image-chooser": require("./image_chooser"),
 		"color-picker": require("./color_picker"),
@@ -61,7 +61,7 @@ module.exports = {
 	computed: {
 	},
 	methods: {
-		optionsFor: function(field) {
+		optionsFor(field) {
 			let cardOptions = this.$store.state.cardOptions[this.card.id];
 			if (!cardOptions) return null;
 			return cardOptions.get("/" + field.name);

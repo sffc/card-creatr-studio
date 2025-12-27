@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div class="asset-box">
 	<em>{{ path }}</em><br/>
 	<span>{{ fileSizeString }}</span>
@@ -31,23 +31,23 @@ const store = require("../store");
 const Utils = require("../lib/utils");
 
 module.exports = {
-	template: template,
+	template,
 	props: ["path"],
 	emits: ["remove"],
 	computed: {
-		fileSizeString: function() {
+		fileSizeString() {
 			return Utils.fileSizeString(this.bytes);
 		},
-		buffer: function() {
+		buffer() {
 			return store.getters.buffer(this.path);
 		},
-		bytes: function() {
+		bytes() {
 			if (!this.buffer) return 0;
 			return this.buffer.length;
 		}
 	},
 	methods: {
-		deleteFile: function() {
+		deleteFile() {
 			if (confirm("Delete this asset?\n" + this.path)) {
 				ccsb.removeFile(this.path);
 				this.$emit("remove", this.path);

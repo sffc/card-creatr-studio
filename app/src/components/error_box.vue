@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div>
 	<div class="error-entry" v-for="[key,err] in errorsArray">{{ err.toString() }} ({{ key }})\n<span class="error-details" v-on:click="showDetails(key, err)">(technical details)</span></div>
 </div>
@@ -27,10 +27,10 @@ var template = `
 const electron = require("electron");
 
 module.exports = {
-	template: template,
+	template,
 	props: ["show"],
 	computed: {
-		errorsArray: function() {
+		errorsArray() {
 			let result = [];
 			for (let [key, err] of this.show) {
 				result.push([key, err]);
@@ -39,7 +39,7 @@ module.exports = {
 		},
 	},
 	methods: {
-		showDetails: function(key, err) {
+		showDetails(key, err) {
 			electron.ipcRenderer.send("showMessageBox", {
 				type: "error",
 				title: "Error Details: " + key,

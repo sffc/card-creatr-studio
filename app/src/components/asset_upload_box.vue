@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div class="asset-box">
 	<strong>Add File</strong><br/>
 	<input type="file" v-on:click.stop v-on:change="uploadFile" />
@@ -30,11 +30,11 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports = {
-	template: template,
+	template,
 	props: [],
 	emits: ["upload"],
 	methods: {
-		uploadFile: function(event) {
+		uploadFile(event) {
 			let file = event.target.files[0];
 			if (!file) return;
 			fs.readFile(file.path, (err, buffer) => {

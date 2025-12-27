@@ -272,7 +272,7 @@ class CustomMenu extends EventEmitter {
 
 		this.template = getTemplate();
 
-		var editMenu, viewMenu, helpMenu;
+		let editMenu, helpMenu, viewMenu;
 		if (process.platform === "darwin") {
 			this.template.splice(1, 0, fileMenu);
 			editMenu = this.template[2];

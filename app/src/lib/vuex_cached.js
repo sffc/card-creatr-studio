@@ -19,7 +19,7 @@
 
 const Utils = require("./utils");
 
-var globalCounter = 0;
+let globalCounter = 0;
 
 function makeDefault() {
 	return {

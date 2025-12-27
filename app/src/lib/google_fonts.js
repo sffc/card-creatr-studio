@@ -25,17 +25,17 @@ const mime = require("mime");
 
 const apiKey = "AIzaSyAgQiZdbJp_1uGqQeE1p2jpDEtkzUzoBTg";
 
-var fontListPromise = null;
-var fontList = null;
+let fontListPromise = null;
+let fontList = null;
 
 function getUrl(url, next) {
-	var fn = (url[4] === "s") ? https : http;
+	let fn = (url[4] === "s") ? https : http;
 	fn.get(url, (res) => {
-		var buffers = [];
-		res.on("data", function(chunk) {
+		let buffers = [];
+		res.on("data", (chunk) => {
 			buffers.push(chunk);
 		});
-		res.on("end", function() {
+		res.on("end", () => {
 			next(null, Buffer.concat(buffers));
 		});
 	}, (err) => {

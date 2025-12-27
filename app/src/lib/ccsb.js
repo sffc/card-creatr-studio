@@ -27,19 +27,19 @@ const oldCreateFile = ccsb.createFile;
 const oldRemoveFile = ccsb.removeFile;
 
 ccsb.writeFile = function() {
-	var ret = oldWriteFile.apply(ccsb, arguments);
+	let ret = oldWriteFile.apply(ccsb, arguments);
 	require("../store").commit("updateAllAssets");
 	return ret;
 };
 
 ccsb.createFile = function() {
-	var ret = oldCreateFile.apply(ccsb, arguments);
+	let ret = oldCreateFile.apply(ccsb, arguments);
 	require("../store").commit("updateAllAssets");
 	return ret;
 };
 
 ccsb.removeFile = function() {
-	var ret = oldRemoveFile.apply(ccsb, arguments);
+	let ret = oldRemoveFile.apply(ccsb, arguments);
 	require("../store").commit("updateAllAssets");
 	return ret;
 };

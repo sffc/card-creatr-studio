@@ -61,7 +61,7 @@ const STORE = new Vuex.Store({
 		addCardData(state, card) {
 			// Vue.get prevents triggering other watchers
 			Utils.vueGetOrDefault(state.cardData, card.id, card);
-			var newSet = new Set(state.cardIds);
+			let newSet = new Set(state.cardIds);
 			newSet.add(card.id);
 			state.cardIds = newSet;
 			state.cardIdSortOrder.push(card.id);
@@ -70,7 +70,7 @@ const STORE = new Vuex.Store({
 			Vue.set(Utils.vueGetOrDefault(state.cardData, cardId, {}), fieldId, value);
 		},
 		moveCard(state, [ cardId, directionDown ]) {
-			var oldIndex = state.cardIdSortOrder.indexOf(cardId);
+			let oldIndex = state.cardIdSortOrder.indexOf(cardId);
 			state.cardIdSortOrder.splice(oldIndex, 1);
 			if (directionDown) {
 				// Note: splice inserts at end if index > length
@@ -82,7 +82,7 @@ const STORE = new Vuex.Store({
 		},
 		deleteCard(state, cardId) {
 			Vue.delete(state.cardData, cardId);
-			var newSet = new Set(state.cardIds);
+			let newSet = new Set(state.cardIds);
 			newSet.delete(cardId);
 			state.cardIds = newSet;
 			state.cardIdSortOrder.splice(state.cardIdSortOrder.indexOf(cardId), 1);
@@ -275,7 +275,7 @@ setInterval(() => {
 	}
 }, 250);
 
-var cardDataWatchers = {};
+let cardDataWatchers = {};
 STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 	return state.cardIds;
 }, (newSet, oldSet) => {

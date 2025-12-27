@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div></div>
 `;
 
@@ -32,10 +32,10 @@ require("../vendor/mode-hjson.js");
 window.ace.config.set("basePath", path.join(__dirname, "node_modules/ace-builds/src-noconflict"));
 
 module.exports = {
-	template: template,
+	template,
 	props: ["mode", "theme", "modelValue"],
 	emits: ["update:modelValue"],
-	mounted: function() {
+	mounted() {
 		this._editor = window.ace.edit(this.$el);
 		this._editor.getSession().setMode("ace/mode/" + this.mode);
 		this._editor.setTheme("ace/theme/" + this.theme);
@@ -55,13 +55,13 @@ module.exports = {
 		});
 	},
 	watch: {
-		mode: function(mode) {
+		mode(mode) {
 			this._editor.getSession().setMode("ace/mode/" + mode);
 		},
-		theme: function(theme) {
+		theme(theme) {
 			this._editor.setTheme("ace/theme/" + theme);
 		},
-		modelValue: function(value) {
+		modelValue(value) {
 			if (value !== this._editor.getValue()) {
 				this._editor._silent = true;
 				this._editor.setValue(value);

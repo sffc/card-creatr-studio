@@ -17,18 +17,18 @@
 
 "use strict";
 
-var template = `
+let template = `
 <textarea v-model="lines" v-on:click="onClick"></textarea>
 `;
 
 //<script>
 module.exports = {
-	template: template,
+	template,
 	props: ["modelValue"],
 	emits: ["update:modelValue", "click"],
 	computed: {
 		lines: {
-			get: function() {
+			get() {
 				if (!this.modelValue) {
 					return "";
 				} else if (typeof this.modelValue === "string") {
@@ -39,13 +39,13 @@ module.exports = {
 					return this.modelValue.join("\n");
 				}
 			},
-			set: function(newLines) {
+			set(newLines) {
 				this.$emit("update:modelValue", newLines);
 			}
 		}
 	},
 	methods: {
-		onClick: function(event) {
+		onClick(event) {
 			this.$emit("click", event);
 		}
 	}

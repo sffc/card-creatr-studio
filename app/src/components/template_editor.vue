@@ -19,13 +19,13 @@
 
 // This file is an unfinished attempt at making a GUI to construct a template, instead of requiring the user to write Pug code.
 
-var editorTemplate = `
+let editorTemplate = `
 <div>
 	<template-element v-for="element in elements" :element="element"></template-element>
 </div>
 `;
 
-var elementTemplate = `
+let elementTemplate = `
 <div>
 	{{ element.toString() }}
 </div>
@@ -64,7 +64,7 @@ function getAttr(node, key, type) {
 			if (type === "float") {
 				return parseFloat(value);
 			} else if (type === "string") {
-				value = value || "";
+				value ||= "";
 				return value.length >= 2 ? value.substr(1, value.length-2) : value;
 			} else if (type === "color") {
 				// TODO
@@ -177,7 +177,7 @@ Vue.component("template-editor", {
 	template: editorTemplate,
 	props: ["modelValue"],
 	emits: ["update:modelValue"],
-	data: function() {
+	data() {
 		return {
 			elements: []
 		};
@@ -188,13 +188,13 @@ Vue.component("template-editor", {
 	},
 	watch: {
 		modelValue: {
-			handler: function(templateString) {
+			handler(templateString) {
 				this.elements = stringToElements(templateString);
 			},
 			immediate: true
 		},
 		elements: {
-			handler: function(newValue /* , oldValue */) {
+			handler(newValue /* , oldValue */) {
 				let templateString = elementsToString(newValue);
 				this.$emit("update:modelValue", templateString);
 			},

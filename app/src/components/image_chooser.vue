@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div class="image-chooser">
 	<template v-if="hasImage && !isCorrupted">
 		<span>

@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div>
 	<table class="card-list" v-bind:style="{ 'min-width': tableWidth + 'px' }">
 		<thead v-bind:class="{ sortReversed: sortReversed }">
@@ -40,13 +40,13 @@ var template = `
 
 //<script>
 module.exports = {
-	template: template,
+	template,
 	components: {
 		"card-row": require("./card_row"),
 	},
 	props: ["cards", "cardIdSortOrder", "fields", "modelValue"],
 	emits: ["update:modelValue", "new"],
-	data: function() {
+	data() {
 		return {
 			sortField: null,
 			sortReversed: false,
@@ -54,27 +54,27 @@ module.exports = {
 		};
 	},
 	computed: {
-		tableWidth: function() {
+		tableWidth() {
 			if (!this.fields) return 1;
 			return Object.keys(this.fields).reduce((s,fieldId) => { return s + parseInt(this.fields[fieldId].width); }, 0);
 		},
 	},
 	methods: {
-		onRowClick: function(card) {
+		onRowClick(card) {
 			this.$emit("update:modelValue", card.id);
 		},
-		onColumnClick: function(field) {
+		onColumnClick(field) {
 			if (this.sortField === field) {
 				this.sortReversed = !this.sortReversed;
 			} else {
 				this.sortField = field;
 			}
 		},
-		resetSort: function() {
+		resetSort() {
 			this.sortField = null;
 			this.sortReversed = false;
 		},
-		doSort: function() {
+		doSort() {
 			// This is in an explicit watch-method instead of a computed in order to avoid re-sorting rows when card content changes.
 			if (this.cards === null) return null;
 
@@ -97,8 +97,8 @@ module.exports = {
 					a = a.join("");
 					b = b.join("");
 				}
-				a = a || "";
-				b = b || "";
+				a ||= "";
+				b ||= "";
 				if (this.sortField && (this.sortField.properties.indexOf("uint") !== -1 || this.sortField.properties.indexOf("number") !== -1)) {
 					a = parseFloat(a) || 0;
 					b = parseFloat(b) || 0;
@@ -113,26 +113,26 @@ module.exports = {
 			});
 			return cardsArray;
 		},
-		newCard: function() {
+		newCard() {
 			this.resetSort();
 			this.$emit("new");
 		}
 	},
 	watch: {
 		sortField: {
-			handler: function() {
+			handler() {
 				this.sortedCards = this.doSort();
 			},
 			immediate: true
 		},
 		sortReversed: {
-			handler: function() {
+			handler() {
 				this.sortedCards = this.doSort();
 			},
 			immediate: true
 		},
 		cardIdSortOrder: {
-			handler: function() {
+			handler() {
 				this.sortedCards = this.doSort();
 			},
 			deep: true

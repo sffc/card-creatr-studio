@@ -48,7 +48,7 @@ function vueGetOrDefault(obj, key, defaultVal) {
 
 function setEquals(set1, set2) {
 	if (set1.size !== set2.size) return false;
-	for (var a of set1) if (!set2.has(a)) return false;
+	for (let a of set1) if (!set2.has(a)) return false;
 	return true;
 }
 
@@ -76,9 +76,9 @@ function uuid() {
 	return uuidV4();
 }
 
-var globalCounterMinid = 1;
+let globalCounterMinid = 1;
 function minid() {
-	var sn = "0000" + (globalCounterMinid++);
+	let sn = "0000" + (globalCounterMinid++);
 	if (sn.length < 9) {
 		sn = sn.slice(-5);
 	}
@@ -93,9 +93,9 @@ function fileSizeString(bytes) {
 }
 
 function createCard(existingIds, fields) {
-	var id;
-	var maxId = "";
-	var i = 0;
+	let id;
+	let maxId = "";
+	let i = 0;
 	for (let _id of existingIds) {
 		if (_id > maxId) {
 			maxId = _id;
@@ -185,7 +185,7 @@ function finalizeSvg(innerSvg, dims, options, noUnits, numPages, scale) {
 function resized() {
 	// Fire a window "resize" event to make sure everything adjusts,
 	// like the ACE editor
-	var evt = document.createEvent("UIEvents");
+	let evt = document.createEvent("UIEvents");
 	evt.initUIEvent("resize", true, false, window, 0);
 	window.dispatchEvent(evt);
 }
