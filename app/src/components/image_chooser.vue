@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div class="image-chooser">
 	<template v-if="hasImage && !isCorrupted">
 		<span>
@@ -44,50 +44,54 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const Utils = require("../lib/utils");
 const ccsb = require("../lib/ccsb");
-const fs = require("fs");
 const mime = require("mime");
 
-Vue.component("image-chooser", {
-	template: template,
-	props: ["value", "placeholder", "extra"],
+module.exports = {
+	template,
+	props: ["modelValue", "placeholder", "extra"],
+	emits: ["update:modelValue"],
 	computed: {
-		hasImage: function() {
-			return !!this.value;
+		hasImage() {
+			return !!this.modelValue;
 		},
-		isCorrupted: function() {
+		isCorrupted() {
 			if (!this.extra) return false;
 			if (!this.extra.buffer || !this.extra.dataUri) return true;
 			return false;
 		},
-		dataUri: function() {
+		dataUri() {
 			if (!this.extra) return null;
 			return this.extra.dataUri;
 		},
-		fileSizeString: function() {
+		fileSizeString() {
 			if (!this.extra) return null;
 			let bytes = this.extra.buffer.length;
 			return Utils.fileSizeString(bytes);
 		}
 	},
 	methods: {
-		clearImage: function() {
+		clearImage() {
 			if (confirm("Remove this image?")) {
-				ccsb.removeFile(this.value);
-				this.$emit("input", null);
+				ccsb.removeFile(this.modelValue);
+				this.$emit("update:modelValue", null);
 			}
 		},
-		onFileChoosen: function(event) {
+		onFileChoosen(event) {
 			let file = event.target.files[0];
 			if (!file) return;
-			fs.readFile(file.path, (err, buffer) => {
-				if (err) return alert(err);
-				let filePath = ccsb.createFile(mime.lookup(file.path), "card_assets", buffer);
-				this.$emit("input", filePath);
+			const reader = new FileReader();
+			reader.addEventListener("load", (event) => { // eslint-disable-line no-shadow
+				console.log("Loaded file:", reader.result?.byteLength, event);
+				let filePath = ccsb.createFile(mime.lookup(file.name), "card_assets", reader.result);
+				this.$emit("update:modelValue", filePath);
 			});
+			reader.addEventListener("error", (event) => { // eslint-disable-line no-shadow
+				alert(event);
+			});
+			reader.readAsArrayBuffer(file);
 		}
 	}
-});
+};
 //</script>

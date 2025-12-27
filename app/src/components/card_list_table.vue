@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div>
 	<table class="card-list" v-bind:style="{ 'min-width': tableWidth + 'px' }">
 		<thead v-bind:class="{ sortReversed: sortReversed }">
@@ -29,7 +29,7 @@ var template = `
 			</tr>
 		</thead>
 		<tbody>
-			<card-row v-for="card in sortedCards" :key="card.id" :card="card" :fields="fields" v-on:click.stop="onRowClick(card)" :active="value === card.id"></card-row>
+			<card-row v-for="card in sortedCards" :key="card.id" :card="card" :fields="fields" v-on:click.stop="onRowClick(card)" :active="modelValue === card.id"></card-row>
 		</tbody>
 	</table>
 	<div class="below-card-list">
@@ -39,13 +39,14 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
-require("./card_row");
-
-Vue.component("card-list-table", {
-	template: template,
-	props: ["cards", "cardIdSortOrder", "fields", "value"],
-	data: function() {
+module.exports = {
+	template,
+	components: {
+		"card-row": require("./card_row"),
+	},
+	props: ["cards", "cardIdSortOrder", "fields", "modelValue"],
+	emits: ["update:modelValue", "new"],
+	data() {
 		return {
 			sortField: null,
 			sortReversed: false,
@@ -53,27 +54,27 @@ Vue.component("card-list-table", {
 		};
 	},
 	computed: {
-		tableWidth: function() {
+		tableWidth() {
 			if (!this.fields) return 1;
 			return Object.keys(this.fields).reduce((s,fieldId) => { return s + parseInt(this.fields[fieldId].width); }, 0);
 		},
 	},
 	methods: {
-		onRowClick: function(card) {
-			this.$emit("input", card.id);
+		onRowClick(card) {
+			this.$emit("update:modelValue", card.id);
 		},
-		onColumnClick: function(field) {
+		onColumnClick(field) {
 			if (this.sortField === field) {
 				this.sortReversed = !this.sortReversed;
 			} else {
 				this.sortField = field;
 			}
 		},
-		resetSort: function() {
+		resetSort() {
 			this.sortField = null;
 			this.sortReversed = false;
 		},
-		doSort: function() {
+		doSort() {
 			// This is in an explicit watch-method instead of a computed in order to avoid re-sorting rows when card content changes.
 			if (this.cards === null) return null;
 
@@ -96,8 +97,8 @@ Vue.component("card-list-table", {
 					a = a.join("");
 					b = b.join("");
 				}
-				a = a || "";
-				b = b || "";
+				a ||= "";
+				b ||= "";
 				if (this.sortField && (this.sortField.properties.indexOf("uint") !== -1 || this.sortField.properties.indexOf("number") !== -1)) {
 					a = parseFloat(a) || 0;
 					b = parseFloat(b) || 0;
@@ -112,29 +113,30 @@ Vue.component("card-list-table", {
 			});
 			return cardsArray;
 		},
-		newCard: function() {
+		newCard() {
 			this.resetSort();
 			this.$emit("new");
 		}
 	},
 	watch: {
 		sortField: {
-			handler: function() {
+			handler() {
 				this.sortedCards = this.doSort();
 			},
 			immediate: true
 		},
 		sortReversed: {
-			handler: function() {
+			handler() {
 				this.sortedCards = this.doSort();
 			},
 			immediate: true
 		},
 		cardIdSortOrder: {
-			handler: function() {
+			handler() {
 				this.sortedCards = this.doSort();
-			}
+			},
+			deep: true
 		}
 	}
-});
+};
 //</script>

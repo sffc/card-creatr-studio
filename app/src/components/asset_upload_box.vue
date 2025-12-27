@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div class="asset-box">
 	<strong>Add File</strong><br/>
 	<input type="file" v-on:click.stop v-on:change="uploadFile" />
@@ -25,18 +25,19 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const ccsb = require("../lib/ccsb");
 const fs = require("fs");
 const path = require("path");
 
-Vue.component("asset-upload-box", {
-	template: template,
+module.exports = {
+	template,
 	props: [],
+	emits: ["upload"],
 	methods: {
-		uploadFile: function(event) {
+		uploadFile(event) {
 			let file = event.target.files[0];
 			if (!file) return;
+			// eslint-disable-next-line consistent-return
 			fs.readFile(file.path, (err, buffer) => {
 				if (err) return alert(err);
 				let basename = path.basename(file.path);
@@ -50,5 +51,5 @@ Vue.component("asset-upload-box", {
 			event.target.value = null;
 		}
 	}
-});
+};
 //</script>

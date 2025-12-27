@@ -2,8 +2,8 @@
   "main": "app/electron/main.js",
   "description": "A graphical user interface to Card Creatr",
   "scripts": {
-    "lint": "eslint  --ext .js,.vue .",
-    "stylus": "stylus app/src/styl -w -o app/src/css",
+    "lint": "eslint --ext .js,.vue .",
+    "stylus": "stylus app/src/styl --include-css -w -o app/src/css",
     "electron": "electron .",
     "build-mac": "electron-builder -m",
     "build-mac-linux": "electron-builder -ml --x64",
@@ -16,10 +16,13 @@
   "license": "GPL-3.0",
   "repository": "sffc/cc-studio",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "electron": "^39",
     "electron-builder": "^26",
     "electron-devtools-installer": "^4",
     "eslint": "^9",
+    "globals": "^16.5.0",
     "stylus": "^0.64"
   },
   "engines": {

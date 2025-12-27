@@ -15,39 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-"use strict";
+ // TODO: This is probably not the best way to import this CSS. It seems like you can import it as ESM.
 
-let template = `
-<textarea v-model="lines" v-on:click="onClick"></textarea>
-`;
-
-//<script>
-module.exports = {
-	template,
-	props: ["modelValue"],
-	emits: ["update:modelValue", "click"],
-	computed: {
-		lines: {
-			get() {
-				if (!this.modelValue) {
-					return "";
-				} else if (typeof this.modelValue === "string") {
-					// normal case
-					return this.modelValue;
-				} else {
-					// special case: when an array of strings is provided
-					return this.modelValue.join("\n");
-				}
-			},
-			set(newLines) {
-				this.$emit("update:modelValue", newLines);
-			}
-		}
-	},
-	methods: {
-		onClick(event) {
-			this.$emit("click", event);
-		}
-	}
-};
-//</script>
+@require("../../node_modules/vue-color/dist/vue-color.css")

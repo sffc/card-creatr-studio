@@ -17,8 +17,8 @@
 
 "use strict";
 
-var template = `
-<tr v-on:click="onClick" v-bind:class="{ active: active }">
+let template = `
+<tr v-bind:class="{ active: active }">
 	<td class="left-buffer"></td>
 	<td v-for="field in fields">
 		<template v-if="field.display == 'string'">
@@ -49,26 +49,23 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
-require("./image_chooser");
-require("./color_picker");
-require("./textarea_array");
-require("./dropdown_field");
-
-Vue.component("card-row", {
-	template: template,
+module.exports = {
+	template,
+	components: {
+		"image-chooser": require("./image_chooser"),
+		"color-picker": require("./color_picker"),
+		"textarea-array": require("./textarea_array"),
+		"dropdown-field": require("./dropdown_field"),
+	},
 	props: ["card", "fields", "active"],
 	computed: {
 	},
 	methods: {
-		onClick: function(event) {
-			this.$emit("click", event);
-		},
-		optionsFor: function(field) {
+		optionsFor(field) {
 			let cardOptions = this.$store.state.cardOptions[this.card.id];
 			if (!cardOptions) return null;
 			return cardOptions.get("/" + field.name);
 		}
 	}
-});
+};
 //</script>

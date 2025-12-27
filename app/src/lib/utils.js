@@ -17,7 +17,7 @@
 
 "use strict";
 
-const Vue = require("vue/dist/vue");
+const Vue = require("@vue/compat");
 const uuidV4 = require("uuid/v4");
 const CardCreatr = require("card-creatr");
 
@@ -48,7 +48,7 @@ function vueGetOrDefault(obj, key, defaultVal) {
 
 function setEquals(set1, set2) {
 	if (set1.size !== set2.size) return false;
-	for (var a of set1) if (!set2.has(a)) return false;
+	for (let a of set1) if (!set2.has(a)) return false;
 	return true;
 }
 
@@ -76,9 +76,9 @@ function uuid() {
 	return uuidV4();
 }
 
-var globalCounterMinid = 1;
+let globalCounterMinid = 1;
 function minid() {
-	var sn = "0000" + (globalCounterMinid++);
+	let sn = "0000" + (globalCounterMinid++);
 	if (sn.length < 9) {
 		sn = sn.slice(-5);
 	}
@@ -93,9 +93,9 @@ function fileSizeString(bytes) {
 }
 
 function createCard(existingIds, fields) {
-	var id;
-	var maxId = "";
-	var i = 0;
+	let id;
+	let maxId = "";
+	let i = 0;
 	for (let _id of existingIds) {
 		if (_id > maxId) {
 			maxId = _id;
@@ -120,6 +120,7 @@ function createCard(existingIds, fields) {
 }
 
 function createField(template) {
+	// eslint-disable-next-line no-param-reassign
 	if (!template) template = {
 		name: "untitled"
 	};
@@ -137,7 +138,7 @@ function makeCardSvgs(options, renderer, allCardOptions, { showBack, useQty }) {
 			if (!cardOptions) continue;
 			let qty = parseInt(cardOptions.get("/qty"));
 			if (isNaN(qty) || !useQty) qty = 1;
-			if (qty == 0) continue;
+			if (qty === 0) continue;
 			let str = renderer.render(cardOptions, options, options.get("/viewports/card"), {
 				__BACK: showBack
 			});
@@ -185,7 +186,7 @@ function finalizeSvg(innerSvg, dims, options, noUnits, numPages, scale) {
 function resized() {
 	// Fire a window "resize" event to make sure everything adjusts,
 	// like the ACE editor
-	var evt = document.createEvent("UIEvents");
+	let evt = document.createEvent("UIEvents");
 	evt.initUIEvent("resize", true, false, window, 0);
 	window.dispatchEvent(evt);
 }

@@ -25,15 +25,16 @@ const url = require("url");
 const rasterize = require("card-creatr/lib/rasterize");
 
 function renderAndSavePdf(pdfPath, options, next) {
-	var svgString = options.svgString;
-	var pageWidth = options.pageWidth;
-	var pageHeight = options.pageHeight;
-	var scale = options.scale;
-	var numPages = options.numPages;
+	let { svgString, pageWidth, pageHeight, scale, numPages } = options;
+	// eslint-disable-next-line no-use-before-define
 	createWindowFromString(svgString, pageWidth*scale, pageHeight*scale*numPages, (err, window, cleanupCallback) => {
-		if (err) return cleanupCallback() && next(err);
+		if (err) {
+			cleanupCallback();
+			next(err);
+			return;
+		}
 		async.times(numPages, (i, _next) => {
-			var rectangle = {
+			let rectangle = {
 				x: 0,
 				y: pageHeight*scale*i,
 				width: pageWidth*scale,
@@ -41,13 +42,17 @@ function renderAndSavePdf(pdfPath, options, next) {
 			};
 			console.log("Capturing page", rectangle);
 			window.capturePage(rectangle).then((nativeImage) => {
-				var outputSize = nativeImage.getSize();
+				let outputSize = nativeImage.getSize();
 				console.log("Captured page", outputSize);
 				_next(null, nativeImage.toPNG());
 			}).catch(_next);
-		}, (err, pngBuffers) => {
-			if (err) return cleanupCallback() && next(err);
-			var writeStream = fs.createWriteStream(pdfPath);
+		}, (err, pngBuffers) => { // eslint-disable-line no-shadow
+			if (err) {
+				cleanupCallback();
+				next(err);
+				return;
+			}
+			let writeStream = fs.createWriteStream(pdfPath);
 			writeStream.on("finish", () => {
 				cleanupCallback();
 				next(null);
@@ -111,7 +116,7 @@ function capturePageMosaic(window, n, pageWidth, pageHeight, scale, next) {
 */
 
 function createWindowFromString(svgString, windowWidth, windowHeight, next) {
-	var tmpPath, fd, cleanupCallback, window;
+	let cleanupCallback, fd, tmpPath, window;
 	async.waterfall([
 		(_next) => {
 			tmp.file({ postfix: ".svg", detachDescriptor: true }, _next);
@@ -134,7 +139,7 @@ function createWindowFromString(svgString, windowWidth, windowHeight, next) {
 				backgroundColor: "#FFF",
 				show: false
 			});
-			var _url = url.format({
+			let _url = url.format({
 				pathname: tmpPath,
 				protocol: "file:",
 				slashes: true
@@ -158,7 +163,7 @@ function createWindowFromString(svgString, windowWidth, windowHeight, next) {
 			_realCleanup();
 			return next(err);
 		}
-		next(null, window, _realCleanup);
+		return next(null, window, _realCleanup);
 	});
 }
 

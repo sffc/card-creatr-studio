@@ -17,6 +17,8 @@
 
 "use strict";
 
+/* eslint max-classes-per-file: "off" */
+
 // A class running in the main thread representing a window object.
 
 const electron = require("electron");
@@ -24,7 +26,7 @@ const EventEmitter = require("events");
 const path = require("path");
 const url = require("url");
 
-var globalCounter = 0;
+let globalCounter = 0;
 
 class CustomWindow extends EventEmitter {
 	constructor(filePath) {
@@ -46,7 +48,7 @@ class CustomWindow extends EventEmitter {
 		this._addListeners();
 		this._setPath(filePath);
 		this._reload();
-		console.log("Created window " + this.id + " for path " + filePath);
+		console.log(`Created window ${this.id} for path ${filePath}`);
 	}
 
 	saveAs(next) {
@@ -64,7 +66,7 @@ class CustomWindow extends EventEmitter {
 
 	saveOrSaveAs(next) {
 		// If a ccst file is open, do not overwrite it by default.
-		if (this.path && !/\.ccst$/.test(this.path)) {
+		if (this.path && !/\.ccst$/u.test(this.path)) {
 			this._save(next);
 		} else {
 			this.saveAs(next);
@@ -112,7 +114,7 @@ class CustomWindow extends EventEmitter {
 	}
 
 	_addListeners() {
-		console.log("Adding listeners for window " + this.id);
+		console.log(`Adding listeners for window ${this.id}`);
 		this._onClose$bound = this._onClose.bind(this);
 		this._onClosed$bound = this._onClosed.bind(this);
 		this._onSAR$bound = this._onSAR.bind(this);
@@ -126,7 +128,7 @@ class CustomWindow extends EventEmitter {
 	}
 
 	_removeListeners() {
-		console.log("Removing listeners for window " + this.id);
+		console.log(`Removing listeners for window ${this.id}`);
 		this.browserWindow.removeListener("close", this._onClose$bound);
 		this.browserWindow.removeListener("closed", this._onClosed$bound);
 		electron.ipcMain.removeListener("_SAR", this._onSAR$bound);
@@ -153,9 +155,9 @@ class CustomWindow extends EventEmitter {
 	_updateTitle() {
 		this.browserWindow.setDocumentEdited(this.isDirty);
 		if (this.isDirty) {
-			this.browserWindow.setTitle(this._basename() + "* — Card Creatr");
+			this.browserWindow.setTitle(`${this._basename()}* — Card Creatr`);
 		} else {
-			this.browserWindow.setTitle(this._basename() + " — Card Creatr");
+			this.browserWindow.setTitle(`${this._basename()} — Card Creatr`);
 		}
 	}
 
@@ -169,7 +171,7 @@ class CustomWindow extends EventEmitter {
 
 	_reload() {
 		// var port = process.env.PORT || appConfig.dev.port;
-		var _url = url.format({
+		let _url = url.format({
 			pathname: path.join(__dirname, "..", "electron", "index.html"),
 			protocol: "file:",
 			// pathname: "/",
@@ -192,7 +194,7 @@ class CustomWindow extends EventEmitter {
 			electron.dialog.showMessageBox({
 				type: "info",
 				title: "Save changes?",
-				message: "Do you want to save the changes you made to " + this._basename() + "?",
+				message: `Do you want to save the changes you made to ${this._basename()}?`,
 				detail: "Your changes will be lost if you don't save them.",
 				buttons: ["Save", "Discard", "Cancel"],
 				defaultId: 0
@@ -219,7 +221,7 @@ class CustomWindow extends EventEmitter {
 
 	_onDirty(event, message) {
 		if (event.sender === this.browserWindow.webContents) {
-			console.log("Dirty event for window " + this.id, message);
+			console.log(`Dirty event for window ${this.id}`, message);
 			this.isDirty = message.isDirty;
 			this._updateTitle();
 		}

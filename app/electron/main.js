@@ -20,9 +20,9 @@
 const electron = require("electron");
 const capture = require("./capture");
 const CustomMenu = require("./menu");
-const CustomWindowManager = require("./window").CustomWindowManager;
+const {CustomWindowManager} = require("./window");
 const http = require("http");
-const shell = require("electron").shell;
+const {shell} = require("electron");
 
 const menu = new CustomMenu();
 
@@ -36,7 +36,7 @@ function showOpenDialog(next) {
 			{name: "Card Creatr Studio Files", extensions: ["ccsb", "ccst"]},
 			{name: "All Files", extensions: ["*"]}
 		]
-	}).then(({ filePaths }) => {
+	}).then(({ filePaths }) => { // eslint-disable-line consistent-return
 		if (!filePaths) return next(null);
 		next(filePaths[0]);
 	});
@@ -163,15 +163,15 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 	http.get("http://cardcreatr.shane.guru/versions/latest.txt", (res) => {
 		let currentVersion = require("../package.json").version;
 		let latestVersion = "";
-		res.on("data", function(chunk) {
+		res.on("data", (chunk) => {
 			latestVersion += chunk;
 		});
-		res.on("end", function() {
+		res.on("end", () => {
 			if (currentVersion !== latestVersion) {
 				electron.dialog.showMessageBox({
 					type: "info",
 					message: "Updates Available",
-					detail: "Your version: " + currentVersion + "\nLatest version: " + latestVersion,
+					detail: `Your version: ${currentVersion}\nLatest version: ${latestVersion}`,
 					buttons: ["Download", "Cancel"],
 					defaultId: 0,
 					cancelId: 1
@@ -184,7 +184,7 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 				electron.dialog.showMessageBox({
 					type: "info",
 					message: "All Up-to-Date!",
-					detail: "Version: " + currentVersion,
+					detail: `Version: ${currentVersion}`,
 					buttons: ["OK", "Download Page"],
 					defaultId: 0,
 					cancelId: 1
@@ -199,7 +199,7 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 		electron.dialog.showMessageBox({
 			type: "warning",
 			message: "Internet Connection Required",
-			detail: "Could not connect to cardcreatr.shane.guru: " + err
+			detail: `Could not connect to cardcreatr.shane.guru: ${err}`
 		});
 	});
 });
