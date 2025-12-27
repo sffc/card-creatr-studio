@@ -33,6 +33,7 @@ const Utils = require("../lib/utils");
 module.exports = {
 	template: template,
 	props: ["path"],
+	emits: ["remove"],
 	computed: {
 		fileSizeString: function() {
 			return Utils.fileSizeString(this.bytes);

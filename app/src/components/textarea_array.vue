@@ -25,7 +25,7 @@ var template = `
 module.exports = {
 	template: template,
 	props: ["modelValue"],
-	emits: ["update:modelValue"],
+	emits: ["update:modelValue", "click"],
 	computed: {
 		lines: {
 			get: function() {

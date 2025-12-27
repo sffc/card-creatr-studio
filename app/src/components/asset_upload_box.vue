@@ -32,6 +32,7 @@ const path = require("path");
 module.exports = {
 	template: template,
 	props: [],
+	emits: ["upload"],
 	methods: {
 		uploadFile: function(event) {
 			let file = event.target.files[0];

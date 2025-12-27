@@ -29,7 +29,7 @@ var template = `
 module.exports = {
 	template: template,
 	props: ["modelValue", "dropdownV1"],
-	emits: ["update:modelValue"],
+	emits: ["update:modelValue", "click"],
 	computed: {
 		selected: {
 			get: function() {

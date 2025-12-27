@@ -45,7 +45,7 @@ module.exports = {
 		"card-row": require("./card_row"),
 	},
 	props: ["cards", "cardIdSortOrder", "fields", "modelValue"],
-	emits: ["update:modelValue"],
+	emits: ["update:modelValue", "new"],
 	data: function() {
 		return {
 			sortField: null,
