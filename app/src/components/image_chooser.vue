@@ -46,7 +46,6 @@ var template = `
 //<script>
 const Utils = require("../lib/utils");
 const ccsb = require("../lib/ccsb");
-const fs = require("fs");
 const mime = require("mime");
 
 module.exports = {

@@ -16,10 +16,13 @@
   "license": "GPL-3.0",
   "repository": "sffc/cc-studio",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "electron": "^39",
     "electron-builder": "^26",
     "electron-devtools-installer": "^4",
     "eslint": "^9",
+    "globals": "^16.5.0",
     "stylus": "^0.64"
   },
   "engines": {

@@ -31,7 +31,7 @@ if (__dirname.indexOf("app.asar") !== -1) {
 
 require.extensions[".vue"] = require.extensions[".js"];
 
-const Vue = require("@vue/compat");
+// const Vue = require("@vue/compat");
 const Vue3 = require("vue");
 const App = require("./App");
 const CardCreatr = require("card-creatr");
