@@ -44,10 +44,9 @@ const pagePrinterFallback = require("./lib/page_printer_fallback");
 const svgXml = require("./lib/svg_xml");
 const electron = require("electron");
 
-const vm = Vue3.createApp(App);
-
-vm.use(store);
-vm.mount("#app");
+const app = Vue3.createApp(App);
+app.use(store);
+const vm = app.mount("#app");
 
 if (global) {
 	global.vm = vm;
@@ -71,7 +70,7 @@ function ipcStatusUpdate(status) {
 		action = "Error";
 		break;
 	}
-	vm.$children[0].$data.spinnerText = action + " page #" + (status.page+1) + "…";
+	vm.spinnerText = action + " page #" + (status.page+1) + "…";
 }
 
 document.body.addEventListener("click", (event) => {
@@ -89,10 +88,10 @@ electron.ipcRenderer.on("path", (event, message) => {
 	ccsb.setPath(message.path);
 });
 electron.ipcRenderer.on("print3", (event, message) => {
-	vm.$children[0].$data.spinnerCount++;
-	vm.$children[0].$data.spinnerText = "Calculating…";
+	vm.spinnerCount++;
+	vm.spinnerText = "Calculating…";
 	pagePrinterFallback.printPageCanvasPdf(message, ipcStatusUpdate, (err) => {
-		vm.$children[0].$data.spinnerCount--;
+		vm.spinnerCount--;
 		if (err) {
 			console.error(err);
 			alert("Error: " + err.message);
@@ -101,10 +100,10 @@ electron.ipcRenderer.on("print3", (event, message) => {
 	});
 });
 electron.ipcRenderer.on("print4", (event, message) => {
-	vm.$children[0].$data.spinnerCount++;
-	vm.$children[0].$data.spinnerText = "Calculating…";
+	vm.spinnerCount++;
+	vm.spinnerText = "Calculating…";
 	pagePrinterFallback.printPageCanvasPdf2(message, ipcStatusUpdate, (err) => {
-		vm.$children[0].$data.spinnerCount--;
+		vm.spinnerCount--;
 		if (err) {
 			console.error(err);
 			alert("Error: " + err.message);
@@ -113,10 +112,10 @@ electron.ipcRenderer.on("print4", (event, message) => {
 	});
 });
 electron.ipcRenderer.on("cardImages1", (event, message) => {
-	vm.$children[0].$data.spinnerCount++;
-	vm.$children[0].$data.spinnerText = "Calculating…";
+	vm.spinnerCount++;
+	vm.spinnerText = "Calculating…";
 	pagePrinterFallback.printCardCanvasZip(message, ipcStatusUpdate, (err) => {
-		vm.$children[0].$data.spinnerCount--;
+		vm.spinnerCount--;
 		if (err) {
 			console.error(err);
 			alert("Error: " + err.message);
@@ -125,17 +124,17 @@ electron.ipcRenderer.on("cardImages1", (event, message) => {
 	});
 });
 electron.ipcRenderer.on("addcard", (/* event, message */) => {
-	vm.$children[0].newCard();
+	vm.newCard();
 });
 electron.ipcRenderer.on("movecardup", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
-	vm.$children[0].moveCard(card.id, false);
+	vm.moveCard(card.id, false);
 });
 electron.ipcRenderer.on("movecarddown", (/* event, message */) => {
 	let card = store.getters.currentCard;
 	if (!card) return alert("Please select a card first.");
-	vm.$children[0].moveCard(card.id, true);
+	vm.moveCard(card.id, true);
 });
 electron.ipcRenderer.on("deletecard", (/* event, message */) => {
 	let card = store.getters.currentCard;
