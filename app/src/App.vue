@@ -341,13 +341,16 @@ module.exports = {
 		}
 	},
 	watch: {
-		errors: function(newValue) {
-			// A few heuristics to determine when to switch from the splash screen to the main editor view (here and below):
-			if (this.ready) return;
-			if (!this.loaded) return;
-			if (newValue.length > 0) return;
-			if (!this.$store.getters.globalOptions) return;
-			this.ready = true;
+		errors: {
+			handler: function(newValue) {
+				// A few heuristics to determine when to switch from the splash screen to the main editor view (here and below):
+				if (this.ready) return;
+				if (!this.loaded) return;
+				if (newValue.length > 0) return;
+				if (!this.$store.getters.globalOptions) return;
+				this.ready = true;
+			},
+			deep: true
 		},
 		loaded: function(newValue) {
 			if (this.ready) return;

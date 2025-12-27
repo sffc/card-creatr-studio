@@ -134,7 +134,8 @@ module.exports = {
 		cardIdSortOrder: {
 			handler: function() {
 				this.sortedCards = this.doSort();
-			}
+			},
+			deep: true
 		}
 	}
 };
