@@ -104,7 +104,7 @@ module.exports = {
 			<style type="text/css" scoped>
 				@font-face {
 					font-family: "${info.name}";
-					src: url("` + (info.dataUri ? info.dataUri : this.dataUri(info.filename)) + `");
+					src: url("${info.dataUri ? info.dataUri : this.dataUri(info.filename)}");
 				}
 			</style>
 			<span style="font-family: ${info.name};">The quick brown fox jumps over the lazy dog.</span>

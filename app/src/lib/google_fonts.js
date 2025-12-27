@@ -49,7 +49,7 @@ function ensureLoaded(next) {
 	} else {
 		if (!fontListPromise) {
 			fontListPromise = new Promise((resolve) => {
-				getUrl("https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key="+apiKey, (err, string) => {
+				getUrl(`https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${apiKey}`, (err, string) => {
 					if (err) {
 						console.error(err);
 						fontList = [];
@@ -66,9 +66,7 @@ function ensureLoaded(next) {
 
 function getNameList(next) {
 	ensureLoaded(() => {
-		next(fontList.map((details) => {
-			return details.family;
-		}));
+		next(fontList.map((details) => details.family));
 	});
 }
 

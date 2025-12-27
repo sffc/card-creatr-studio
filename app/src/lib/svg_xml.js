@@ -17,7 +17,7 @@
 
 "use strict";
 
-const pd = require("pretty-data").pd;
+const {pd} = require("pretty-data");
 const entities = new (require("html-entities").XmlEntities)();
 
 let svgXmlWindow = null;

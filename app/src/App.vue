@@ -175,16 +175,14 @@ module.exports = {
 		// "template-editor": require("./components/template_editor"),
 		"font-view": require("./components/font_view"),
 	},
-	data: () => {
-		return {
-			tab: null,
-			currentField: null,
-			ready: false,
-			bottomFlexBasis: 50,
-			spinnerCount: 0,
-			spinnerText: "Calculating…"
-		};
-	},
+	data: () => ({
+		tab: null,
+		currentField: null,
+		ready: false,
+		bottomFlexBasis: 50,
+		spinnerCount: 0,
+		spinnerText: "Calculating…"
+	}),
 	computed: {
 		cards() {
 			return this.$store.state.cardData;
@@ -313,7 +311,7 @@ module.exports = {
 			this.$store.commit("addField", field);
 		},
 		deleteField(){
-			if (confirm("Are you sure you want to delete the field \"" + this.currentField.name + "\" and all data associated with this field?")) {
+			if (confirm(`Are you sure you want to delete the field "${this.currentField.name}" and all data associated with this field?`)) {
 				this.$store.commit("deleteField", this.currentField);
 			}
 		},

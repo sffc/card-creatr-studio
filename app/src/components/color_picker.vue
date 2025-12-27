@@ -77,7 +77,7 @@ module.exports = {
 			set(newValue) {
 				if (newValue.a) {
 					// alpha channel: use rgba syntax
-					this.$emit("update:modelValue", "rgba("+newValue.r+","+newValue.g+","+newValue.b+","+newValue.a+")");
+					this.$emit("update:modelValue", `rgba(${newValue.r},${newValue.g},${newValue.b},${newValue.a})`);
 				} else {
 					// no alpha channel: use hex syntax
 					this.$emit("update:modelValue", newValue);

@@ -42,7 +42,7 @@ module.exports = {
 		showDetails(key, err) {
 			electron.ipcRenderer.send("showMessageBox", {
 				type: "error",
-				title: "Error Details: " + key,
+				title: `Error Details: ${key}`,
 				message: err.message,
 				detail: err.stack,
 				buttons: ["OK"],

@@ -163,9 +163,7 @@ const STORE = new Vuex.Store({
 	},
 	getters: {
 		buffer(state) {
-			return (filename) => {
-				return VuexCached.getter(state.buffers, filename, STORE, "updateBuffer");
-			};
+			return (filename) => VuexCached.getter(state.buffers, filename, STORE, "updateBuffer");
 		},
 		errors(state) {
 			// let allErrors = [].concat(VuexCached.errors(state.buffers));
@@ -278,9 +276,9 @@ setInterval(() => {
 }, 250);
 
 let cardDataWatchers = {};
-STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
-	return state.cardIds;
-}, (newSet, oldSet) => {
+STORE.watch((state, getters) =>  // eslint-disable-line no-unused-vars
+	 state.cardIds
+, (newSet, oldSet) => {
 	console.log("card data watchers triggered");
 	// eslint-disable-next-line no-param-reassign
 	if (!oldSet) oldSet = new Set();
@@ -304,9 +302,7 @@ STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 				let cardOptions = new (CardCreatr.OptionsParser)();
 				let card = Utils.toCardCreatrForm(rawCard, state.fields);
 				cardOptions.addPrimary(card, getters.buffer); // This line is important! When this watcher attempts to load a file, it actually pulls it from the reactive cache of file buffers.
-				cardOptions.addPrimary(card, (filename) => {
-					return getters.buffer(filename);
-				});
+				cardOptions.addPrimary(card, (filename) => getters.buffer(filename));
 				try {
 					cardOptions.loadSync();
 				} catch(err) {

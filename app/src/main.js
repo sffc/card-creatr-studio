@@ -18,7 +18,7 @@
 "use strict";
 
 const path = require("path");
-const Module = require("module").Module;
+const {Module} = require("module");
 if (__dirname.indexOf("app.asar") !== -1) {
 	// slimerjs and slimerjs-capture and its dependencies (tmp and os-tmpdir) are not designed to work inside of an asar archive.  This small hack tells Node to use the "unpacked" version of those modules.
 	const oldNodeModulePaths = Module._nodeModulePaths;
@@ -74,7 +74,7 @@ function ipcStatusUpdate(status) {
 		action = "[[Unknown]]";
 		break;
 	}
-	vm.spinnerText = action + " page #" + (status.page+1) + "…";
+	vm.spinnerText = `${action} page #${status.page+1}…`;
 }
 
 document.body.addEventListener("click", (event) => {
@@ -157,7 +157,7 @@ electron.ipcRenderer.on("viewSvgXml", (/* event, message */) => {
 	svgXml.open(store.state.currentSvg);
 });
 electron.ipcRenderer.on("_SAR", (event, data) => {
-	let id = data.id;
+	let {id} = data;
 	let _sendResponse = (response) => {
 		electron.ipcRenderer.send("_SAR", { id, response });
 	};

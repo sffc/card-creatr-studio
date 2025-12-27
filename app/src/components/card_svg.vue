@@ -30,7 +30,7 @@ module.exports = {
 	props: ["content"],
 	computed: {
 		viewBox() {
-			return "0 0 " + this.aspectRatio + " 1";
+			return `0 0 ${this.aspectRatio} 1`;
 		},
 		dims() {
 			let options = store.getters.globalOptions;

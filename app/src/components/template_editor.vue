@@ -52,7 +52,7 @@ class Element {
 	toString() {
 		let realOptions = Object.assign({}, this.options);
 		delete realOptions.node;
-		return "<Element " + this.type + " " + JSON.stringify(realOptions) + ">";
+		return `<Element ${this.type} ${JSON.stringify(realOptions)}>`;
 	}
 }
 

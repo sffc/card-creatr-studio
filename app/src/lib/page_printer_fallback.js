@@ -32,8 +32,7 @@ function getPageSvg(/* options */) {
 			showBack: store.state.showBack
 		}
 	);
-	let string = result.string;
-	let numPages = result.numPages;
+	let {string, numPages} = result;
 	let options = store.getters.globalOptions;
 	let dims = Object.assign({}, options.get("/dimensions/page"));
 	if (dims.unit !== "pt") {
@@ -42,7 +41,7 @@ function getPageSvg(/* options */) {
 	dims.unit = "px";
 	// TODO: Conider dividing by window.devicePixelRatio below. In the Electron screen capture, the number of pixels gets doubled, but in Firefox, this does not happen.
 	let scale = Math.round(dims.dpi / 72);
-	console.log("scale: " + scale);
+	console.log("scale:", scale);
 	let svgString = Utils.finalizeSvg(
 		string,
 		dims,
@@ -78,7 +77,7 @@ function getSinglePageSvgs(/* options */) {
 	dims.unit = "px";
 	// TODO: Conider dividing by window.devicePixelRatio below. In the Electron screen capture, the number of pixels gets doubled, but in Firefox, this does not happen.
 	let scale = Math.round(dims.dpi / 72);
-	console.log("scale: " + scale);
+	console.log("scale:", scale);
 	let svgStrings = strings.map(string => Utils.finalizeSvg(
 		string,
 		dims,
@@ -113,17 +112,15 @@ function getCardSvgs(/* options */) {
 	dims.unit = "px";
 	// TODO: Conider dividing by window.devicePixelRatio below. In the Electron screen capture, the number of pixels gets doubled, but in Firefox, this does not happen.
 	let scale = Math.round(dims.dpi / 72);
-	console.log("scale: " + scale);
-	let svgStrings = cards.map((card) => {
-		return Utils.finalizeSvg(
-			card,
-			dims,
-			options,
-			false,
-			1,
-			scale
-		);
-	});
+	console.log("scale:", scale);
+	let svgStrings = cards.map((card) => Utils.finalizeSvg(
+		card,
+		dims,
+		options,
+		false,
+		1,
+		scale
+	));
 	return {
 		svgStrings,
 		pageWidth: dims.width,
@@ -133,7 +130,7 @@ function getCardSvgs(/* options */) {
 }
 
 function printPageCanvasPdf(options, progress, next) {
-	let filePath = options.filePath;
+	let {filePath} = options;
 	if (!filePath) return;
 	try {
 		let { svgString, pageWidth, pageHeight, scale, numPages } = getPageSvg(options);
@@ -146,7 +143,7 @@ function printPageCanvasPdf(options, progress, next) {
 }
 
 function printPageCanvasPdf2(options, progress, next) {
-	let filePath = options.filePath;
+	let {filePath} = options;
 	if (!filePath) return;
 	try {
 		let { svgStrings, pageWidth, pageHeight, scale } = getSinglePageSvgs(options);
@@ -161,7 +158,7 @@ function printPageCanvasPdf2(options, progress, next) {
 }
 
 function printCardCanvasZip(options, progress, next) {
-	let filePath = options.filePath;
+	let {filePath} = options;
 	if (!filePath) return;
 	try {
 		let { svgStrings, pageWidth, pageHeight, scale } = getCardSvgs(options);
@@ -173,7 +170,7 @@ function printCardCanvasZip(options, progress, next) {
 			}, _next);
 		}, (err, pngBufferses) => { // eslint-disable-line consistent-return
 			if (err) return next(err);
-			let pngBuffers = pngBufferses.map((v) => { return v[0]; });
+			let pngBuffers = pngBufferses.map((v) => v[0]);
 			CardCreatr.rasterize.pngListToPngsZip(filePath, pngBuffers, pageWidth, pageHeight, next);
 		});
 	} catch(err) {

@@ -20,9 +20,9 @@
 const electron = require("electron");
 const capture = require("./capture");
 const CustomMenu = require("./menu");
-const CustomWindowManager = require("./window").CustomWindowManager;
+const {CustomWindowManager} = require("./window");
 const http = require("http");
-const shell = require("electron").shell;
+const {shell} = require("electron");
 
 const menu = new CustomMenu();
 
@@ -171,7 +171,7 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 				electron.dialog.showMessageBox({
 					type: "info",
 					message: "Updates Available",
-					detail: "Your version: " + currentVersion + "\nLatest version: " + latestVersion,
+					detail: `Your version: ${currentVersion}\nLatest version: ${latestVersion}`,
 					buttons: ["Download", "Cancel"],
 					defaultId: 0,
 					cancelId: 1
@@ -184,7 +184,7 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 				electron.dialog.showMessageBox({
 					type: "info",
 					message: "All Up-to-Date!",
-					detail: "Version: " + currentVersion,
+					detail: `Version: ${currentVersion}`,
 					buttons: ["OK", "Download Page"],
 					defaultId: 0,
 					cancelId: 1
@@ -199,7 +199,7 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 		electron.dialog.showMessageBox({
 			type: "warning",
 			message: "Internet Connection Required",
-			detail: "Could not connect to cardcreatr.shane.guru: " + err
+			detail: `Could not connect to cardcreatr.shane.guru: ${err}`
 		});
 	});
 });

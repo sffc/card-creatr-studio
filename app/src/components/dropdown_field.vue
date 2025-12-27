@@ -40,7 +40,7 @@ module.exports = {
 			}
 		},
 		options() {
-			return [{ value: "", text: "<empty>" }].concat(this.dropdownV1.split("\n").map((line) => { return { value: line, text: line }; }));
+			return [{ value: "", text: "<empty>" }].concat(this.dropdownV1.split("\n").map((line) => ({ value: line, text: line })));
 		}
 	},
 	methods: {

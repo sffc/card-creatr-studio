@@ -25,11 +25,7 @@ const url = require("url");
 const rasterize = require("card-creatr/lib/rasterize");
 
 function renderAndSavePdf(pdfPath, options, next) {
-	let svgString = options.svgString;
-	let pageWidth = options.pageWidth;
-	let pageHeight = options.pageHeight;
-	let scale = options.scale;
-	let numPages = options.numPages;
+	let { svgString, pageWidth, pageHeight, scale, numPages } = options;
 	// eslint-disable-next-line no-use-before-define
 	createWindowFromString(svgString, pageWidth*scale, pageHeight*scale*numPages, (err, window, cleanupCallback) => {
 		if (err) {
