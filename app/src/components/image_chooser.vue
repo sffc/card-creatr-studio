@@ -82,11 +82,16 @@ module.exports = {
 		onFileChoosen: function(event) {
 			let file = event.target.files[0];
 			if (!file) return;
-			fs.readFile(file.path, (err, buffer) => {
-				if (err) return alert(err);
-				let filePath = ccsb.createFile(mime.lookup(file.path), "card_assets", buffer);
+			const reader = new FileReader();
+			reader.addEventListener("load", (event) => {
+				console.log("Loaded file:", reader.result?.byteLength, event);
+				let filePath = ccsb.createFile(mime.lookup(file.name), "card_assets", reader.result);
 				this.$emit("update:modelValue", filePath);
 			});
+			reader.addEventListener("error", (event) => {
+				alert(event);
+			});
+			reader.readAsArrayBuffer(file);
 		}
 	}
 };
