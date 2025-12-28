@@ -265,18 +265,6 @@ class CustomMenu extends EventEmitter {
 							type: "separator"
 						},
 						{
-							label: "Print with Electron…",
-							click: (item, focusedWindow) => {
-								this.emit("print", focusedWindow);
-							}
-						},
-						{
-							label: "Export to PDF with Firefox…",
-							click: (item, focusedWindow) => {
-								this.emit("print3", focusedWindow);
-							}
-						},
-						{
 							label: "Export to PDF with Electron…",
 							click: (item, focusedWindow) => {
 								this.emit("print2", focusedWindow);
@@ -295,7 +283,7 @@ class CustomMenu extends EventEmitter {
 
 		this.template = getTemplate();
 
-		var editMenu, viewMenu, helpMenu;
+		let editMenu, helpMenu, viewMenu;
 		if (process.platform === "darwin") {
 			this.template.splice(1, 0, fileMenu);
 			editMenu = this.template[2];

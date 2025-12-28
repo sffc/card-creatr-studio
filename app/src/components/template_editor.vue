@@ -19,20 +19,20 @@
 
 // This file is an unfinished attempt at making a GUI to construct a template, instead of requiring the user to write Pug code.
 
-var editorTemplate = `
+let editorTemplate = `
 <div>
 	<template-element v-for="element in elements" :element="element"></template-element>
 </div>
 `;
 
-var elementTemplate = `
+let elementTemplate = `
 <div>
 	{{ element.toString() }}
 </div>
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
+const Vue = require("@vue/compat");
 const pugLexer = require("pug-lexer");
 const pugParser = require("pug-parser");
 
@@ -52,7 +52,7 @@ class Element {
 	toString() {
 		let realOptions = Object.assign({}, this.options);
 		delete realOptions.node;
-		return "<Element " + this.type + " " + JSON.stringify(realOptions) + ">";
+		return `<Element ${this.type} ${JSON.stringify(realOptions)}>`;
 	}
 }
 
@@ -64,7 +64,7 @@ function getAttr(node, key, type) {
 			if (type === "float") {
 				return parseFloat(value);
 			} else if (type === "string") {
-				value = value || "";
+				value ||= "";
 				return value.length >= 2 ? value.substr(1, value.length-2) : value;
 			} else if (type === "color") {
 				// TODO
@@ -172,10 +172,12 @@ function elementsToString(elements) {
 	return "xxx " + elements.length;
 }
 
+// TODO: Vue.component does not work any more
 Vue.component("template-editor", {
 	template: editorTemplate,
-	props: ["value"],
-	data: function() {
+	props: ["modelValue"],
+	emits: ["update:modelValue"],
+	data() {
 		return {
 			elements: []
 		};
@@ -185,22 +187,23 @@ Vue.component("template-editor", {
 	methods: {
 	},
 	watch: {
-		value: {
-			handler: function(templateString) {
+		modelValue: {
+			handler(templateString) {
 				this.elements = stringToElements(templateString);
 			},
 			immediate: true
 		},
 		elements: {
-			handler: function(newValue /* , oldValue */) {
+			handler(newValue /* , oldValue */) {
 				let templateString = elementsToString(newValue);
-				this.$emit("input", templateString);
+				this.$emit("update:modelValue", templateString);
 			},
 			deep: true
 		}
 	}
 });
 
+// TODO: Vue.component does not work any more
 Vue.component("template-element", {
 	template: elementTemplate,
 	props: ["element"],

@@ -20,7 +20,7 @@
 const CardCreatr = require("card-creatr");
 const Hjson = require("hjson");
 const Utils = require("./lib/utils");
-const Vue = require("vue/dist/vue");
+const Vue = require("@vue/compat");
 const Vuex = require("vuex");
 const VuexCached = require("./lib/vuex_cached");
 const ccsb = require("./lib/ccsb");
@@ -44,7 +44,6 @@ const STORE = new Vuex.Store({
 		selectedCardIds: [],
 		currentSvg: null,
 		showBack: false,
-		printing: false,
 		loaded: false,
 		gridShown: false,
 		printFrontAndBack: false,
@@ -63,15 +62,40 @@ const STORE = new Vuex.Store({
 		},
 		addCardData(state, card) {
 			// Vue.get prevents triggering other watchers
-			Vue.get(state.cardData, card.id, card);
-			var newSet = new Set(state.cardIds);
+			Utils.vueGetOrDefault(state.cardData, card.id, card);
+			let newSet = new Set(state.cardIds);
 			newSet.add(card.id);
 			state.cardIds = newSet;
 			state.cardIdSortOrder.push(card.id);
 		},
 		setCardDataField(state, [ cardId, fieldId, value ]) {
-			Vue.set(Vue.get(state.cardData, cardId, {}), fieldId, value);
+			Vue.set(Utils.vueGetOrDefault(state.cardData, cardId, {}), fieldId, value);
 		},
+		moveCard(state, [ cardId, directionDown ]) {
+			let oldIndex = state.cardIdSortOrder.indexOf(cardId);
+			state.cardIdSortOrder.splice(oldIndex, 1);
+			if (directionDown) {
+				// Note: splice inserts at end if index > length
+				state.cardIdSortOrder.splice(oldIndex + 1, 0, cardId);
+			} else {
+				// Note: splice inserts at beginning if index < 0
+				state.cardIdSortOrder.splice(oldIndex - 1, 0, cardId);
+			}
+		},
+		deleteCard(state, cardId) {
+			Vue.delete(state.cardData, cardId);
+			let newSet = new Set(state.cardIds);
+			newSet.delete(cardId);
+			state.cardIds = newSet;
+			state.cardIdSortOrder.splice(state.cardIdSortOrder.indexOf(cardId), 1);
+			if (state.currentId === cardId) {
+				state.currentId = null;
+			}
+			state.cardIds = newSet;
+			state.currentId = null;
+			state.selectedCardIds = [];
+		},
+		// TODO: Fix up moveCards/deleteCards
 		moveCards(state, directionDown) {
 			// order before moving
 			let selectedOrdered = state.cardIdSortOrder.slice();
@@ -107,7 +131,7 @@ const STORE = new Vuex.Store({
 			state.fields.push(field);
 			for (let cardId of Object.keys(state.cardData)) {
 				let card = state.cardData[cardId]; // Vue.get() not needed
-				if (!card.hasOwnProperty(field.id)) {
+				if (!Object.prototype.hasOwnProperty.call(card, field.id)) {
 					Vue.set(card, field.id, null);
 				}
 			}
@@ -209,9 +233,7 @@ const STORE = new Vuex.Store({
 	},
 	getters: {
 		buffer(state) {
-			return (filename) => {
-				return VuexCached.getter(state.buffers, filename, STORE, "updateBuffer");
-			};
+			return (filename) => VuexCached.getter(state.buffers, filename, STORE, "updateBuffer");
 		},
 		errors(state) {
 			// let allErrors = [].concat(VuexCached.errors(state.buffers));
@@ -223,7 +245,7 @@ const STORE = new Vuex.Store({
 		},
 		currentCard(state) {
 			if (state.currentId === null) return null;
-			return Vue.get(state.cardData, state.currentId, null);
+			return Utils.vueGetOrDefault(state.cardData, state.currentId, null);
 		},
 		selectedCards(state) {
 			return state.selectedCardIds;
@@ -247,10 +269,11 @@ const STORE = new Vuex.Store({
 			} catch(err) {
 				console.log("build renderer failed:", new Date().getTime() % 10000);
 				STORE.commit("setError", ["renderer", err]);
+				return null;
 			}
 		},
 		globalOptions(state, getters) {
-			if (state.optionsString == null) return null;
+			if (!state.optionsString) return null;
 			console.log("global options starting:", new Date().getTime() % 10000);
 			let globalOptions = new (CardCreatr.OptionsParser)();
 			try {
@@ -274,7 +297,7 @@ const STORE = new Vuex.Store({
 			}
 		},
 		getCurrentSvg(state, getters) {
-			let cardOptions = Vue.get(state.cardOptions, state.currentId, null);
+			let cardOptions = Utils.vueGetOrDefault(state.cardOptions, state.currentId, null);
 			let globalOptions = getters.globalOptions;
 			let renderer = getters.renderer;
 			if (!cardOptions || !globalOptions || !renderer) {
@@ -292,6 +315,7 @@ const STORE = new Vuex.Store({
 			} catch(err) {
 				console.log("rendering svg failed:", new Date().getTime() % 10000);
 				STORE.commit("setError", ["currentSvg", err]);
+				return null;
 			}
 		},
 		pageDimensions(state, getters) {
@@ -324,11 +348,12 @@ setInterval(() => {
 	}
 }, 250);
 
-var cardDataWatchers = {};
-STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
-	return state.cardIds;
-}, (newSet, oldSet) => {
+let cardDataWatchers = {};
+STORE.watch((state, getters) =>  // eslint-disable-line no-unused-vars
+	 state.cardIds
+, (newSet, oldSet) => {
 	console.log("card data watchers triggered");
+	// eslint-disable-next-line no-param-reassign
 	if (!oldSet) oldSet = new Set();
 	if (Utils.setEquals(newSet, oldSet)) return;
 	// Cards have been added or removed.
@@ -346,13 +371,11 @@ STORE.watch((state, getters) => { // eslint-disable-line no-unused-vars
 			// Added card
 			cardDataWatchers[id] = STORE.watch((state, getters) => {
 				console.log("card options watcher starting:", id, new Date().getTime() % 10000);
-				let rawCard = Vue.get(state.cardData, id, null);
+				let rawCard = Utils.vueGetOrDefault(state.cardData, id, null);
 				let cardOptions = new (CardCreatr.OptionsParser)();
 				let card = Utils.toCardCreatrForm(rawCard, state.fields);
 				cardOptions.addPrimary(card, getters.buffer); // This line is important! When this watcher attempts to load a file, it actually pulls it from the reactive cache of file buffers.
-				cardOptions.addPrimary(card, (filename) => {
-					return getters.buffer(filename);
-				});
+				cardOptions.addPrimary(card, (filename) => getters.buffer(filename));
 				try {
 					cardOptions.loadSync();
 				} catch(err) {

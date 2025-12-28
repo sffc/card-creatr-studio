@@ -23,7 +23,7 @@ const Utils = require("./utils");
 const async = require("async");
 
 function getPageSvg(/* options */) {
-	var result = Utils.makePageSvg(
+	let result = Utils.makePageSvg(
 		store.getters.globalOptions,
 		store.getters.renderer,
 		store.state.cardOptions,
@@ -33,18 +33,17 @@ function getPageSvg(/* options */) {
 			showBack: store.state.showBack
 		}
 	);
-	var string = result.string;
-	var numPages = result.numPages;
-	var options = store.getters.globalOptions;
-	var dims = Object.assign({}, options.get("/dimensions/page"));
+	let {string, numPages} = result;
+	let options = store.getters.globalOptions;
+	let dims = Object.assign({}, options.get("/dimensions/page"));
 	if (dims.unit !== "pt") {
 		alert("Units of 'pt' are required for printing");
 	}
 	dims.unit = "px";
 	// TODO: Conider dividing by window.devicePixelRatio below. In the Electron screen capture, the number of pixels gets doubled, but in Firefox, this does not happen.
-	var scale = Math.round(dims.dpi / 72);
-	console.log("scale: " + scale);
-	var svgString = Utils.finalizeSvg(
+	let scale = Math.round(dims.dpi / 72);
+	console.log("scale:", scale);
+	let svgString = Utils.finalizeSvg(
 		string,
 		dims,
 		options,
@@ -62,7 +61,7 @@ function getPageSvg(/* options */) {
 }
 
 function getSinglePageSvgs(/* options */) {
-	var strings = Utils.makePageSvg(
+	let strings = Utils.makePageSvg(
 		store.getters.globalOptions,
 		store.getters.renderer,
 		store.state.cardOptions,
@@ -72,16 +71,16 @@ function getSinglePageSvgs(/* options */) {
 			showBack: store.state.showBack
 		}
 	);
-	var options = store.getters.globalOptions;
-	var dims = Object.assign({}, options.get("/dimensions/page"));
+	let options = store.getters.globalOptions;
+	let dims = Object.assign({}, options.get("/dimensions/page"));
 	if (dims.unit !== "pt") {
 		alert("Units of 'pt' are required for printing");
 	}
 	dims.unit = "px";
 	// TODO: Conider dividing by window.devicePixelRatio below. In the Electron screen capture, the number of pixels gets doubled, but in Firefox, this does not happen.
-	var scale = Math.round(dims.dpi / 72);
-	console.log("scale: " + scale);
-	var svgStrings = strings.map(string => Utils.finalizeSvg(
+	let scale = Math.round(dims.dpi / 72);
+	console.log("scale:", scale);
+	let svgStrings = strings.map(string => Utils.finalizeSvg(
 		string,
 		dims,
 		options,
@@ -98,7 +97,7 @@ function getSinglePageSvgs(/* options */) {
 }
 
 function getCardSvgs(/* options */) {
-	var cards = Utils.makeCardSvgs(
+	let cards = Utils.makeCardSvgs(
 		store.getters.globalOptions,
 		store.getters.renderer,
 		store.state.cardOptions,
@@ -107,25 +106,23 @@ function getCardSvgs(/* options */) {
 			useQty: false
 		}
 	);
-	var options = store.getters.globalOptions;
-	var dims = Object.assign({}, options.get("/dimensions/card"));
+	let options = store.getters.globalOptions;
+	let dims = Object.assign({}, options.get("/dimensions/card"));
 	if (dims.unit !== "pt") {
 		alert("Units of 'pt' are required for printing");
 	}
 	dims.unit = "px";
 	// TODO: Conider dividing by window.devicePixelRatio below. In the Electron screen capture, the number of pixels gets doubled, but in Firefox, this does not happen.
-	var scale = Math.round(dims.dpi / 72);
-	console.log("scale: " + scale);
-	var svgStrings = cards.map((card) => {
-		return Utils.finalizeSvg(
-			card,
-			dims,
-			options,
-			false,
-			1,
-			scale
-		);
-	});
+	let scale = Math.round(dims.dpi / 72);
+	console.log("scale:", scale);
+	let svgStrings = cards.map((card) => Utils.finalizeSvg(
+		card,
+		dims,
+		options,
+		false,
+		1,
+		scale
+	));
 	return {
 		svgStrings,
 		pageWidth: dims.width,
@@ -134,22 +131,8 @@ function getCardSvgs(/* options */) {
 	};
 }
 
-function printSlimerJS(options, next) {
-	var filePath = options.filePath;
-	if (!filePath) return;
-	try {
-		let { svgString, pageWidth, pageHeight, scale, numPages } = getPageSvg(options);
-		CardCreatr.rasterize.slimerjs(svgString, pageWidth, pageHeight, scale, numPages, "pdf", filePath, (err) => {
-			if (err) return next(err);
-			next(null);
-		});
-	} catch(err) {
-		next(err);
-	}
-}
-
 function printPageCanvasPdf(options, progress, next) {
-	var filePath = options.filePath;
+	let {filePath} = options;
 	if (!filePath) return;
 	try {
 		let { svgString, pageWidth, pageHeight, scale, numPages } = getPageSvg(options);
@@ -162,10 +145,11 @@ function printPageCanvasPdf(options, progress, next) {
 }
 
 function printPageCanvasPdf2(options, progress, next) {
-	var filePath = options.filePath;
+	let {filePath} = options;
 	if (!filePath) return;
 	try {
 		let { svgStrings, pageWidth, pageHeight, scale } = getSinglePageSvgs(options);
+		// eslint-disable-next-line consistent-return
 		CardCreatr.rasterize.canvasDrawImage2(svgStrings, pageWidth, pageHeight, scale, progress, (err, pngBuffers) => {
 			if (err) return next(err);
 			CardCreatr.rasterize.pngListToDestinationPdf(filePath, pngBuffers, pageWidth, pageHeight, next);
@@ -176,7 +160,7 @@ function printPageCanvasPdf2(options, progress, next) {
 }
 
 function printCardCanvasZip(options, progress, next) {
-	var filePath = options.filePath;
+	let {filePath} = options;
 	if (!filePath) return;
 	try {
 		let { svgStrings, pageWidth, pageHeight, scale } = getCardSvgs(options);
@@ -186,9 +170,9 @@ function printCardCanvasZip(options, progress, next) {
 				status.page = i;
 				progress(status);
 			}, _next);
-		}, (err, pngBufferses) => {
+		}, (err, pngBufferses) => { // eslint-disable-line consistent-return
 			if (err) return next(err);
-			let pngBuffers = pngBufferses.map((v) => { return v[0]; });
+			let pngBuffers = pngBufferses.map((v) => v[0]);
 			CardCreatr.rasterize.pngListToPngsZip(filePath, pngBuffers, pageWidth, pageHeight, next);
 		});
 	} catch(err) {
@@ -197,4 +181,4 @@ function printCardCanvasZip(options, progress, next) {
 }
 
 
-module.exports = { getPageSvg, getCardSvgs, printSlimerJS, printPageCanvasPdf, printPageCanvasPdf2, printCardCanvasZip };
+module.exports = { getPageSvg, getCardSvgs, printPageCanvasPdf, printPageCanvasPdf2, printCardCanvasZip };

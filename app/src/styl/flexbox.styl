@@ -40,7 +40,7 @@
 		flex-flow: column nowrap
 
 		& > #f-top {
-			flex: 1 1 500px
+			flex: 1 1 300px
 			overflow: auto
 
 			display: flex
@@ -107,8 +107,8 @@
 					}
 
 					input[type=checkbox] {
-						margin: 0
-						transform: scale(0.8)
+						margin: -3px 0 0 0
+						transform: scale(0.8) translate(0, 3px)
 					}
 
 					a {
@@ -120,7 +120,7 @@
 		}
 
 		& > #f-bottom {
-			flex: 1 1 300px
+			flex: 1 1 100px
 			position: relative
 			// NOTE: If changing the transition duration here, also edit the bottomBigger() and bottomSmaller() functions in App.vue
 			transition: flex-basis 0.2s
@@ -135,7 +135,7 @@
 				flex-flow: column nowrap
 				
 				& > .f-tab {
-					flex: 1 1 75px
+					flex: 1 1 25px
 					position: relative
 					overflow: hidden
 

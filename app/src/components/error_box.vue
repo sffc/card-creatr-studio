@@ -17,21 +17,20 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div>
 	<div class="error-entry" v-for="[key,err] in errorsArray">{{ err.toString() }} ({{ key }})\n<span class="error-details" v-on:click="showDetails(key, err)">(technical details)</span></div>
 </div>
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
 const electron = require("electron");
 
-Vue.component("error-box", {
-	template: template,
+module.exports = {
+	template,
 	props: ["show"],
 	computed: {
-		errorsArray: function() {
+		errorsArray() {
 			let result = [];
 			for (let [key, err] of this.show) {
 				result.push([key, err]);
@@ -40,10 +39,10 @@ Vue.component("error-box", {
 		},
 	},
 	methods: {
-		showDetails: function(key, err) {
-			electron.remote.dialog.showMessageBox({
+		showDetails(key, err) {
+			electron.ipcRenderer.send("showMessageBox", {
 				type: "error",
-				title: "Error Details: " + key,
+				title: `Error Details: ${key}`,
 				message: err.message,
 				detail: err.stack,
 				buttons: ["OK"],
@@ -51,5 +50,5 @@ Vue.component("error-box", {
 			});
 		}
 	}
-});
+};
 //</script>

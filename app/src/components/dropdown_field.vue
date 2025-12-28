@@ -17,7 +17,7 @@
 
 "use strict";
 
-var template = `
+let template = `
 <select v-model="selected">
   <option v-for="option in options" v-bind:value="option.value">
     {{ option.text }}
@@ -26,28 +26,27 @@ var template = `
 `;
 
 //<script>
-const Vue = require("vue/dist/vue");
-
-Vue.component("dropdown-field", {
-	template: template,
-	props: ["value", "dropdownV1"],
+module.exports = {
+	template,
+	props: ["modelValue", "dropdownV1"],
+	emits: ["update:modelValue", "click"],
 	computed: {
 		selected: {
-			get: function() {
-				return this.value || "";
+			get() {
+				return this.modelValue || "";
 			},
-			set: function(option) {
-				this.$emit("input", option);
+			set(option) {
+				this.$emit("update:modelValue", option);
 			}
 		},
-		options: function() {
-			return [{ value: "", text: "<empty>" }].concat(this.dropdownV1.split("\n").map((line) => { return { value: line, text: line }; }));
+		options() {
+			return [{ value: "", text: "<empty>" }].concat(this.dropdownV1.split("\n").map((line) => ({ value: line, text: line })));
 		}
 	},
 	methods: {
-		onClick: function(event) {
+		onClick(event) {
 			this.$emit("click", event);
 		}
 	}
-});
+};
 //</script>

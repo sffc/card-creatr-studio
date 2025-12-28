@@ -18,12 +18,13 @@
 "use strict";
 
 const path = require("path");
-const Module = require("module").Module;
+const {Module} = require("module");
 if (__dirname.indexOf("app.asar") !== -1) {
 	// slimerjs and slimerjs-capture and its dependencies (tmp and os-tmpdir) are not designed to work inside of an asar archive.  This small hack tells Node to use the "unpacked" version of those modules.
 	const oldNodeModulePaths = Module._nodeModulePaths;
 	const unpackedPath = path.resolve(__dirname, "../../app.asar.unpacked/node_modules");
 	Module._nodeModulePaths = function() {
+		// eslint-disable-next-line prefer-rest-params
 		return [unpackedPath].concat(oldNodeModulePaths.apply(this, arguments));
 	};
 	console.log("Added node module search path:", unpackedPath);
@@ -31,7 +32,8 @@ if (__dirname.indexOf("app.asar") !== -1) {
 
 require.extensions[".vue"] = require.extensions[".js"];
 
-const Vue = require("vue/dist/vue");
+// const Vue = require("@vue/compat");
+const Vue3 = require("vue");
 const App = require("./App");
 const CardCreatr = require("card-creatr");
 const Utils = require("./lib/utils");
@@ -43,13 +45,9 @@ const pagePrinterFallback = require("./lib/page_printer_fallback");
 const svgXml = require("./lib/svg_xml");
 const electron = require("electron");
 
-/* eslint-disable no-new */
-const vm = new Vue({
-	el: "#app",
-	template: "<App/>",
-	store,
-	components: { App }
-});
+const app = Vue3.createApp(App);
+app.use(store);
+const vm = app.mount("#app");
 
 if (global) {
 	global.vm = vm;
@@ -72,14 +70,18 @@ function ipcStatusUpdate(status) {
 	case "error":
 		action = "Error";
 		break;
+	default:
+		action = "[[Unknown]]";
+		break;
 	}
-	vm.$children[0].$data.spinnerText = action + " page #" + (status.page+1) + "…";
+	vm.spinnerText = `${action} page #${status.page+1}…`;
 }
 
 document.body.addEventListener("click", (event) => {
 	const element = event.target;
 	if (element && element.matches("a[target='_blank']")) {
 		event.preventDefault();
+		console.log("Opening link in new window");
 		electron.shell.openExternal(element.href);
 	}
 });
@@ -92,30 +94,11 @@ electron.ipcRenderer.on("path", (event, message) => {
 electron.ipcRenderer.on("printfrontback", (event, message) => {
 	store.state.printFrontAndBack = message;
 });
-electron.ipcRenderer.on("print", (/* event, message */) => {
-	store.state.printing = true;
-	// TODO: Setting a nonzero timeout here is a hack.  Without it, the browser does not always render fonts correctly in the SVG.  Could be a bug in Chromium.
-	setTimeout(() => {
-		window.print();
-		setTimeout(() => {
-			store.state.printing = false;
-		}, 500);
-	}, 1000);
-});
-electron.ipcRenderer.on("print2", (event, message) => {
-	pagePrinterFallback.printSlimerJS(message, (err) => {
-		if (err) {
-			console.error(err);
-			alert("Error: " + err.message);
-		}
-		else alert("File export is finished");
-	});
-});
 electron.ipcRenderer.on("print3", (event, message) => {
-	vm.$children[0].$data.spinnerCount++;
-	vm.$children[0].$data.spinnerText = "Calculating…";
+	vm.spinnerCount++;
+	vm.spinnerText = "Calculating…";
 	pagePrinterFallback.printPageCanvasPdf(message, ipcStatusUpdate, (err) => {
-		vm.$children[0].$data.spinnerCount--;
+		vm.spinnerCount--;
 		if (err) {
 			console.error(err);
 			alert("Error: " + err.message);
@@ -124,10 +107,10 @@ electron.ipcRenderer.on("print3", (event, message) => {
 	});
 });
 electron.ipcRenderer.on("print4", (event, message) => {
-	vm.$children[0].$data.spinnerCount++;
-	vm.$children[0].$data.spinnerText = "Calculating…";
+	vm.spinnerCount++;
+	vm.spinnerText = "Calculating…";
 	pagePrinterFallback.printPageCanvasPdf2(message, ipcStatusUpdate, (err) => {
-		vm.$children[0].$data.spinnerCount--;
+		vm.spinnerCount--;
 		if (err) {
 			console.error(err);
 			alert("Error: " + err.message);
@@ -136,10 +119,10 @@ electron.ipcRenderer.on("print4", (event, message) => {
 	});
 });
 electron.ipcRenderer.on("cardImages1", (event, message) => {
-	vm.$children[0].$data.spinnerCount++;
-	vm.$children[0].$data.spinnerText = "Calculating…";
+	vm.spinnerCount++;
+	vm.spinnerText = "Calculating…";
 	pagePrinterFallback.printCardCanvasZip(message, ipcStatusUpdate, (err) => {
-		vm.$children[0].$data.spinnerCount--;
+		vm.spinnerCount--;
 		if (err) {
 			console.error(err);
 			alert("Error: " + err.message);
@@ -148,20 +131,26 @@ electron.ipcRenderer.on("cardImages1", (event, message) => {
 	});
 });
 electron.ipcRenderer.on("addcard", (/* event, message */) => {
-	vm.$children[0].newCard();
+	vm.newCard();
 });
+// eslint-disable-next-line consistent-return
 electron.ipcRenderer.on("copycard", (/* event, message */) => {
 	if(store.getters.selectedCards.length === 0) return alert("Please select a card first.");
 	vm.$children[0].copyCard();
 });
+// eslint-disable-next-line consistent-return
 electron.ipcRenderer.on("movecardup", (/* event, message */) => {
-	if (store.getters.selectedCards.length === 0) return alert("Please select a card first.");
-	store.commit("moveCards", false);
+	let card = store.getters.currentCard;
+	if (!card) return alert("Please select a card first.");
+	vm.moveCard(card.id, false);
 });
+// eslint-disable-next-line consistent-return
 electron.ipcRenderer.on("movecarddown", (/* event, message */) => {
-	if (store.getters.selectedCards.length === 0) return alert("Please select a card first.");
-	store.commit("moveCards", true);
+	let card = store.getters.currentCard;
+	if (!card) return alert("Please select a card first.");
+	vm.moveCard(card.id, true);
 });
+// eslint-disable-next-line consistent-return
 electron.ipcRenderer.on("deletecard", (/* event, message */) => {
 	let cards = store.getters.selectedCards;
 	if (cards.length === 0) return alert("Please select a card first.");
@@ -176,13 +165,15 @@ electron.ipcRenderer.on("viewSvgXml", (/* event, message */) => {
 	svgXml.open(store.state.currentSvg);
 });
 electron.ipcRenderer.on("_SAR", (event, data) => {
-	let id = data.id;
+	let {id} = data;
 	let _sendResponse = (response) => {
 		electron.ipcRenderer.send("_SAR", { id, response });
 	};
 	if (data.name === "save") {
+		// eslint-disable-next-line no-use-before-define
 		electronDoSave(data.message, _sendResponse);
 	} else if (data.name === "getsvg") {
+		// eslint-disable-next-line no-use-before-define
 		electronDoGetSvg(data.message, _sendResponse);
 	}
 });
@@ -216,7 +207,9 @@ function electronDoGetSvg(message, next) {
 // Dirty watchers: update the title bar to show when the file has been modified
 function makeDirtyWatchers() {
 	store.watch((state) => {
-		for (let cardId of state.cardIds) Vue.get(state.cardData, cardId, null);
+		for (let cardId of state.cardIds) {
+			Utils.vueGetOrDefault(state.cardData, cardId, null);
+		}
 		return state.cardData;
 	}, (oldValue /* , newValue */) => {
 		if (oldValue) {
@@ -324,7 +317,7 @@ async.auto({
 		} catch(_err) {
 			return _next(_err);
 		}
-		_next(null);
+		return _next(null);
 	}],
 	"resolveData": ["dataObjects", "resolveJson", "loadAssets", (results, _next) => {
 		for (let card of results.dataObjects) {

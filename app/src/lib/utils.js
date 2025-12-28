@@ -17,6 +17,7 @@
 
 "use strict";
 
+const Vue = require("@vue/compat");
 const uuidV4 = require("uuid/v4");
 const CardCreatr = require("card-creatr");
 
@@ -28,9 +29,26 @@ const CardCreatr = require("card-creatr");
 // 	return obj[key];
 // };
 
+/// Updated version of Vue.get() based on Vue.observable()
+/// Similar to Vue.set() but doesn't trigger notificatins on the container
+function vueGetOrDefault(obj, key, defaultVal) {
+	if (Array.isArray(obj)) {
+		return obj[key];
+	}
+	if (Object.prototype.hasOwnProperty.call(obj, key)) {
+		return obj[key];
+	}
+	if (!obj.__ob__) {
+		obj[key] = defaultVal;
+	} else {
+		obj[key] = Vue.observable(defaultVal);
+	}
+	return obj[key];
+}
+
 function setEquals(set1, set2) {
 	if (set1.size !== set2.size) return false;
-	for (var a of set1) if (!set2.has(a)) return false;
+	for (let a of set1) if (!set2.has(a)) return false;
 	return true;
 }
 
@@ -58,10 +76,9 @@ function uuid() {
 	return uuidV4();
 }
 
-var globalCounterMinid = 1;
-
+let globalCounterMinid = 1;
 function minid() {
-	var sn = "0000" + (globalCounterMinid++);
+	let sn = "0000" + (globalCounterMinid++);
 	if (sn.length < 9) {
 		sn = sn.slice(-5);
 	}
@@ -76,9 +93,9 @@ function fileSizeString(bytes) {
 }
 
 function createCard(existingIds, fields) {
-	var id;
-	var maxId = "";
-	var i = 0;
+	let id;
+	let maxId = "";
+	let i = 0;
 	for (let _id of existingIds) {
 		if (_id > maxId) {
 			maxId = _id;
@@ -103,6 +120,7 @@ function createCard(existingIds, fields) {
 }
 
 function createField(template) {
+	// eslint-disable-next-line no-param-reassign
 	if (!template) template = {
 		name: "untitled"
 	};
@@ -228,7 +246,7 @@ function finalizeSvg(innerSvg, dims, options, noUnits, numPages, scale) {
 function resized() {
 	// Fire a window "resize" event to make sure everything adjusts,
 	// like the ACE editor
-	var evt = document.createEvent("UIEvents");
+	let evt = document.createEvent("UIEvents");
 	evt.initUIEvent("resize", true, false, window, 0);
 	window.dispatchEvent(evt);
 }
@@ -249,6 +267,7 @@ rect(fill="url(#cc-layout-grid)", width=${viewport.width}, height=${viewport.hei
 }
 
 module.exports = {
+	vueGetOrDefault,
 	setEquals,
 	toCardIdForm,
 	toCardCreatrForm,

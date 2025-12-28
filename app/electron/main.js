@@ -21,9 +21,9 @@ const electron = require("electron");
 const storage = require("electron-json-storage");
 const capture = require("./capture");
 const CustomMenu = require("./menu");
-const CustomWindowManager = require("./window").CustomWindowManager;
+const {CustomWindowManager} = require("./window");
 const http = require("http");
-const shell = require("electron").shell;
+const {shell} = require("electron");
 
 const menu = new CustomMenu();
 
@@ -41,7 +41,7 @@ function showOpenDialog(next) {
 			{name: "Card Creatr Studio Files", extensions: ["ccsb", "ccst"]},
 			{name: "All Files", extensions: ["*"]}
 		]
-	}, (filePaths) => {
+	}).then(({ filePaths }) => { // eslint-disable-line consistent-return
 		if (!filePaths) return next(null);
 		next(filePaths[0]);
 	});
@@ -69,7 +69,7 @@ menu.on("printhelp", (/* browserWindow */) => {
 	electron.dialog.showMessageBox({
 		type: "info",
 		message: "Print and Export Options",
-		detail: "Card Creatr Studio gives four options for exporting your cards as a printable PDF file in order to work around numerous known bugs in the underlying rendering engines.\n\n1) The default \"Export to PDF\" uses HTML5 Canvas to render the PDF. This is the best option for almost all users.\n\n2) \"Print with Electron\" uses Electron's own printing engine. This has a number of bugs from upstream Chromium that cause image cropping and masking to not work.\n\n3) \"Export to PDF with Firefox\" spawns an instance of Firefox in the background and uses Firefox's rendering engine. This is a viable alternative if you encounter a bug in Chromium's SVG renderer.\n\n4) \"Export to PDF with Electron\" uses Electron's screen capture functionality. This should be attempted only if the other options do not work for you.\n\n5) \"Export to PDF with Canvas v1\" is the same as the default \"Export to PDF\" except that it renders all pages from a single snapshot. This can be attempted if the other options are not successful."
+		detail: "Card Creatr Studio gives multiple options for exporting your cards as a printable PDF file in order to work around numerous known bugs in the underlying rendering engines.\n\n1) The default \"Export to PDF\" uses HTML5 Canvas to render the PDF. This is the best option for almost all users.\n\n2) \"Export to PDF with Electron\" uses Electron's screen capture functionality. This should be attempted only if the other options do not work for you.\n\n3) \"Export to PDF with Canvas v1\" is the same as the default \"Export to PDF\" except that it renders all pages from a single snapshot. This can be attempted if the other options are not successful."
 	});
 });
 
@@ -88,18 +88,13 @@ menu.on("printfrontback", (browserWindow, checked) => {
 	});
 });
 
-menu.on("print", (browserWindow) => {
-	let window = global.windowManager.getByBrowserWindow(browserWindow);
-	window.print();
-});
-
 menu.on("print2", (browserWindow) => {
 	electron.dialog.showSaveDialog(browserWindow, {
 		defaultPath: "print.pdf",
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		console.log("Requesting SVG...");
@@ -107,24 +102,11 @@ menu.on("print2", (browserWindow) => {
 			capture.renderAndSavePdf(filePath, response, (err) => {
 				electron.dialog.showMessageBox({
 					type: (err ? "warning" : "info"),
-					message: "Export using Blink",
+					message: "Export with Electron Capture",
 					detail: (err ? err.toString() : "The export is complete.")
 				});
 			});
 		});
-	});
-});
-
-menu.on("print3", (browserWindow) => {
-	electron.dialog.showSaveDialog(browserWindow, {
-		defaultPath: "print.pdf",
-		filters: [
-			{name: "PDF File", extensions: ["pdf"]}
-		]
-	}, (filePath) => {
-		if (!filePath) return;
-		let window = global.windowManager.getByBrowserWindow(browserWindow);
-		window.print2({ filePath });
 	});
 });
 
@@ -134,7 +116,7 @@ menu.on("print4", (browserWindow) => {
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		window.print3({ filePath });
@@ -147,7 +129,7 @@ menu.on("print5", (browserWindow) => {
 		filters: [
 			{name: "PDF File", extensions: ["pdf"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		window.print4({ filePath });
@@ -160,7 +142,7 @@ menu.on("cardImages1", (browserWindow) => {
 		filters: [
 			{name: "Zip File", extensions: ["zip"]}
 		]
-	}, (filePath) => {
+	}).then(({ filePath }) => {
 		if (!filePath) return;
 		let window = global.windowManager.getByBrowserWindow(browserWindow);
 		window.cardImages1({ filePath });
@@ -206,19 +188,19 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 	http.get("http://cardcreatr.shane.guru/versions/latest.txt", (res) => {
 		let currentVersion = require("../package.json").version;
 		let latestVersion = "";
-		res.on("data", function(chunk) {
+		res.on("data", (chunk) => {
 			latestVersion += chunk;
 		});
-		res.on("end", function() {
+		res.on("end", () => {
 			if (currentVersion !== latestVersion) {
 				electron.dialog.showMessageBox({
 					type: "info",
 					message: "Updates Available",
-					detail: "Your version: " + currentVersion + "\nLatest version: " + latestVersion,
+					detail: `Your version: ${currentVersion}\nLatest version: ${latestVersion}`,
 					buttons: ["Download", "Cancel"],
 					defaultId: 0,
 					cancelId: 1
-				}, (response) => {
+				}).then(({ response }) => {
 					if (response === 0) {
 						shell.openExternal("http://cardcreatr.shane.guru/latestdist/");
 					}
@@ -227,11 +209,11 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 				electron.dialog.showMessageBox({
 					type: "info",
 					message: "All Up-to-Date!",
-					detail: "Version: " + currentVersion,
+					detail: `Version: ${currentVersion}`,
 					buttons: ["OK", "Download Page"],
 					defaultId: 0,
 					cancelId: 1
-				}, (response) => {
+				}).then(({ response }) => {
 					if (response === 1) {
 						shell.openExternal("http://cardcreatr.shane.guru/latestdist/");
 					}
@@ -242,7 +224,7 @@ menu.on("checkForUpdates", (/* browserWindow */) => {
 		electron.dialog.showMessageBox({
 			type: "warning",
 			message: "Internet Connection Required",
-			detail: "Could not connect to cardcreatr.shane.guru: " + err
+			detail: `Could not connect to cardcreatr.shane.guru: ${err}`
 		});
 	});
 });

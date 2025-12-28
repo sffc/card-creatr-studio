@@ -17,12 +17,9 @@
 
 "use strict";
 
-var template = `
+let template = `
 <div>
-	<div id="print" v-if="printing">
-		<print-page v-for="(page,pageIndex) in pages" :key="pageIndex" :svg-string="page" :page-index="pageIndex"></print-page>
-	</div>
-	<div id="f-main" v-if="!printing">
+	<div id="f-main">
 		<template v-if="ready">
 			<div id="f-null" v-on:click="clearCurrentId" v-if="hasCards">
 			</div>
@@ -30,7 +27,7 @@ var template = `
 				<div id="f-top">
 					<div id="f-list" v-on:click="clearCurrentId">
 						<div v-if="hasCards" class="card-list-wrapper">
-							<card-list-table v-model="currentId" v-on:input="setCurrentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" :selectedCardIds="selectedCardIds" v-on:new="newCard" v-on:copy="copyCard"></card-list-table>
+							<card-list-table v-model="currentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" v-on:new="newCard" v-on:copy="copyCard"></card-list-table>
 						</div>
 						<div v-else class="card-empty-list">
 							<strong>Welcome.</strong>
@@ -67,9 +64,11 @@ var template = `
 					<div id="f-editor" class="ace-container" v-if="tab === 'template'">
 						<ace-editor v-model="templateString" mode="jade" theme="solarized_light"></ace-editor>
 					</div>
+					<!--
 					<div id="f-editor" class="template2-container" v-if="tab === 'template2'">
 						<template-editor v-model="templateString"></template-editor>
 					</div>
+					-->
 					<div id="f-editor" class="fonts-container" v-if="tab === 'fonts'">
 						<font-view :fonts="fontsList"></font-view>
 					</div>
@@ -163,28 +162,27 @@ var template = `
 
 //<script>
 const Utils = require("./lib/utils");
-require("./components/card_list_table");
-require("./components/card_svg");
-require("./components/ace_editor");
-require("./components/asset_upload_box");
-require("./components/asset_box");
-require("./components/error_box");
-require("./components/print_page");
-require("./components/template_editor");
-require("./components/font_view");
 
 module.exports = {
-	template: template,
-	data: () => {
-		return {
-			tab: null,
-			currentField: null,
-			ready: false,
-			bottomFlexBasis: 250,
-			spinnerCount: 0,
-			spinnerText: "Calculating…"
-		};
+	template,
+	components: {
+		"card-list-table": require("./components/card_list_table"),
+		"card-svg": require("./components/card_svg"),
+		"ace-editor": require("./components/ace_editor"),
+		"asset-upload-box": require("./components/asset_upload_box"),
+		"asset-box": require("./components/asset_box"),
+		"error-box": require("./components/error_box"),
+		// "template-editor": require("./components/template_editor"),
+		"font-view": require("./components/font_view"),
 	},
+	data: () => ({
+		tab: null,
+		currentField: null,
+		ready: false,
+		bottomFlexBasis: 50,
+		spinnerCount: 0,
+		spinnerText: "Calculating…"
+	}),
 	computed: {
 		cards() {
 			return this.$store.state.cardData;
@@ -207,8 +205,13 @@ module.exports = {
 		fontsList() {
 			return this.$store.state.fontsList;
 		},
-		currentId() {
-			return this.$store.state.currentId;
+		currentId: {
+			get() {
+				return this.$store.state.currentId;
+			},
+			set(newValue) {
+				this.$store.commit("setCurrentId", newValue);
+			},
 		},
 		currentSvg() {
 			return this.$store.state.currentSvg;
@@ -220,26 +223,26 @@ module.exports = {
 			return !!this.$store.getters.guideHtml;
 		},
 		templateString: {
-			get: function() {
+			get() {
 				return this.$store.state.templateString;
 			},
-			set: function(newValue) {
+			set(newValue) {
 				this.$store.commit("setTemplateString", newValue);
 			}
 		},
 		optionsString: {
-			get: function() {
+			get() {
 				return this.$store.state.optionsString;
 			},
-			set: function(newValue) {
+			set(newValue) {
 				this.$store.commit("setOptionsString", newValue);
 			}
 		},
 		showBack: {
-			get: function() {
+			get() {
 				return this.$store.state.showBack;
 			},
-			set: function(newValue) {
+			set(newValue) {
 				this.$store.commit("setShowBack", newValue);
 			}
 		},
@@ -277,25 +280,10 @@ module.exports = {
 		bottomFlexBasisPx() {
 			return this.$store.state.bottomFlexBasis + "px";
 		},
-		printing() {
-			return this.$store.state.printing;
-		},
-		pages() {
-			console.log("computing pages");
-			return Utils.makePages(
-				this.$store.getters.globalOptions,
-				this.$store.getters.renderer,
-				this.$store.state.cardOptions,
-				false
-			);
-		},
 	},
 	methods: {
 		clearCurrentId() {
-			this.$store.commit("setCurrentId", [null, false, false]);
-		},
-		setCurrentId(e) {
-			this.$store.commit("setCurrentId", [e.cardId, e.event.ctrlKey, e.event.shiftKey]);
+			this.$store.commit("setCurrentId", null);
 		},
 		updateAsset(){
 			// noop
@@ -335,7 +323,7 @@ module.exports = {
 			this.$store.commit("addField", field);
 		},
 		deleteField(){
-			if (confirm("Are you sure you want to delete the field \"" + this.currentField.name + "\" and all data associated with this field?")) {
+			if (confirm(`Are you sure you want to delete the field "${this.currentField.name}" and all data associated with this field?`)) {
 				this.$store.commit("deleteField", this.currentField);
 			}
 		},
@@ -346,39 +334,42 @@ module.exports = {
 			this.$store.commit("moveField", [ this.currentField, true ]);
 		},
 		bottomBigger() {
-			if (this.bottomFlexBasis === 250) {
-				this.bottomFlexBasis = 1000;
-			} else {
-				this.bottomFlexBasis = 250;
+			if (this.bottomFlexBasis === 50) {
+				this.bottomFlexBasis = 600;
+			} else if (this.bottomFlexBasis === 0) {
+				this.bottomFlexBasis = 50;
 			}
 			setTimeout(Utils.resized, 200); // resize Ace Editor
 		},
 		bottomSmaller() {
-			if (this.bottomFlexBasis === 250) {
-				this.bottomFlexBasis = 0;
+			if (this.bottomFlexBasis === 600) {
+				this.bottomFlexBasis = 50;
 			} else {
-				this.bottomFlexBasis = 250;
+				this.bottomFlexBasis = 0;
 			}
 			setTimeout(Utils.resized, 200); // resize Ace Editor
 		}
 	},
 	watch: {
-		errors: function(newValue) {
-			// A few heuristics to determine when to switch from the splash screen to the main editor view (here and below):
-			if (this.ready) return;
-			if (!this.loaded) return;
-			if (newValue.length > 0) return;
-			if (!this.$store.getters.globalOptions) return;
-			this.ready = true;
+		errors: {
+			handler(newValue) {
+				// A few heuristics to determine when to switch from the splash screen to the main editor view (here and below):
+				if (this.ready) return;
+				if (!this.loaded) return;
+				if (newValue.length > 0) return;
+				if (!this.$store.getters.globalOptions) return;
+				this.ready = true;
+			},
+			deep: true
 		},
-		loaded: function(newValue) {
+		loaded(newValue) {
 			if (this.ready) return;
 			if (!newValue) return;
 			if (this.errors.length > 0) return;
 			if (!this.$store.getters.globalOptions) return;
 			this.ready = true;
 		},
-		ready: function(newValue) {
+		ready(newValue) {
 			if (newValue) {
 				if (this.$store.getters.guideHtml) {
 					// If a guide is available, default to hiding the properties panel.

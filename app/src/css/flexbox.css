@@ -33,7 +33,7 @@
   flex-flow: column nowrap;
 }
 #f-main > #f-primary > #f-top {
-  flex: 1 1 500px;
+  flex: 1 1 300px;
   overflow: auto;
   display: flex;
   flex-flow: row nowrap;
@@ -91,15 +91,15 @@
   display: inline;
 }
 #f-main > #f-primary > #f-top > #f-preview > #preview-options input[type=checkbox] {
-  margin: 0;
-  transform: scale(0.8);
+  margin: -3px 0 0 0;
+  transform: scale(0.8) translate(0, 3px);
 }
 #f-main > #f-primary > #f-top > #f-preview > #preview-options a {
   color: inherit;
   text-decoration: inherit;
 }
 #f-main > #f-primary > #f-bottom {
-  flex: 1 1 300px;
+  flex: 1 1 100px;
   position: relative;
   transition: flex-basis 0.2s;
   display: flex;
@@ -111,7 +111,7 @@
   flex-flow: column nowrap;
 }
 #f-main > #f-primary > #f-bottom > #f-tabs > .f-tab {
-  flex: 1 1 75px;
+  flex: 1 1 25px;
   position: relative;
   overflow: hidden;
   background-color: #666;
