@@ -74,8 +74,9 @@ module.exports = {
 	methods: {
 		clearImage() {
 			if (confirm("Remove this image?")) {
-				ccsb.removeFile(this.modelValue);
+				let filePath = this.modelValue;
 				this.$emit("update:modelValue", null);
+				this.$store.commit("tryRemoveCardAsset", filePath);
 			}
 		},
 		onFileChoosen(event) {

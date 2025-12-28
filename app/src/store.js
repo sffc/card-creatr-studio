@@ -85,6 +85,7 @@ const STORE = new Vuex.Store({
 			}
 		},
 		deleteCard(state, cardId) {
+			let deletedData = state.cardData[cardId];
 			Vue.delete(state.cardData, cardId);
 			let newSet = new Set(state.cardIds);
 			newSet.delete(cardId);
@@ -92,6 +93,33 @@ const STORE = new Vuex.Store({
 			state.cardIdSortOrder.splice(state.cardIdSortOrder.indexOf(cardId), 1);
 			if (state.currentId === cardId) {
 				state.currentId = null;
+			}
+			for (let field of state.fields) {
+				if (field.display === "image") {
+					this.commit("tryRemoveCardAsset", deletedData[field.id]);
+				}
+			}
+		},
+		tryRemoveCardAsset(state, path) {
+			// Check if the deleted image occurs elsewhere.
+			let confirmed;
+			outer: for (let cardId of Object.keys(state.cardData)) {
+				let card = state.cardData[cardId];
+				for (let field of state.fields) {
+					if (card[field.id] === path) {
+						if (!confirmed) {
+							confirmed = confirm("This image is used in other cards. Remove it from the other cards, too?");
+						}
+						if (!confirmed) {
+							break outer;
+						}
+						Vue.set(card, field.id, null);
+					}
+				}
+			}
+			if (confirmed !== false) {
+				console.log("Deleting file:", path);
+				ccsb.removeFile(path);
 			}
 		},
 		addField(state, field) {
