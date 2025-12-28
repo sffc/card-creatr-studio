@@ -46,6 +46,7 @@ export default eslintConfig.defineConfig([
 			"no-alert": "off",
 			"no-implicit-coercion": "off",
 			"no-inline-comments": "off",
+			"no-labels": "off",
 			"no-negated-condition": "off",
 			"no-nested-ternary": "off",
 			"no-plusplus": "off",

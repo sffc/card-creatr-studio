@@ -118,10 +118,10 @@ module.exports = {
 			this.resetSort();
 			this.$emit("new");
 		},
-		copyCard: function () {
+		copyCard() {
 			this.resetSort();
 			this.$emit("copy");
-		}
+		},
 	},
 	watch: {
 		sortField: {
