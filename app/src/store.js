@@ -330,6 +330,7 @@ STORE.watch((state, getters) =>  // eslint-disable-line no-unused-vars
 			cardDataWatchers[id](); // unwatch
 			delete cardDataWatchers[id];
 			STORE.commit("clearCardOptions", id);
+			STORE.commit("clearError", "cardOptions/" + id);
 		}
 	}
 	for (let id of newSet) {
@@ -338,6 +339,13 @@ STORE.watch((state, getters) =>  // eslint-disable-line no-unused-vars
 			cardDataWatchers[id] = STORE.watch((state, getters) => {
 				console.log("card options watcher starting:", id, new Date().getTime() % 10000);
 				let rawCard = Utils.vueGetOrDefault(state.cardData, id, null);
+				if (!rawCard) {
+					console.log("card options watcher card not found:", id);
+					return {
+						success: false,
+						error: new Error("not found")
+					};
+				}
 				let cardOptions = new (CardCreatr.OptionsParser)();
 				let card = Utils.toCardCreatrForm(rawCard, state.fields);
 				cardOptions.addPrimary(card, getters.buffer); // This line is important! When this watcher attempts to load a file, it actually pulls it from the reactive cache of file buffers.
