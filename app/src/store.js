@@ -58,13 +58,17 @@ const STORE = new Vuex.Store({
 		setBuffer(state, value) {
 			VuexCached.mutation(state.buffers, value);
 		},
-		addCardData(state, card) {
+		addCardData(state, { card, index }) {
 			// Vue.get prevents triggering other watchers
 			Utils.vueGetOrDefault(state.cardData, card.id, card);
 			let newSet = new Set(state.cardIds);
 			newSet.add(card.id);
 			state.cardIds = newSet;
-			state.cardIdSortOrder.push(card.id);
+			if (Number.isFinite(index)) {
+				state.cardIdSortOrder.splice(index, 0, card.id);
+			} else {
+				state.cardIdSortOrder.push(card.id);
+			}
 		},
 		setCardDataField(state, [ cardId, fieldId, value ]) {
 			Vue.set(Utils.vueGetOrDefault(state.cardData, cardId, {}), fieldId, value);
@@ -176,6 +180,13 @@ const STORE = new Vuex.Store({
 		currentCard(state) {
 			if (state.currentId === null) return null;
 			return Utils.vueGetOrDefault(state.cardData, state.currentId, null);
+		},
+		insertionIndex(state) {
+			let N = state.cardIdSortOrder.length;
+			// -1..=N-1
+			let currentIndex = state.cardIdSortOrder.indexOf(state.currentId);
+			// 1..=N
+			return ((currentIndex + N) % N) + 1;
 		},
 		renderer(state, getters) {
 			let templateString = state.templateString;

@@ -312,10 +312,10 @@ async.auto({
 		return _next(null);
 	}],
 	"resolveData": ["dataObjects", "resolveJson", "loadAssets", (results, _next) => {
-		for (let card of results.dataObjects) {
-			let _card = Utils.toCardIdForm(card, store.state.fields);
-			_card.id = card.id;
-			store.commit("addCardData", _card);
+		for (let dataCard of results.dataObjects) {
+			let card = Utils.toCardIdForm(dataCard, store.state.fields);
+			card.id = dataCard.id;
+			store.commit("addCardData", { card });
 		}
 		_next(null);
 	}],

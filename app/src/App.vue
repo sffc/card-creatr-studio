@@ -290,7 +290,8 @@ module.exports = {
 		},
 		newCard(){
 			let card = Utils.createCard(Object.keys(this.cards), this.fields);
-			this.$store.commit("addCardData", card);
+			let index = this.$store.getters.insertionIndex;
+			this.$store.commit("addCardData", { card, index });
 			this.$store.commit("setCurrentId", card.id);
 			// Let Vue re-render before setting focus to the new card
 			setTimeout(() => {
