@@ -85,14 +85,15 @@ const STORE = new Vuex.Store({
 			}
 		},
 		deleteCard(state, cardId) {
-			let deletedData = state.cardData[cardId];
+			const deletedData = state.cardData[cardId];
+			const oldIndex = state.cardIdSortOrder.indexOf(cardId);
 			Vue.delete(state.cardData, cardId);
-			let newSet = new Set(state.cardIds);
+			const newSet = new Set(state.cardIds);
 			newSet.delete(cardId);
 			state.cardIds = newSet;
-			state.cardIdSortOrder.splice(state.cardIdSortOrder.indexOf(cardId), 1);
+			state.cardIdSortOrder.splice(oldIndex, 1);
 			if (state.currentId === cardId) {
-				state.currentId = null;
+				state.currentId = state.cardIdSortOrder[Math.min(oldIndex, state.cardIdSortOrder.length - 1)];
 			}
 			for (let field of state.fields) {
 				if (field.display === "image") {
