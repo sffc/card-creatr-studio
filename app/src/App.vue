@@ -313,6 +313,23 @@ module.exports = {
 		moveCard(id, directionDown) {
 			this.$store.commit("moveCard", [ id, directionDown ]);
 		},
+		selectPrevCard() {
+			const sortOrder = this.$store.state.cardIdSortOrder;
+			if (!sortOrder.length) return;
+			// if 0 or null, select the last card
+			let newIndex = sortOrder.indexOf(this.$store.state.currentId) - 1;
+			if (newIndex === -2) newIndex = -1;
+			newIndex = (newIndex + sortOrder.length) % sortOrder.length;
+			this.$store.commit("setCurrentId", sortOrder[newIndex]);
+		},
+		selectNextCard() {
+			const sortOrder = this.$store.state.cardIdSortOrder;
+			if (!sortOrder.length) return;
+			// if max or null, select the last card
+			let newIndex = sortOrder.indexOf(this.$store.state.currentId) + 1;
+			newIndex = newIndex % sortOrder.length;
+			this.$store.commit("setCurrentId", sortOrder[newIndex]);
+		},
 		gotoTab(newTab) {
 			this.tab = newTab;
 		},

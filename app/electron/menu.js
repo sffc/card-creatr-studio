@@ -331,6 +331,23 @@ class CustomMenu extends EventEmitter {
 				type: "separator"
 			},
 			{
+				label: "Select Previous Card",
+				accelerator: "CmdOrCtrl+Up",
+				click: (item, focusedWindow) => {
+					this.emit("selectPrevCard", focusedWindow);
+				}
+			},
+			{
+				label: "Select Next Card",
+				accelerator: "CmdOrCtrl+Down",
+				click: (item, focusedWindow) => {
+					this.emit("selectNextCard", focusedWindow);
+				}
+			},
+			{
+				type: "separator"
+			},
+			{
 				label: "Show/Hide Grid",
 				accelerator: "CmdOrCtrl+Alt+G",
 				click: (item, focusedWindow) => {

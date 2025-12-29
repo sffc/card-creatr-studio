@@ -155,6 +155,12 @@ electron.ipcRenderer.on("deletecard", (/* event, message */) => {
 		store.commit("deleteCard", store.state.currentId);
 	}
 });
+electron.ipcRenderer.on("selectPrevCard", (/* event, message */) => {
+	vm.selectPrevCard();
+});
+electron.ipcRenderer.on("selectNextCard", (/* event, message */) => {
+	vm.selectNextCard();
+});
 electron.ipcRenderer.on("toggleGrid", (/* event, message */) => {
 	store.commit("toggleGrid");
 });

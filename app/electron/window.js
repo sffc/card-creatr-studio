@@ -109,6 +109,14 @@ class CustomWindow extends EventEmitter {
 		this._sendMessage("deletecard", {});
 	}
 
+	selectPrevCard() {
+		this._sendMessage("selectPrevCard", {});
+	}
+
+	selectNextCard() {
+		this._sendMessage("selectNextCard", {});
+	}
+
 	toggleGrid() {
 		this._sendMessage("toggleGrid", {});
 	}

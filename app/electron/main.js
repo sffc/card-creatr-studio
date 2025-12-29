@@ -154,6 +154,16 @@ menu.on("deletecard", (browserWindow) => {
 	window.deleteCard();
 });
 
+menu.on("selectPrevCard", (browserWindow) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.selectPrevCard();
+});
+
+menu.on("selectNextCard", (browserWindow) => {
+	let window = global.windowManager.getByBrowserWindow(browserWindow);
+	window.selectNextCard();
+});
+
 menu.on("toggleGrid", (browserWindow) => {
 	let window = global.windowManager.getByBrowserWindow(browserWindow);
 	window.toggleGrid();
