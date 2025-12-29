@@ -54,8 +54,8 @@ class CustomWindow extends EventEmitter {
 	saveAs(next) {
 		electron.dialog.showSaveDialog(this.browserWindow, {
 			filters: [
+				{name: "Card Creatr Studio Bundle", extensions: ["ccsb"]},
 				{name: "Card Creatr Studio Template", extensions: ["ccst"]},
-				{name: "Card Creatr Studio Bundle", extensions: ["ccsb"]}
 			]
 		}).then(({ filePath }) => {
 			if (!filePath) return;
