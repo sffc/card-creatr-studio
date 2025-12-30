@@ -232,6 +232,13 @@ class CustomMenu extends EventEmitter {
 					}
 				},
 				{
+					label: "Export Front/Back to PDF…",
+					// accelerator: "CmdOrCtrl+Alt+E",
+					click: (item, focusedWindow) => {
+						this.emit("print5fb", focusedWindow);
+					}
+				},
+				{
 					label: "Export Card Images…",
 					accelerator: "CmdOrCtrl+Shift+E",
 					click: (item, focusedWindow) => {

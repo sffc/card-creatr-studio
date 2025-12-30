@@ -116,6 +116,19 @@ menu.on("print5", (browserWindow) => {
 	});
 });
 
+menu.on("print5fb", (browserWindow) => {
+	electron.dialog.showSaveDialog(browserWindow, {
+		defaultPath: "print.pdf",
+		filters: [
+			{name: "PDF File", extensions: ["pdf"]}
+		]
+	}).then(({ filePath }) => {
+		if (!filePath) return;
+		let window = global.windowManager.getByBrowserWindow(browserWindow);
+		window.print4({ filePath, showFrontBack: true });
+	});
+});
+
 menu.on("cardImages1", (browserWindow) => {
 	electron.dialog.showSaveDialog(browserWindow, {
 		defaultPath: "cards.zip",

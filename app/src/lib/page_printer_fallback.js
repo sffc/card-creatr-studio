@@ -59,15 +59,16 @@ function getPageSvg(/* options */) {
 	};
 }
 
-function getSinglePageSvgs(/* options */) {
+function getSinglePageSvgs(exportOptions) {
+	exportOptions = Object.assign({}, exportOptions, {
+		concatenated: false,
+		showBack: store.state.showBack
+	});
 	let strings = Utils.makePageSvg(
 		store.getters.globalOptions,
 		store.getters.renderer,
 		store.state.cardOptions,
-		{
-			concatenated: false,
-			showBack: store.state.showBack
-		}
+		exportOptions
 	);
 	let options = store.getters.globalOptions;
 	let dims = Object.assign({}, options.get("/dimensions/page"));

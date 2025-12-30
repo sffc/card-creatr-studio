@@ -152,17 +152,24 @@ function makeCardSvgs(options, renderer, allCardOptions, { showBack, useQty }) {
 	return cardSvgStrings;
 }
 
-function makePageSvg(options, renderer, allCardOptions, { concatenated, showBack }) {
+function makePageSvg(options, renderer, allCardOptions, { concatenated, showBack, showFrontBack }) {
 	if (!options || !renderer || !allCardOptions) return null;
 	let cardSvgStrings = makeCardSvgs(options, renderer, allCardOptions, {
 		showBack,
 		useQty: true
 	});
+	let cardBacks;
+	if (showFrontBack) {
+		cardBacks = makeCardSvgs(options, renderer, allCardOptions, {
+			showBack: !showBack,
+			useQty: true
+		});
+	}
 	let pageRenderer = new (CardCreatr.PageRenderer)(options.get("/viewports/page"), options.get("/layoutStrategy"), !!showBack);
 	if (concatenated) {
-		return pageRenderer.renderConcatenated(cardSvgStrings);
+		return pageRenderer.renderConcatenated(cardSvgStrings, { cardBacks });
 	} else {
-		return pageRenderer.render(cardSvgStrings);
+		return pageRenderer.render(cardSvgStrings, { cardBacks });
 	}
 }
 
