@@ -9,6 +9,7 @@
   "main": "electron/main.js",
   "repository": "sffc/cc-studio",
   "dependencies": {
+    "@vue/compat": "3.4.27",
     "ace-builds": "^1.2.5",
     "async": "^2.6.4",
     "card-creatr": "^0.2.5",
@@ -20,7 +21,6 @@
     "tmp": "0.0.31",
     "uuid": "^3.0.1",
     "vue": "3.4.27",
-    "@vue/compat": "3.4.27",
     "vue-color": "^3.3",
     "vuex": "^4"
   }
