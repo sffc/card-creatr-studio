@@ -53,12 +53,14 @@
     "build/ccsb.icns",
     "build/ccst.icns"
   ],
+  "//build": "Comment: the package seems brittle with asar turned on, because various specific dependencies need to be unpacked from it. It's not clear what value we get by turning it on.",
   "build": {
     "appId": "guru.shane.ccstudio",
-    "asar": true,
+    "asar": false,
     "asarUnpack": [
       "node_modules/tmp",
-      "node_modules/os-tmpdir"
+      "node_modules/os-tmpdir",
+      "node_modules/setimmediate"
     ],
     "mac": {
       "category": "public.app-category.graphics-design"
