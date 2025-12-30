@@ -79,10 +79,6 @@
         }
       ]
     },
-    "win": {
-      "certificateFile": "local/ShaneFCarr.p12",
-      "certificatePassword": "xChRd5dSEF5GCGuC"
-    },
     "nsis": {
       "perMachine": true,
       "oneClick": false
