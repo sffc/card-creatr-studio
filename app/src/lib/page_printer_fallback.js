@@ -60,6 +60,7 @@ function getPageSvg(/* options */) {
 }
 
 function getSinglePageSvgs(exportOptions) {
+	// eslint-disable-next-line no-param-reassign
 	exportOptions = Object.assign({}, exportOptions, {
 		concatenated: false,
 		showBack: store.state.showBack

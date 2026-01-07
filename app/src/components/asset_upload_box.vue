@@ -26,7 +26,6 @@ let template = `
 
 //<script>
 const ccsb = require("../lib/ccsb");
-const fs = require("fs");
 const path = require("path");
 
 module.exports = {

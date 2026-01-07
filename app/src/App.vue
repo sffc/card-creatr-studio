@@ -327,7 +327,7 @@ module.exports = {
 			if (!sortOrder.length) return;
 			// if max or null, select the last card
 			let newIndex = sortOrder.indexOf(this.$store.state.currentId) + 1;
-			newIndex = newIndex % sortOrder.length;
+			newIndex %= sortOrder.length;
 			this.$store.commit("setCurrentId", sortOrder[newIndex]);
 		},
 		gotoTab(newTab) {

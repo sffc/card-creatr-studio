@@ -67,6 +67,7 @@ export default eslintConfig.defineConfig([
 		"**/_old/",
 		"**/build/",
 		"**/config/",
+		"**/dist/",
 		"**/vendor/",
 	]),
 ]);
