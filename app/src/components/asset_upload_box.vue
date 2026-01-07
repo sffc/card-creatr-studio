@@ -37,18 +37,22 @@ module.exports = {
 		uploadFile(event) {
 			let file = event.target.files[0];
 			if (!file) return;
-			// eslint-disable-next-line consistent-return
-			fs.readFile(file.path, (err, buffer) => {
-				if (err) return alert(err);
-				let basename = path.basename(file.path);
+			const reader = new FileReader();
+			reader.addEventListener("load", (event) => { // eslint-disable-line no-shadow
+				console.log("Loaded file:", reader.result?.byteLength, event);
+				let basename = path.basename(file.name);
 				// no path.join() here because we are in the zip file, which always uses '/'
 				while (ccsb.containsFile("assets/" + basename)) {
 					basename = "_" + basename;
 				}
-				ccsb.writeFile("assets/" + basename, buffer);
+				ccsb.writeFile("assets/" + basename, reader.result);
 				this.$emit("upload");
 			});
 			event.target.value = null;
+			reader.addEventListener("error", (event) => { // eslint-disable-line no-shadow
+				alert(event);
+			});
+			reader.readAsArrayBuffer(file);
 		}
 	}
 };
