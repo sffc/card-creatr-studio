@@ -29,7 +29,7 @@ let template = `
 			</tr>
 		</thead>
 		<tbody>
-			<card-row v-for="card in sortedCards" :key="card.id" :card="card" :fields="fields" v-on:click.stop="onRowClick(card)" :active="modelValue === card.id"></card-row>
+			<card-row v-for="card in sortedCards" :key="card.id" :card="card" :fields="fields" v-on:click.stop="onRowClick(card)" :active="modelValue === card.id" v-on:selectPrev="selectPrevCard" v-on:selectNext="selectNextCard" ref="cardRow"></card-row>
 		</tbody>
 	</table>
 	<div class="below-card-list">
@@ -69,6 +69,32 @@ module.exports = {
 				this.sortReversed = !this.sortReversed;
 			} else {
 				this.sortField = field;
+			}
+		},
+		selectPrevCard({ fieldId }) {
+			// TODO: Merge this with selectPrevCard in App.vue
+			const sortOrder = this.cardIdSortOrder;
+			if (!sortOrder.length) return;
+			// if 0 or null, select the last card
+			let newIndex = sortOrder.indexOf(this.modelValue) - 1;
+			if (newIndex === -2) newIndex = -1;
+			newIndex = (newIndex + sortOrder.length) % sortOrder.length;
+			this.$emit("update:modelValue", sortOrder[newIndex]);
+			if (fieldId) {
+				this.$refs.cardRow[newIndex].selectField(fieldId, false);
+			}
+		},
+		selectNextCard({ fieldId }) {
+			// TODO: Merge this with selectNextCard in App.vue
+			console.log("selectNextCard");
+			const sortOrder = this.cardIdSortOrder;
+			if (!sortOrder.length) return;
+			// if max or null, select the last card
+			let newIndex = sortOrder.indexOf(this.modelValue) + 1;
+			newIndex %= sortOrder.length;
+			this.$emit("update:modelValue", sortOrder[newIndex]);
+			if (fieldId) {
+				this.$refs.cardRow[newIndex].selectField(fieldId, true);
 			}
 		},
 		resetSort() {

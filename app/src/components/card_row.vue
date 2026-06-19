@@ -22,27 +22,27 @@ let template = `
 	<td class="left-buffer"></td>
 	<td v-for="field in fields">
 		<template v-if="field.display == 'string'">
-			<input v-model="card[field.id]" v-on:click.stop :placeholder="field.name"/>
+			<input v-model="card[field.id]" :ref="field.id" v-on:click.stop v-on:keydown.up="handleKeyDownUp($event, field.id)" v-on:keydown.down="handleKeyDownDown($event, field.id)" :placeholder="field.name"/>
 		</template>
 		<template v-if="field.display == 'number'">
 			<template v-if="field.properties.indexOf('uint') !== -1">
-				<input v-model="card[field.id]" v-on:click.stop :placeholder="field.name" type="number" min="0"/>
+				<input v-model="card[field.id]" :ref="field.id" v-on:click.stop :placeholder="field.name" type="number" min="0"/>
 			</template>
 			<template v-else>
-				<input v-model="card[field.id]" v-on:click.stop :placeholder="field.name" type="number"/>
+				<input v-model="card[field.id]" :ref="field.id" v-on:click.stop :placeholder="field.name" type="number"/>
 			</template>
 		</template>
 		<template v-if="field.display == 'multiline'">
-			<textarea-array v-model="card[field.id]" v-on:click.stop></textarea-array>
+			<textarea-array v-model="card[field.id]" :ref="field.id" v-on:click.stop></textarea-array>
 		</template>
 		<template v-if="field.display == 'image'">
-			<image-chooser v-model="card[field.id]" :placeholder="field.name" :extra="optionsFor(field)"></image-chooser>
+			<image-chooser v-model="card[field.id]" :ref="field.id" :placeholder="field.name" :extra="optionsFor(field)"></image-chooser>
 		</template>
 		<template v-if="field.display == 'color'">
-			<color-picker v-model="card[field.id]"></color-picker>
+			<color-picker v-model="card[field.id]" :ref="field.id"></color-picker>
 		</template>
 		<template v-if="field.display == 'dropdown'">
-			<dropdown-field v-model="card[field.id]" :dropdownV1="field.dropdownV1"></dropdown-field>
+			<dropdown-field v-model="card[field.id]" :ref="field.id" :dropdownV1="field.dropdownV1"></dropdown-field>
 		</template>
 	</td>
 </tr>
@@ -58,6 +58,7 @@ module.exports = {
 		"dropdown-field": require("./dropdown_field"),
 	},
 	props: ["card", "fields", "active"],
+	emits: ["selectPrev", "selectNext"],
 	computed: {
 	},
 	methods: {
@@ -65,6 +66,28 @@ module.exports = {
 			let cardOptions = this.$store.state.cardOptions[this.card.id];
 			if (!cardOptions) return null;
 			return cardOptions.get("/" + field.name);
+		},
+		selectField(fieldId, toEnd) {
+			this.$refs[fieldId][0].select();
+			if (toEnd) {
+				this.$refs[fieldId][0].selectionStart = this.$refs[fieldId][0].selectionEnd;
+			} else {
+				this.$refs[fieldId][0].selectionEnd = 0;
+			}
+		},
+		handleKeyDownUp(event, fieldId) {
+			if (!this.active) return;
+			if (event.srcElement.selectionStart === event.srcElement.selectionEnd && event.srcElement.selectionStart === 0) {
+				event.preventDefault();
+				this.$emit("selectPrev", { fieldId });
+			}
+		},
+		handleKeyDownDown(event, fieldId) {
+			if (!this.active) return;
+			if (event.srcElement.selectionStart === event.srcElement.selectionEnd && event.srcElement.selectionEnd === event.srcElement.value.length) {
+				event.preventDefault();
+				this.$emit("selectNext", { fieldId });
+			}
 		}
 	}
 };

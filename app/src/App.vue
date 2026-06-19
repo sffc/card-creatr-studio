@@ -314,6 +314,7 @@ module.exports = {
 			this.$store.commit("moveCard", [ id, directionDown ]);
 		},
 		selectPrevCard() {
+			// TODO: Merge this with selectPrevCard in card_list_table.vue
 			const sortOrder = this.$store.state.cardIdSortOrder;
 			if (!sortOrder.length) return;
 			// if 0 or null, select the last card
@@ -323,6 +324,7 @@ module.exports = {
 			this.$store.commit("setCurrentId", sortOrder[newIndex]);
 		},
 		selectNextCard() {
+			// TODO: Merge this with selectNextCard in card_list_table.vue
 			const sortOrder = this.$store.state.cardIdSortOrder;
 			if (!sortOrder.length) return;
 			// if max or null, select the last card
