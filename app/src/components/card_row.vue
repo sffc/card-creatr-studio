@@ -74,6 +74,7 @@ module.exports = {
 			} else {
 				this.$refs[fieldId][0].selectionEnd = 0;
 			}
+			this.$refs[fieldId][0].scrollIntoViewIfNeeded();
 		},
 		handleKeyDownUp(event, fieldId) {
 			if (!this.active) return;
