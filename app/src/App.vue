@@ -27,7 +27,7 @@ let template = `
 				<div id="f-top">
 					<div id="f-list" v-on:click="clearCurrentId">
 						<div v-if="hasCards" class="card-list-wrapper">
-							<card-list-table v-model="currentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" v-on:new="newCard" v-on:copy="copyCard"></card-list-table>
+							<card-list-table v-model="currentId" :cards="cards" :cardIdSortOrder="cardIdSortOrder" :fields="fields" v-on:newcard="newCard" v-on:copycard="copyCard"></card-list-table>
 						</div>
 						<div v-else class="card-empty-list">
 							<strong>Welcome.</strong>

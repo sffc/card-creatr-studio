@@ -46,7 +46,7 @@ module.exports = {
 		"card-row": require("./card_row"),
 	},
 	props: ["cards", "cardIdSortOrder", "fields", "modelValue"],
-	emits: ["update:modelValue", "new"],
+	emits: ["update:modelValue", "newcard", "copycard"],
 	data() {
 		return {
 			sortField: null,
@@ -142,11 +142,11 @@ module.exports = {
 		},
 		newCard() {
 			this.resetSort();
-			this.$emit("new");
+			this.$emit("newcard");
 		},
 		copyCard() {
 			this.resetSort();
-			this.$emit("copy");
+			this.$emit("copycard");
 		},
 	},
 	watch: {
