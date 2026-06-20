@@ -34,7 +34,7 @@ let template = `
 	</table>
 	<div class="below-card-list">
 		<button v-on:click.stop="newCard">+ Add Card</button>
-		<button v-if="modelValue" v-on:click.stop="copyCard">+ Copy Card</button>
+		<button v-if="modelValue" v-on:click.stop="copyCard">+ Duplicate Card</button>
 	</div>
 </div>
 `;

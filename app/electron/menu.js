@@ -304,8 +304,8 @@ class CustomMenu extends EventEmitter {
 				}
 			},
 			{
-				label: "Copy Card",
-				accelerator: "CmdOrCtrl+Shift+C",
+				label: "Duplicate Card",
+				accelerator: "CmdOrCtrl+Shift+D",
 				click: (item, focusedWindow) => {
 					this.emit("copycard", focusedWindow);
 				}
