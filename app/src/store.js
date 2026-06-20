@@ -102,26 +102,21 @@ const STORE = new Vuex.Store({
 			}
 		},
 		tryRemoveCardAsset(state, path) {
+			if (!path) return;
 			// Check if the deleted image occurs elsewhere.
-			let confirmed;
-			outer: for (let cardId of Object.keys(state.cardData)) {
+			for (let cardId of Object.keys(state.cardData)) {
 				let card = state.cardData[cardId];
 				for (let field of state.fields) {
 					if (card[field.id] === path) {
-						if (!confirmed) {
-							confirmed = confirm("This image is used in other cards. Remove it from the other cards, too?");
-						}
-						if (!confirmed) {
-							break outer;
-						}
-						Vue.set(card, field.id, null);
+						alert("Note: This card contains images used elsewhere. The image will not be deleted.");
+						return;
+						// Vue.set(card, field.id, null);
 					}
 				}
 			}
-			if (confirmed !== false) {
-				console.log("Deleting file:", path);
-				ccsb.removeFile(path);
-			}
+			// If we get here, the image was unique to the deleted card.
+			console.log("Deleting file:", path);
+			ccsb.removeFile(path);
 		},
 		addField(state, field) {
 			state.fields.push(field);
